@@ -27,10 +27,8 @@ ITEMS=".alias
 .bashrc
 .bashrc.${HOSTNAME}
 .bashrc.${HOSTNAME}.${USER}
-.cvsrc
 .inputrc
 .ssh
-.subversion
 .vim
 .vimrc
 bin"
@@ -118,5 +116,5 @@ fi
 chmod -R a=,u+rwX ${DIR_SKEL}
 
 # set bin perms
-find .skel/bin -maxdepth 2 -type f -not -iwholename '*.svn/*' -exec chmod u+x {} \;
-find .skel/scripts -maxdepth 1 -type f -not -iwholename '*.svn/*' -exec chmod u+x {} \;
+find .skel/bin -maxdepth 2 -type f -not -iwholename '*.git/*' -exec chmod u+x {} \;
+find .skel/scripts -maxdepth 1 -type f -not -iwholename '*.git/*' -exec chmod u+x {} \;
