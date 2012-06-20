@@ -1,0 +1,56 @@
+#!/bin/sh
+
+# SVN copy file helper script
+#
+# 1. Given two arguements, source and destination
+# 2. copy source to destination
+# 3. svn add destination
+# 4. svn ci changes
+#
+# @author Michael Cannon <michael@peimic.com>
+# @version $Id: cvscp,v 1.1.1.1 2010/04/14 09:05:44 peimic.comprock Exp $
+
+# have two arguements?
+if [ ! "$2" ]
+then
+	echo "Usage: `basename $0` source-file destination"
+	exit 65
+fi
+
+# boolean helpers
+TRUE=1
+FALSE=0
+
+# original name
+SOURCE=$1
+DEBUG=${FALSE}
+
+# ../. sadly is treated as a directory
+# if destination basename is . then remove it
+PERIOD=.
+DESTINATION=${2}
+DEST_BNAME=`basename ${DESTINATION}`
+
+# Destination uses same name as source
+if [ ${PERIOD} = ${DEST_BNAME} ]
+then
+	DESTINATION=`basename ${SOURCE}`
+fi
+
+# is $DESTINATION a directory, file, or path
+if [ -d "${DESTINATION}" ]
+then
+	DESTINATION=${DESTINATION}${SOURCE}
+fi
+
+# debug or go
+if [ "$FALSE" -eq "$DEBUG" ]
+then
+	svn cp $SOURCE $DESTINATION
+	svn ci -m "Copy \"$SOURCE\" to \"$DESTINATION\"" "$SOURCE" "$DESTINATION"
+else
+	echo svn cp $SOURCE $DESTINATION
+	echo svn ci -m \"Copy \\\"$SOURCE\\\" to \\\"$DESTINATION\\\"\" "$SOURCE" "$DESTINATION"
+fi
+
+exit 0

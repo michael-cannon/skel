@@ -1,0 +1,77 @@
+#!/bin/sh
+
+# Helper for pulling live DOMAIN_NAME to local
+#
+# @author Michael Cannon <michael@peimic.com>
+# @version $Id: l2l_biceps_in2code,v 1.1 2011/09/26 13:03:58 peimic.comprock Exp $
+
+# base configuration vars
+# einpraegsam.net is running MySQL 4.0 on CLI so, DB_FULL_DUMP is true to
+# prevent mysqldump errors on ignore-table variables
+FILE_CONFIG_OVERWRITE_DENY="true"
+DB_FULL_DUMP="true"
+DB_NO_CREATE="true"
+HOSTS_NO_CREATE="true"
+REMOTE_SERVER="p34045689@einpraegsam.net"
+SITES="client"
+VHOST_NO_CREATE="true"
+WWW_GROUP="nobody"
+LOCAL_MODS[1]="perl -pi -e 's/^(AddType x-mapp-php5 .php)/# \1/g' .htaccess"
+LOCAL_MODS[2]="perl -pi -e 's/^(AddHandler x-mapp-php5 .php)/# \1/g' .htaccess"
+
+# 1st of many migration sites
+DOMAIN_NAME="onlineshop.wunschtacho.de"
+REMOTE_DIR_WWW="~/shop304"
+source ~/.skel/scripts/live2local.sh
+l2l_site_xtcommerce
+l2l_do_sync ${@}
+
+# 2nd of many migration sites needs resets
+l2l_reset
+DOMAIN_NAME="einpraegsam.net"
+REMOTE_DIR_WWW="~/typo3_einpraegsam"
+source ~/.skel/scripts/live2local.sh
+l2l_site_typo3
+l2l_do_sync ${@}
+
+l2l_reset
+DOMAIN_NAME="fsnord.com"
+REMOTE_DIR_WWW="~/typo3_fsnord"
+source ~/.skel/scripts/live2local.sh
+l2l_site_typo3
+l2l_do_sync ${@}
+
+l2l_reset
+DOMAIN_NAME="justpowder.com"
+REMOTE_DIR_WWW="~/typo3_justpowder"
+source ~/.skel/scripts/live2local.sh
+l2l_site_typo3
+l2l_do_sync ${@}
+
+l2l_reset
+DOMAIN_NAME="typo3_nitem.de"
+REMOTE_DIR_WWW="~/typo3_nitem"
+source ~/.skel/scripts/live2local.sh
+l2l_site_typo3
+l2l_do_sync ${@}
+
+l2l_reset
+DOMAIN_NAME="smokethis.de"
+REMOTE_DIR_WWW="~/typo3_smokethis2"
+source ~/.skel/scripts/live2local.sh
+l2l_site_typo3
+l2l_do_sync ${@}
+
+l2l_reset
+DOMAIN_NAME="t3twitter.com"
+REMOTE_DIR_WWW="~/typo3_t3twitter"
+source ~/.skel/scripts/live2local.sh
+l2l_site_typo3
+l2l_do_sync ${@}
+
+l2l_reset
+DOMAIN_NAME="wunschtacho.de"
+REMOTE_DIR_WWW="~/typo3_wunschtacho"
+source ~/.skel/scripts/live2local.sh
+l2l_site_typo3
+l2l_do_sync ${@}

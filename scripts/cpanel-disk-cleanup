@@ -1,0 +1,48 @@
+#!/bin/sh
+
+# Quick and Easy Clean up for cPanel Servers
+# @ref http://neverthelost.net/site/2009/04/quick-and-easy-clean-up-for-cpanel-servers/
+
+## Out Put for the boys and girls to See the before usage
+df -h
+
+## Yum works best when cleaned often I have noticed :)
+yum clean all
+
+## Remove all Compressed logs / remove any variations / incrementals
+rm -f /var/log/*.gz
+rm -f /var/log/*.?
+
+## And I said clean up after home!
+
+# Any Core files that may have been dumped as they take up a good 40 to 60Mb of Disk space.
+rm -rf /home/core.*
+# Get rid of Easy Apache
+rm -rf /home/cpeasyapache
+# Get rid of Old MySQL Install
+rm -rf /home/MySQL-install
+# Get rid of other BS
+rm -f /home/latest
+rm -rf /home/cprubygemsbuild
+rm -rf /home/cprubybuild
+rm -rf /home/cprestore
+rm -rf /usr/local/cpanel/src/3rdparty/*
+cd /tmp
+for files in `ls`; do rm -f $files; done;
+
+# restart MySQL as mysql.sock might've been dropped
+/scripts/restartsrv_mysql
+
+## See what kind of Kernels you may have that are old but first lets remove any kernel sources
+rpm -qa kernel-source | xargs rpm -e
+
+## Display new space prior to any kernels being removed.
+df -h
+
+## List out the installed kernels
+rpm -qa | grep kernel
+
+## Give current running kernel
+uname -a | awk {'print $3'}
+
+## End

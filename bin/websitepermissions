@@ -1,0 +1,232 @@
+#!/bin/bash
+
+# Set permissions for production websites
+# 
+# Basic premise, remove all current perms, set minimal read, write and execute 
+# needed to run live website. Set immutable if possible.
+#
+# string	account_owner	default $USER
+# string	httpd_owner group that httpd process runs as	default $USER
+# string	mode [live|dev|owner]	default live
+# 				live (a-w) no excess write perms, make immutable 
+#				dev (ug+w) remove immutable
+#				owner (u+w) remove immutable
+#
+# usage: websitepermissions [account_owner] [httpd_owner] [mode]
+#
+# WARNING: If your application fails due to a file write, remove immutable for
+# that location and enable the lowest needed write permission.
+#
+# @author Michael Cannon, michael@typo3vagabond.com
+# @version $Id$
+
+PWD=`pwd`
+
+CHATTR=""
+DIRS_WRITE=""
+DIRS_WRITE_RECURSIVE=""
+DIR_SITE="${PWD}/"
+FILE_HTACCESS=".htaccess"
+FILES_WRITE=""
+GROUP_BIT_CGI=""
+GROUP_BIT_FILE=""
+GROUP_BIT_WRITE=""
+IS_MODE="production"
+IS_TYPE="no"
+OTHER_BIT_FILE=""
+USER_BIT_FILE="u+rX"
+WHICH_CHATTR=`which chattr`
+
+if [[ ${WHICH_CHATTR} ]] && [[ "${WHICH_CHATTR}" != "No *" ]]
+then
+	CHATTR=${WHICH_CHATTR}
+fi
+
+if [[ -n ${1} ]]
+then
+	FILE_OWNER=${1}
+else
+	FILE_OWNER=${USER}
+fi
+
+if [[ -z ${2} ]]
+then
+	HTTPD_USER=${FILE_OWNER}
+else
+	GROUP_BIT_FILE=",g+rX"
+	GROUP_BIT_WRITE=",g+w"
+	HTTPD_USER=${2}
+fi
+
+if [[ -n ${3} ]]
+then
+	case "${3}" in
+		"dev" )
+		IS_MODE="development"
+		GROUP_BIT_CGI=",g+x"
+		GROUP_BIT_FILE=",g+rwX"
+		USER_BIT_FILE="u+rwX"
+		;;
+
+		"owner" )
+		IS_MODE="owner"
+		USER_BIT_FILE="u+rwX"
+		;;
+
+		"su" )
+		IS_MODE="su"
+		GROUP_BIT_FILE=",g+rX"
+		GROUP_BIT_WRITE=""
+		OTHER_BIT_FILE=",o+rX"
+		USER_BIT_FILE="u+rwX"
+		;;
+
+		"plesk" )
+		IS_MODE="plesk"
+		GROUP_BIT_CGI=",g+x"
+		GROUP_BIT_FILE=",g+rX"
+		OTHER_BIT_FILE=",o+rX"
+		USER_BIT_FILE="u+rwX"
+		;;
+
+		# live
+		# production
+		* )
+		# nada default
+		;;
+
+	esac
+fi
+
+PERM_CGI="u+x${GROUP_BIT_CGI}"
+PERM_FILE="a=,a-s,${USER_BIT_FILE}${GROUP_BIT_FILE}${OTHER_BIT_FILE}"
+PERM_WRITE="u+w${GROUP_BIT_WRITE}"
+
+
+function detect_system {
+	if [[ -e "typo3conf/localconf.php" ]]
+	then
+		IS_TYPE="TYPO3"
+		DIRS_WRITE="typo3conf"
+		DIRS_WRITE_RECURSIVE="fileadmin
+			typo3temp
+			uploads"
+		FILES_WRITE="typo3conf/ENABLE_INSTALL_TOOL"
+	elif [[ -e "wp-config.php" ]]
+	then
+		IS_TYPE="WordPress"
+		DIRS_WRITE=""
+		DIRS_WRITE_RECURSIVE="wp-content/blogs.dir/*
+			wp-content/cache
+			wp-content/uploads
+			wp-content/themes/snapwire/cache
+			wp-content/w3tc*"
+		FILES_WRITE="wp-content/w3-total-cache-config.php"
+	fi
+}
+
+
+echo
+echo Begin ${IS_MODE} website permissions setting
+
+echo Working in ${DIR_SITE}
+cd ${DIR_SITE}
+
+detect_system
+echo Configure for ${IS_TYPE} system
+
+if [[ "" != ${CHATTR} ]]
+then
+	echo Recursively remove immutable on ${DIR_SITE}
+	${CHATTR} -R -i ${DIR_SITE}
+fi
+
+echo Recursively changing owner to ${FILE_OWNER}
+chown -R ${FILE_OWNER} ${DIR_SITE}
+
+if [[ `grep ${HTTPD_USER} /etc/group` != "" ]]
+then
+	echo Recursively changing group to ${HTTPD_USER}
+	chgrp -R ${HTTPD_USER} ${DIR_SITE}
+fi
+
+echo Recursively changing file permissions to ${PERM_FILE}
+chmod -R ${PERM_FILE} ${DIR_SITE}
+
+if [[ -e ${FILE_HTACCESS} ]]
+then
+	echo Correct .htaccess permissions to ${PERM_FILE}
+	chmod ${PERM_FILE} ${FILE_HTACCESS}
+fi
+
+echo Enable cgi/sh file execution
+find ${DIR_SITE} -type f \( -name "*.cgi" -o -name "*.fcgi" -o -name "*.sh" -o -name "*.phpcron" -o -name "*.phpsh" \) -exec chmod ${PERM_CGI} {} \;
+
+if [[ "" != ${CHATTR} && "production" = ${IS_MODE} ]]
+then
+	echo Recursively set immutable on ${DIR_SITE}
+	${CHATTR} -R +i ${DIR_SITE}
+fi
+
+for DIR in ${DIRS_WRITE}
+do
+	if [[ -e ${DIR} ]]
+	then
+		if [[ "" != ${CHATTR} && "production" = ${IS_MODE} ]]
+		then
+			echo Remove immutable on ${DIR}
+			${CHATTR} -i ${DIR}
+		fi
+
+		echo Change directory ${DIR} permissions to ${PERM_WRITE}
+		chmod ${PERM_WRITE} ${DIR}
+	fi
+done
+
+for DIR in ${DIRS_WRITE_RECURSIVE}
+do
+	if [[ -e ${DIR} ]]
+	then
+		if [[ "" != ${CHATTR} && "production" = ${IS_MODE} ]]
+		then
+			echo Recursively remove immutable on ${DIR}
+			${CHATTR} -R -i ${DIR}
+		fi
+
+		echo Recursively changing directory ${DIR} permissions to ${PERM_WRITE}
+		chmod -R ${PERM_WRITE} ${DIR}
+	fi
+done
+
+for FILE in ${FILES_WRITE}
+do
+	if [[ -e ${FILE} ]]
+	then
+		if [[ "" != ${CHATTR} && "production" = ${IS_MODE} ]]
+		then
+			echo Remove immutable on ${FILE}
+			${CHATTR} -i ${FILE}
+		fi
+
+		echo Changing ${FILE} permissions to ${PERM_WRITE}
+		chmod ${PERM_WRITE} ${FILE}
+	fi
+done
+
+if [[ "development" = ${IS_MODE} ]]
+then
+	echo Enabling SETUID and SETGID on directories
+	find * -type d ! -type l -exec chmod ug+s {} \;
+	chmod ug+s ${DIR_SITE}
+elif [[ "owner" = ${IS_MODE} || "su" = ${IS_MODE} ]]
+then
+	echo Enabling SETUID on directories
+	find * -type d ! -type l -exec chmod u+s {} \;
+	chmod ug+s ${DIR_SITE}
+fi
+
+echo Enabling exec on ${DIR_SITE}
+chmod a+X ${DIR_SITE}
+
+echo End ${IS_MODE} website permissions setting
+echo

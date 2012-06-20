@@ -1,0 +1,84 @@
+#!/bin/sh
+
+# Create basic Typo3 4.0 site
+#
+# @author Michael Cannon <michael@peimic.com>
+# @version $Id: typo3-create-base4,v 1.2 2011/09/12 19:48:15 peimic.comprock Exp $
+
+# home dir
+USER=`echo $USER`
+HOME_DIR="/home/${USER}"
+
+# original Typo3 source
+TYPO3_SRC_DIR="${HOME_DIR}/local/typo3_src-4.0"
+
+# needed folders
+TYPO3_DIRS="fileadmin
+fileadmin/_temp_
+fileadmin/templates
+typo3conf
+typo3conf/ext
+typo3temp
+uploads"
+
+# typo3 links
+TYPO3_LINKS="index.php
+typo3
+misc
+t3lib"
+
+# localconf starter helper
+TYPO3_CONF_SRC="${HOME_DIR}/.skel/scripts/typo3-localconf.php"
+TYPO3_CONF="typo3conf/localconf.php"
+
+# .htaccess starter helper
+TYPO3_HTACCESS_SRC="${HOME_DIR}/.skel/scripts/typo3-htaccess"
+TYPO3_HTACCESS=".htaccess"
+
+for DIR in ${TYPO3_DIRS}
+do
+	# don't create directory if already there
+	if [ ! -d ${DIR} ]
+	then
+		mkdir -p ${DIR}
+		chmod a+w ${DIR}
+	fi
+done
+
+ln -s ${TYPO3_SRC_DIR} typo3_src
+
+for LINKS in ${TYPO3_LINKS}
+do
+	# remove existing link
+	if [ -L ${LINKS} ]
+	then
+		rm ${LINKS}
+	elif [ -e ${LINKS} ]
+	then
+		mv ${LINKS} ${LINKS}.bak
+	fi
+
+	ln -s typo3_src/${LINKS}
+done
+
+# don't overwrite existing localconf.php
+if [ ! -e ${TYPO3_CONF} ]
+then
+	cp ${TYPO3_CONF_SRC} ${TYPO3_CONF}
+	chmod a+w ${TYPO3_CONF}
+fi
+
+# don't overwrite existing htaccess
+if [ ! -e ${TYPO3_HTACCESS} ]
+then
+	cp ${TYPO3_HTACCESS_SRC} ${TYPO3_HTACCESS}
+fi
+
+# helps me get my own starter extension
+# cd typo3conf/ext
+# cvs co -d cbstarter typo3/cbstarter
+
+# cd ../..
+
+# server side fixnobody will come along every hour to reset user, group, other
+# permissions, so don't panic at this point given you're on a Cannonbose server

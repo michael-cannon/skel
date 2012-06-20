@@ -1,0 +1,17 @@
+#!/bin/sh
+
+# Helper for pulling live DOMAIN_NAME to local
+#
+# @author Michael Cannon <michael@peimic.com>
+# @version $Id: l2l_datest_in2code,v 1.1 2011/09/26 10:00:19 peimic.comprock Exp $
+
+# configuration vars
+DOMAIN_NAME="datest.in2code.de"
+REMOTE_SERVER="ssh-968678@in2code.de"
+REMOTE_DIR_WWW="/kunden/bus-netzwerk.info/hosting/44225/in2code.de/projekte/in2code/datest/www"
+
+# load live2local function helpers
+source ~/.skel/scripts/live2local.sh
+
+l2l_site_typo3
+l2l_do_sync ${@}

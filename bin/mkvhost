@@ -1,0 +1,39 @@
+#!/bin/sh
+
+# Helper script to create a directory, database and virtual host for website development
+#
+# @author Michael Cannon <michael@typo3vagabond.com>
+
+# Create a vhost file of name ${1}
+if [[ -n ${1} ]]
+then
+	DOMAIN_BASE=${1}
+	DB_HOST=${1}
+	DB_NAME=${1}
+	DB_USER=${1}
+	DB_PW=${1}
+else
+	echo
+	echo Helper script to create a directory, database and virtual host for website development
+	echo `basename ${0}` domain_base
+	echo
+	exit
+fi
+
+# use a tld otherthan localhost
+if [[ -n ${2} ]]
+then
+	DOMAIN_LOCALHOST_BASE=${2}
+	DOMAIN_LOCALHOST="${DOMAIN_BASE}.${DOMAIN_LOCALHOST_BASE}"
+fi
+
+if [[ -z ${DOMAIN_LOCALHOST} ]]
+then
+	DOMAIN_NAME=${1}
+else
+	DOMAIN_NAME=${DOMAIN_LOCALHOST}
+fi
+
+source ~/.skel/scripts/live2local.sh
+l2l_site_mkvhost
+l2l_access_create

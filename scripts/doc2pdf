@@ -1,0 +1,24 @@
+#!/bin/bash
+
+# Word document to pdf helper
+#
+# @author Michael Cannon <michael@peimic.com>
+# @version $Id: doc2pdf,v 1.1.1.1 2010/04/14 09:05:44 peimic.comprock Exp $
+
+FUNCTION=`basename $0`
+WARN_1="Word document to pdf helper"
+
+# have an arguement
+if [ ! "$1" ]
+then
+	echo "Usage: ${FUNCTION} word-document"
+	echo $WARN_1
+	exit 65
+else
+	# original name
+	INPUT_FILE="$*"
+fi
+
+OUTPUT_FILE=${INPUT_FILE%.doc}.pdf
+echo "INPUT_FILE=${INPUT_FILE} OUTPUT_FILE=${OUTPUT_FILE}"
+antiword -p letter "$INPUT_FILE" | ps2pdf - "$OUTPUT_FILE"

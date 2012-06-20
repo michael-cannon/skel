@@ -1,0 +1,7 @@
+#!/bin/sh
+
+mkdir -p ${1}/branches
+mkdir -p ${1}/tags
+mkdir -p ${1}/trunk
+svn add ${1}
+svn ci -m "Initial ${1} setup"

@@ -1,0 +1,42 @@
+#!/bin/sh 
+# grep finder helper script
+#
+# 1. Given arguement, search value
+# 2. Check recursively if findable
+# 3. Redirect results to some file
+# 4. Open results file for editing
+#
+# @author Michael Cannon <michael@peimic.com>
+# @version $Id: grepit,v 1.1.1.1 2010/04/14 09:05:44 peimic.comprock Exp $
+
+
+# boolean helpers
+TRUE=1
+FALSE=0
+
+FUNCTION=`basename $0`
+WARN_1="This script logs a grep'd pattern search to file for viewing"
+
+# have an arguement
+if [ ! "$1" ]
+then
+	echo "Usage: ${FUNCTION} pattern"
+	echo ${WARN_1}
+	exit 65
+else
+	# original name
+	PATTERN="$*"
+	FILE_LOG="${FUNCTION}_${1}.log"
+fi
+
+if [[ -f ${FILE_LOG} ]]
+then
+	rm ${FILE_LOG}
+fi
+
+grep -r -n -I "${PATTERN}" * | grep -v CVS | grep -v svn | grep -v grepit_* > "${FILE_LOG}"
+echo "${PATTERN} search results in ${FILE_LOG}:"
+cat "${FILE_LOG}"
+echo
+
+exit 0

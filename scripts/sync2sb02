@@ -1,0 +1,230 @@
+#!/bin/sh
+
+# Copy live stonebriar websites over to dev box
+#
+# @author Michael Cannon <michael@peimic.com>
+# @version $Id: sync2sb02,v 1.8 2011/09/28 07:48:08 peimic.comprock Exp $
+
+
+DEV="root@stonebriar02"
+APACHE_USER="apache"
+CONFIG_WP="/wp-config.php"
+CONFIG_TYPO3="/typo3conf/localconf.php"
+
+# grab MySQL PW from DEV
+MYSQL_PW_LOC="/var/lib/mysql/.my.cnf"
+MYSQL_PW=`ssh ${DEV} cat ${MYSQL_PW_LOC}`
+MYSQL_PW=`echo ${MYSQL_PW} | sed -e "s#.*password=##g"`
+
+
+# carry over live db contents to remote
+function db2dev {
+	DB_FILE="${DB}.sql"
+
+	# dump live db
+	nice mysqldump --host=localhost --user=${DB_USER} --password=${DB_PW} --add-drop-table --extended-insert --opt ${DB} > ${DB_FILE}
+
+	gzip ${DB_FILE}
+
+	# copy live db dump TO dev
+	scp ${DB_FILE}.gz ${DEV}:.
+
+	# check dev box that db user & db exists
+	# create such if not
+	SQL_FILE="db.sql"
+
+	# FIXME check for db to exists remotely and then only run
+	echo "CREATE DATABASE IF NOT EXISTS ${DB};" >> ${SQL_FILE}
+	echo "GRANT ALL ON ${DB}.* TO ${DB_USER}@'localhost' IDENTIFIED BY '${DB_PW}';" >> ${SQL_FILE}
+	echo "FLUSH PRIVILEGES;" >> ${SQL_FILE}
+
+	# send over db sql
+	scp ${SQL_FILE} ${DEV}:.
+
+	# db dev db for dev domain
+	ssh -t ${DEV} "mysql -p${MYSQL_PW} < ${SQL_FILE}"
+
+	# remove db sql
+	rm ${SQL_FILE}
+	ssh ${DEV} rm -f ${SQL_FILE}
+
+	# prepare dev sql for import
+	ssh ${DEV} gunzip ${DB_FILE}.gz
+
+	# import live dump to TO dev
+	ssh ${DEV} "mysql --user=${DB_USER} --password=${DB_PW} ${DB} < ${DB_FILE}"
+
+	# remove local and remote db dump
+	rm ${DB_FILE}.gz
+	ssh ${DEV} rm -f ${DB_FILE}
+
+	return
+}
+
+
+# pull wordpress db connection
+function dbpullwp {
+	DB=`grep -P "\bDB_NAME\b" ${CONFIG_FILE}`
+	DB=`echo ${DB} | sed -e "s#');.*##g" -e "s#^.*, '##g"`
+
+	DB_USER=`grep -P "\bDB_USER\b" ${CONFIG_FILE}`
+	DB_USER=`echo ${DB_USER} | sed -e "s#');.*##g" -e "s#^.*, '##g"`
+
+	DB_PW=`grep -P "\bDB_PASSWORD\b" ${CONFIG_FILE}`
+	DB_PW=`echo ${DB_PW} | sed -e "s#');.*##g" -e "s#^.*, '##g"`
+	DB_PW=`echo ${DB_PW} | sed -e 's#(#\\\(#g' -e 's#)#\\\)#g'`
+
+	return
+}
+
+
+# pull typo3 db connection
+function dbpulltypo3 {
+	DB=`grep -P "\btypo_db\b" ${CONFIG_FILE}`
+	DB=`echo ${DB} | sed -e "s#';.*##g" -e "s#^.*'##g"`
+
+	DB_USER=`grep -P "\btypo_db_username\b" ${CONFIG_FILE}`
+	DB_USER=`echo ${DB_USER} | sed -e "s#';.*##g" -e "s#^.*'##g"`
+
+	DB_PW=`grep -P "\btypo_db_password\b" ${CONFIG_FILE}`
+	DB_PW=`echo ${DB_PW} | sed -e "s#';.*##g" -e "s#^.*'##g"`
+	DB_PW=`echo ${DB_PW} | sed -e 's#(#\\\(#g' -e 's#)#\\\)#g'`
+
+	return
+}
+
+
+# wordpress url updates
+function dburlwp {
+	# update domain in wp-config.php
+	ssh ${DEV} "perl -pi -e 's#\b${DOMAIN}\b#${DEV_DOMAIN}#g' ${CONFIG_FILE}"
+	ssh ${DEV} "perl -pi -e 's#(dev.){2,}#dev.#g' ${CONFIG_FILE}"
+
+	# update domain in wp db
+	SQL_FILE="update.sql"
+
+	echo "IF EXISTS (SELECT * FROM wp_blogs)" >> ${SQL_FILE}
+	echo "UPDATE wp_blogs SET domain = '${DEV_DOMAIN}' WHERE domain = '${DOMAIN}';" >> ${SQL_FILE}
+
+	echo "IF EXISTS (SELECT * FROM wp_site)" >> ${SQL_FILE}
+	echo "UPDATE wp_site SET domain = '${DEV_DOMAIN}' WHERE domain = '${DOMAIN}';" >> ${SQL_FILE}
+
+	echo "IF EXISTS (SELECT * FROM wp_sitemeta)" >> ${SQL_FILE}
+	echo "UPDATE wp_sitemeta SET meta_value = '${DEV_DOMAIN}' WHERE meta_value = '${DOMAIN}';" >> ${SQL_FILE}
+
+	echo "IF EXISTS (SELECT * FROM wp_options)" >> ${SQL_FILE}
+	echo "UPDATE wp_options SET option_value = 'http://${DEV_DOMAIN}' WHERE option_value = 'http://${DOMAIN}';" >> ${SQL_FILE}
+
+	# older wpmu options are kept in separate tables like wp_*_options
+	# @ref http://dev.mysql.com/doc/refman/5.1/en/show-tables.html
+	# SHOW TABLES LIKE 'wp_%_options'; 
+	for i in {1..100}
+	do
+		# echo "" >> ${SQL_FILE}
+		echo "IF EXISTS (SELECT * FROM wp_${i}_options)" >> ${SQL_FILE}
+		echo "UPDATE wp_${i}_options SET option_value = REPLACE(option_value, 'http://${DOMAIN}/', 'http://${DEV_DOMAIN}/') WHERE option_value LIKE 'http://${DOMAIN}/%';" >> ${SQL_FILE}
+	done
+
+	# send over update sql
+	scp ${SQL_FILE} ${DEV}:.
+
+	# update dev db for dev domain
+	ssh -t ${DEV} "mysql --host=localhost --user=${DB_USER} --password=${DB_PW} ${DB} < ${SQL_FILE}"
+
+	# remove update sql
+	rm ${SQL_FILE}
+	ssh ${DEV} rm -f ${SQL_FILE}
+
+	return
+}
+
+
+# typo3 url updates
+function dburltypo3 {
+	SQL_FILE="update.sql"
+
+	echo "UPDATE sys_template SET constants = REPLACE(constants,'baseURL = http://${DOMAIN}/','baseURL = http://${DEV_DOMAIN}/');" >> ${SQL_FILE}
+	echo "UPDATE sys_template SET constants = REPLACE(constants,'baseURL = https://${DOMAIN}/','baseURL = https://${DEV_DOMAIN}/');" >> ${SQL_FILE}
+	echo "UPDATE sys_template SET config = REPLACE(config,'baseURL = http://${DOMAIN}/','baseURL = http://${DEV_DOMAIN}/');" >> ${SQL_FILE}
+	echo "UPDATE sys_template SET config = REPLACE(config,'baseURL = https://${DOMAIN}/','baseURL = https://${DEV_DOMAIN}/');" >> ${SQL_FILE}
+	echo "UPDATE sys_template SET constants = REPLACE(constants,'unsecure_typo3_root = ${DOMAIN}','unsecure_typo3_root = ${DEV_DOMAIN}');" >> ${SQL_FILE}
+	echo "UPDATE sys_template SET constants = REPLACE(constants,'secure_typo3_root = ${DOMAIN}','secure_typo3_root = ${DEV_DOMAIN}');" >> ${SQL_FILE}
+	echo "UPDATE sys_domain SET domainName = '${DEV_DOMAIN}' WHERE domainName = '${DOMAIN}';" >> ${SQL_FILE}
+	echo "UPDATE sys_domain SET redirectTo = 'http://${DEV_DOMAIN}' WHERE redirectTo = 'http://${DOMAIN}';" >> ${SQL_FILE}
+	echo "UPDATE sys_domain SET redirectTo = 'https://${DEV_DOMAIN}' WHERE redirectTo = 'https://${DOMAIN}';" >> ${SQL_FILE}
+
+	# send over update sql
+	scp ${SQL_FILE} ${DEV}:.
+
+	# update dev db for dev domain
+	ssh -t ${DEV} "mysql --host=localhost --user=${DB_USER} --password=${DB_PW} ${DB} < ${SQL_FILE}"
+
+	# remove update sql
+	rm ${SQL_FILE}
+	ssh ${DEV} rm -f ${SQL_FILE}
+
+	return
+}
+
+
+# check httpd conf for domains and docroots
+DOCROOTS=`grep -r -h -e "^ *DocumentRoot.*" /etc/httpd/vhosts.d/*`
+
+# cycle through docroots 
+for DOCROOT in ${DOCROOTS}
+do
+	if [ "DocumentRoot" == "${DOCROOT}" ]
+	then
+		continue
+	fi
+
+	SUB_DOMAIN=`echo ${DOCROOT} | awk -F "/" '{print $6}'`
+	BASE_DOMAIN=`echo ${DOCROOT} | awk -F "/" '{print $5}'`
+	DOMAIN="${SUB_DOMAIN}.${BASE_DOMAIN}"
+
+	echo "start ${DOMAIN}"
+	echo "DocumentRoot ${DOCROOT}"
+
+	# adjust domains for www to dev or prepending dev. to subdomains
+	# Ex: af.sb.org to dev.af.sb.org
+	if [ "www" == ${SUB_DOMAIN} ]
+	then
+		DEV_DOMAIN="dev.${BASE_DOMAIN}"
+	else
+		DEV_DOMAIN="dev.${DOMAIN}"
+	fi
+
+	echo "dev domain ${DEV_DOMAIN}"
+
+	# check that remote directory exists
+	# create if not
+	ssh ${DEV} "[ -d "${DOCROOT}" ] || mkdir -p ${DOCROOT}"
+
+	# rsync files live TO dev
+	DOCROOT_BASE=`dirname ${DOCROOT}`
+	/usr/bin/rsync -auEh ${DOCROOT} ${DEV}:${DOCROOT_BASE}
+
+	# fix web permissions
+	ssh ${DEV} "chown -R ${APACHE_USER}:${APACHE_USER} ${DOCROOT}"
+
+	# check for wp-config.php or typo3conf/localconf.php file
+	if [ -e "${DOCROOT}${CONFIG_WP}" ]
+	then
+		CONFIG_FILE="${DOCROOT}${CONFIG_WP}" 
+		dbpullwp
+		db2dev
+		dburlwp
+	elif [ -e "${DOCROOT}${CONFIG_TYPO3}" ]
+	then
+		CONFIG_FILE="${DOCROOT}${CONFIG_TYPO3}" 
+		dbpulltypo3
+		db2dev
+		dburltypo3
+		# TODO remove temp files
+	fi
+
+	echo "end ${DOMAIN}"
+	echo ''
+
+	# end docroot cycle
+done

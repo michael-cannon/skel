@@ -1,0 +1,54 @@
+#!/bin/sh
+
+# Read a RealAudio directory and create ram files for each rm file not already
+# having a ram file.
+#
+# @author Michael Cannon <michael@peimic.com>
+# @version $Id: rm2ram,v 1.1.1.1 2010/04/14 09:05:44 peimic.comprock Exp $
+
+# in 
+#	ADAME4-13.rm
+# out
+#	rstp://lma605.siteprotect.com:1554/bpminstitute/CH05/ADAME4-13.rm > ADAME4-13.ram
+
+if [ ! "$1" ]
+then
+	echo "Usage: `basename $0` domain-name"
+	echo Create ram files for rm files. Domain name is sans sub-domain.
+	echo Call this script from within the directory containing rm files.
+	echo 
+	echo "Example: `basename $0` bpminstitute.org"
+	exit 
+fi
+
+# grab domain from cli
+DOMAIN=${1}
+
+# HOSTNAME=`hostname`
+# HOSTNAME='bpminstitute.org'
+PWD=`pwd`
+RA_DIR=`basename ${PWD}`
+RAM_EXT='.ram'
+RM_EXT='.rm'
+# RA_HOST="rtsp://${HOSTNAME}:1554/${DOMAIN}/${RA_DIR}/"
+RA_HOST="http://${DOMAIN}/realaudio/${RA_DIR}/"
+
+for FILE in *${RM_EXT}
+do
+	# remove rm extension
+	RAM_FILE=`echo ${FILE} | sed -e "s#${RM_EXT}##g"`
+
+	# add ram extension
+	RAM_FILE=${RAM_FILE}${RAM_EXT}
+
+	if [[ -f ${RAM_FILE} ]]
+	then
+		mv "${RAM_FILE}" "${RAM_FILE}".bak
+	fi
+
+	# convert spaces to %20
+	FILE=`echo ${FILE} | sed -e "s# #%20#g"`
+
+	# write rtsp line to ram file
+	echo ${RA_HOST}${FILE} > ${RAM_FILE}
+done

@@ -1,0 +1,56 @@
+#!/bin/sh
+
+# Setup mod_pagespeed on cpanel server
+#
+# @author Michael Cannon <michael@typo3vagabond.com>
+# @version $Id:$
+
+
+DIR_APACHE="/usr/local/apache"
+DIR_PAGESPEED_CACHE="/var/www/mod_pagespeed"
+DIR_PAGESPEED="/usr/local/src/mod_pagespeed"
+FILE="mod-pagespeed-beta_current_i386.rpm"
+PERM_USER="nobody"
+PRE_VIRTUALHOST_GLOBAL="${DIR_APACHE}/conf/includes/pre_virtualhost_global.conf"
+
+
+if [[ ! -d ${DIR_PAGESPEED} ]]
+then
+	mkdir -p ${DIR_PAGESPEED}
+fi
+
+cd ${DIR_PAGESPEED}
+
+if [[ ! -e ${FILE} ]]
+then
+	wget https://dl-ssl.google.com/dl/linux/direct/${FILE}
+	rpm2cpio ${FILE} | cpio -idmv
+fi
+
+cp ${DIR_PAGESPEED}/usr/lib/httpd/modules/mod_pagespeed.so ${DIR_APACHE}/modules/
+cp ${DIR_PAGESPEED}/etc/httpd/conf.d/pagespeed.conf ${DIR_APACHE}/conf/
+
+chmod 755 ${DIR_APACHE}/modules/mod_pagespeed.so
+
+if [[ ! -d ${DIR_PAGESPEED_CACHE}/{cache,files} ]]
+then
+	mkdir -p ${DIR_PAGESPEED_CACHE}/{cache,files}
+fi
+
+chown ${PERM_USER}:${PERM_USER} ${DIR_PAGESPEED_CACHE}/*
+
+INCLUDE_PAGESPEED="Include conf/pagespeed.conf"
+INCLUDE_PAGESPEED_SET=`grep -P "\b${INCLUDE_PAGESPEED}\b" ${PRE_VIRTUALHOST_GLOBAL}`
+
+if [[ -z ${INCLUDE_PAGESPEED_SET} ]]
+then
+	echo ${INCLUDE_PAGESPEED} >> ${PRE_VIRTUALHOST_GLOBAL}
+else
+	perl -pi -e "s#\#(\s+)?${INCLUDE_PAGESPEED}#${INCLUDE_PAGESPEED}#g" ${PRE_VIRTUALHOST_GLOBAL}
+fi
+
+${DIR_APACHE}/bin/apxs -c -i /home/cpeasyapache/src/httpd-2.2.21/modules/filters/mod_deflate.c 
+
+perl -pi -e "s#/usr/lib/httpd/##g" ${DIR_APACHE}/conf/pagespeed.conf
+/etc/init.d/httpd configtest
+echo /etc/init.d/httpd graceful

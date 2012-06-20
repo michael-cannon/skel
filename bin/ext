@@ -1,0 +1,18 @@
+#!/bin/bash
+
+# @reference http://www.osxfaq.com/tips/unix-tricks/week73/monday.ws
+
+if [ "$3" = "" ] || [ "$4" != "" ]; then
+  echo 'For each file *.ext1, executes "command file.ext1 file.ext2"'
+  echo '  eg "cp html php" to copy all html files to php equivalents'
+  echo '     "mv html php" to rename all html files to have a php extension'
+  echo "Usage: ${0##*/} command ext1 ext2"
+  exit
+fi
+
+# this option ensures that no match for *.$2 returns null not *.$2
+shopt -s nullglob
+
+for file in *.$2; do
+  $1 "$file" "${file%.$2}.$3"
+done

@@ -1,0 +1,29 @@
+#!/bin/bash
+
+# .bash_custom
+#
+# @author Michael Cannon, michael@peimic.com
+# @version $Id: .bash_var.set,v 1.1.1.1 2010/04/14 09:05:43 peimic.comprock Exp $
+
+# User specific environment and startup programs
+HOSTNAME=`hostname`
+UNAME=`uname`
+OS_REDHAT="redhat"
+OS_DARWIN="darwin"
+OS_CYGWIN="cygwin"
+export HOSTNAME UNAME OS_REDHAT OS_DARWIN OS_CYGWIN
+
+# determine server
+if [ ${UNAME} == "Darwin" ]
+then
+	HOST_OS=${OS_DARWIN}
+elif [ ${UNAME} == "Linux" ]
+then
+	HOST_OS=${OS_REDHAT}
+else
+# elif [ ${UNAME} == "CYGWIN_NT-6.1" ]
+	# probably Windows
+	HOST_OS=${OS_CYGWIN}
+fi
+
+export HOST_OS

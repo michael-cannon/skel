@@ -1,0 +1,22 @@
+#!/bin/sh
+
+# Helper for pulling live DOMAIN_NAME to local
+#
+# @author Michael Cannon <michael@peimic.com>
+# @version $Id: l2l_biceps_in2code,v 1.1 2011/09/26 13:03:58 peimic.comprock Exp $
+
+# configuration vars
+DOMAIN_NAME="sicher-sein.net"
+REMOTE_SERVER="itdsec_0@sicher-sein.net"
+REMOTE_DIR_WWW="/"
+TYPO3_VERSION="4.2.10"
+USE_FTP="true"
+# LOCAL_MODS[1]="perl -pi -e 's#(require\($confDir)#// \1#g' typo3conf/localconf.php"
+# LOCAL_MODS[2]="echo '<?php require(\"db.inc.php\"); ?>' >> typo3conf/localconf.php"
+
+# load live2local function helpers
+source ~/.skel/scripts/live2local.sh
+
+l2l_site_typo3
+l2l_do_sync ${@}
+l2l_typo3_source ${TYPO3_VERSION} ${@}

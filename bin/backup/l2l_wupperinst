@@ -1,0 +1,24 @@
+#!/bin/sh
+
+# Helper for pulling live DOMAIN_NAME to local
+#
+# @author Michael Cannon <michael@peimic.com>
+# @version $Id: l2l_biceps_in2code,v 1.1 2011/09/26 13:03:58 peimic.comprock Exp $
+
+# configuration vars
+# DOMAIN_BASE="wohin-mittags"
+DOMAIN_NAME="test.wupperinst.de"
+LOCAL_DIR_WWW="/Users/michael/Sites/wupperinst"
+REMOTE_SERVER="winst@dedi3082.your-server.de"
+REMOTE_DIR_WWW="/usr/home/winst/public_html"
+RSYNC_MODS="--max-size=4m"
+TYPO3_VERSION="4.6.8"
+# DB_UTF8_CONVERT="true"
+LOCAL_MODS[1]="perl -pi -e 's#dedi3082.your-server.de#localhost#g' typo3conf/localconf.php"
+
+# load live2local function helpers
+source ~/.skel/scripts/live2local.sh
+
+l2l_site_typo3
+l2l_do_sync ${@}
+l2l_typo3_source ${TYPO3_VERSION} ${@}

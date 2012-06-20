@@ -1,0 +1,18 @@
+#!/bin/sh
+
+# Helper for pulling live DOMAIN_NAME to local
+#
+# @author Michael Cannon <michael@peimic.com>
+# @version $Id: l2l_biceps_in2code,v 1.1 2011/09/26 13:03:58 peimic.comprock Exp $
+
+# configuration vars
+DOMAIN_NAME="science-lab.de"
+REMOTE_SERVER="u01190313054@ftp.hosting-agency.de"
+REMOTE_DIR_WWW="/public_html"
+USE_FTP="true"
+
+# load live2local function helpers
+source ~/.skel/scripts/live2local.sh
+
+l2l_site_typo3
+l2l_do_sync ${@}

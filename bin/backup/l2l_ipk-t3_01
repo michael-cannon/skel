@@ -1,0 +1,22 @@
+#!/bin/sh
+
+# Helper for pulling DOMAIN_NAME live to localhost
+#
+# @author Michael Cannon <michael@peimic.com>
+# @version $Id: l2l_greatbooks,v 1.2 2011/09/23 05:13:46 peimic.comprock Exp $
+
+# configuration vars
+DOMAIN_NAME="dmz-web-145.ipk-gatersleben.de"
+LOCAL_DIR_WWW="/Users/michael/Sites/dmz-web-145.ipk-gatersleben/ipk-t3_01"
+REMOTE_SERVER="ext-krug@dmz-web-145.ipk-gatersleben.de"
+REMOTE_DIR_WWW="/var/www/html/ipk-t3_01"
+RSYNC_MODS="--max-size=2m"
+# RSYNC_MODS="--max-size=2m --include=store/ --exclude=**/store/** --include=MediaContent/ --exclude=**/MediaContent/** --include=pdf/ --exclude=**/pdf/**"
+
+# load live2local function helpers
+source ~/.skel/scripts/live2local.sh
+
+LOCAL_MODS[1]="perl -pi -e 's#\broot\b#ipk-t3_01-1#g' typo3conf/localconf.php"
+
+l2l_site_typo3
+l2l_do_sync ${@}

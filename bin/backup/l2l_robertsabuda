@@ -1,0 +1,25 @@
+#!/bin/sh
+
+# Helper for pulling DOMAIN_NAME live to localhost
+#
+# @author Michael Cannon <michael@peimic.com>
+# @version $Id: l2l_greatbooks,v 1.2 2011/09/23 05:13:46 peimic.comprock Exp $
+
+# configuration vars
+DOMAIN_NAME="robertsabuda.com"
+REMOTE_SERVER="root@64.57.244.134"
+REMOTE_DIR_WWW="/var/www/vhosts/robertsabuda.com/httpdocs/store"
+# RSYNC_MODS="--max-size=2m --include=store/ --exclude=**/store/** --include=MediaContent/ --exclude=**/MediaContent/** --include=pdf/ --exclude=**/pdf/**"
+RSYNC_MODS="--max-size=2m"
+
+# load live2local function helpers
+source ~/.skel/scripts/live2local.sh
+
+l2l_site_oscommerce
+
+LOCAL_MODS[1]="sudo chmod a+w ${FILE_CONFIG} admin/${FILE_CONFIG}"
+LOCAL_MODS[2]="perl -pi -e \"s#'/store#'#g\" ${FILE_CONFIG} admin/${FILE_CONFIG}"
+LOCAL_MODS[3]="echo \"<?php error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED); ?>\" >> ${FILE_CONFIG}"
+LOCAL_MODS[4]="echo \"<?php error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED); ?>\" >> admin/${FILE_CONFIG}"
+
+l2l_do_sync ${@}

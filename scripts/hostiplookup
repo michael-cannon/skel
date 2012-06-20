@@ -1,0 +1,49 @@
+#!/bin/bash
+
+LOOKUPS="80.11.67.135
+server7.integrityserver.net"
+
+REGEX_IP="\(\([0-9]\{1,3\}\.\)\{3\}\([0-9]\{1,3\}\)\)"
+REGEX_IP_HOST="\(\([0-9]\{1,3\}[-_\.]\)\{3\}\([0-9]\{1,3\}\)\)"
+REGEX_WORD="[-_\. a-zA-Z]*"
+
+# assume input isn't IP
+HOST_IP=''
+IS_IP=''
+
+for LOOKUP in ${LOOKUPS}
+do
+	HOST_IP=${LOOKUP}
+	IS_IP=`echo ${HOST_IP} | sed -e "s#^${REGEX_IP}\\$#true#g"`
+
+	# LOOKUP isn't IP, try to use host lookup to determine it
+	if [[ 'true' != ${IS_IP} ]]
+	then
+		# adsl-67-124-86-73.dsl.pltn13.pacbell.net has address 67.124.86.73
+		# Host nk210-202-215-138.vdsl.static.apol.com.tw not found: 3(NXDOMAIN)
+
+		HOST_IP=`host ${LOOKUP} | sed -e "s#^.* ${REGEX_IP}\\$#\1#g"`
+		IS_IP=`echo ${HOST_IP} | sed -e "s#^${REGEX_IP}\\$#true#g"`
+
+		# host lookup doesn't translate to IP, try to pull IP from LOOKUP
+		if [[ 'true' != ${IS_IP} ]]
+		then
+			HOST_IP=`host ${LOOKUP} | sed -e "s#^${REGEX_WORD}${REGEX_IP_HOST}.*\\$#\1#g"`
+			# change -_ to .
+			HOST_IP=`echo ${HOST_IP} | sed -e "s#[-_]#.#g"`
+			IS_IP=`echo ${HOST_IP} | sed -e "s#^${REGEX_IP}\\$#true#g"`
+		fi	
+	fi
+
+	if [[ 'true' == ${IS_IP} ]]
+	then
+		echo ${LOOKUP} has an IP of ${HOST_IP}
+	else
+		echo ${LOOKUP} does not have an IP
+		echo `host ${LOOKUP}`
+	fi
+
+	echo
+done
+
+exit 0

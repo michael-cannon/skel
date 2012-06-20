@@ -1,0 +1,194 @@
+#!/bin/sh 
+# Sort through the DIR_HOMES directory and fix permissions for DIR_HTDOCS. Nice
+# wrapper for websitepermissions.
+# 
+# Basic premise, remove all current perms, set minimal read, write and execute 
+# needed to run production website. Set immutable if possible.
+#
+# string	mode [cpanel|mamp|plesk|stonebriar|stonebriardev]	default cpanel
+#				What kind of hosting system?
+# string	perms_mode [live|dev|owner]	default live
+# 				live (a-w) no excess write perms, make immutable 
+#				dev (ug+w) remove immutable
+#				owner (u+w) remove immutable
+# int		test_mode	default 0
+#				Used to see what changes would be made
+# string	owner_override	default null
+#				should resources be chmod'd to somebody else
+#
+# usage: fixwebsitepermissions [mode] [perms_mode] [test_mode] [owner_override]
+#
+# @author Michael Cannon, michael@typo3vagabond.com
+# @version $Id$
+
+# cpanel - used as default
+CHATTR=""
+DIR_HOMES="/home"
+DIR_HOMES_RECURSE=1
+DIR_HTDOCS="public_html"
+DIR_HTDOCS_RECURSE="0"
+HTTPD_GROUP="nobody"
+HTTPD_GROUP_OVERRIDE=0
+MODE="cpanel"
+MODE_PERMS="live"
+MODE_TEST=0
+OWNER_OVERRIDE="nobody"
+PERMS_DIR_HTTPD=0750
+PERMS_DIR_USER=0711
+WHICH_CHATTR=`which chattr`
+
+if [[ ${WHICH_CHATTR} ]] && [[ "${WHICH_CHATTR}" != "No *" ]]
+then
+	CHATTR=${WHICH_CHATTR}
+fi
+
+if [[ -n ${1} ]]
+then
+	MODE=${1}
+fi
+
+case "${MODE}" in
+	"mamp" )
+		DIR_HOMES="/Users"
+		DIR_HTDOCS="Sites"
+		DIR_HTDOCS_RECURSE="1"
+		# HTTPD_GROUP="staff"
+		HTTPD_GROUP="www"
+		MODE_PERMS="dev"
+		# OWNER_OVERRIDE="www"
+		OWNER_OVERRIDE="michael"
+		PERMS_DIR_HTTPD=0751
+		;;
+
+	"plesk" )
+		DIR_HTDOCS="httpdocs
+		httpsdocs"
+		DIR_HTDOCS_RECURSE="2"
+		;;
+
+	"stonebriar" )
+		DIR_HOMES="/var/www/domains"
+		DIR_HOMES_RECURSE=2
+		DIR_HTDOCS="htdocs"
+		HTTPD_GROUP="apache"
+		OWNER_OVERRIDE="michael"
+		;;
+
+	"stonebriardev" )
+		DIR_HOMES="/var/www/domains"
+		DIR_HOMES_RECURSE=2
+		DIR_HTDOCS="htdocs"
+		HTTPD_GROUP="apache"
+		MODE_PERMS="dev"
+		OWNER_OVERRIDE="michael"
+		;;
+
+	"su" )
+		HTTPD_GROUP_OVERRIDE=1
+		MODE_PERMS="su"
+		OWNER_OVERRIDE=""
+		PERMS_DIR_HTTPD=0755
+		;;
+
+	# cpanel
+	* )
+		HTTPD_GROUP_OVERRIDE=1
+		;;
+
+esac
+
+if [[ -n ${2} && "" != ${2} ]]
+then
+	MODE_PERMS=${2}
+fi
+
+if [[ -n ${3} ]]
+then
+	MODE_TEST=${3}
+fi
+
+if [[ -n ${4} && "" != ${4} ]]
+then
+	OWNER_OVERRIDE=${4}
+fi
+
+for DIR_HOME in `find ${DIR_HOMES} -maxdepth ${DIR_HOMES_RECURSE} -type d ! -type l`
+do
+	echo 0.0 - Looking in ${DIR_HOME}
+	echo
+	
+	TEMP_DIR="${DIR_HOME}/${DIR_HTDOCS}"
+	if [[ ! -d ${TEMP_DIR} ]]
+	then
+		continue
+	fi
+
+	for DIR in `find ${TEMP_DIR} -maxdepth 0 -type d ! -type l`
+	do
+		echo 0.1 - Looking in ${DIR}
+		echo
+	
+		for DIR_WORKING in `find ${DIR} -maxdepth ${DIR_HTDOCS_RECURSE} -type d ! -type l ! -name ".*"`
+		do
+			TEMP_USER=`echo ${DIR_WORKING} | sed -e "s#${DIR_HOMES}/##g" -e "s#/${DIR_HTDOCS}.*##g"`
+
+			DIR_USER="${DIR_HOMES}/${TEMP_USER}"
+
+			if [[ '1' == ${HTTPD_GROUP_OVERRIDE} ]]
+			then
+				HTTPD_GROUP=${TEMP_USER}
+			fi
+
+			if [[ -n ${OWNER_OVERRIDE} && "" != ${OWNER_OVERRIDE} ]]
+			then
+				TEMP_USER=${OWNER_OVERRIDE}
+			fi
+
+			echo 1 - cd ${DIR_WORKING}
+			cd ${DIR_WORKING}
+
+			echo 2 - websitepermissions ${TEMP_USER} ${HTTPD_GROUP} ${MODE_PERMS}
+			if [[ 0 = ${MODE_TEST} ]]
+			then
+				~/bin/websitepermissions ${TEMP_USER} ${HTTPD_GROUP} ${MODE_PERMS}
+			fi
+
+			if [[ "" != ${CHATTR} ]]
+			then
+				echo 2.5 - Remove immutable on ${DIR_WORKING}
+				if [[ 0 = ${MODE_TEST} ]]
+				then
+					${CHATTR} -i ${DIR_WORKING}
+				fi
+			fi
+
+			echo 3 - chown ${TEMP_USER}:${HTTPD_GROUP} ${DIR_WORKING}
+			if [[ 0 = ${MODE_TEST} ]]
+			then
+				chown ${TEMP_USER}:${HTTPD_GROUP} ${DIR_WORKING}
+			fi
+
+			if [[ "dev" = ${MODE_PERMS} ]]
+			then
+				PERMS_DIR_HTTPD=0771
+			fi
+
+			echo 4 - chmod ${PERMS_DIR_HTTPD} ${DIR_WORKING}
+			if [[ 0 = ${MODE_TEST} ]]
+			then
+				chmod ${PERMS_DIR_HTTPD} ${DIR_WORKING}
+			fi
+
+			if [[ "" != ${CHATTR} ]]
+			then
+				if [[ 0 = ${MODE_TEST} && "live" = ${MODE_PERMS} ]]
+				then
+					echo 4.1 - Set immutable on ${DIR_WORKING}
+					${CHATTR} +i ${DIR_WORKING}
+				fi
+			fi
+
+			echo
+		done
+	done
+done

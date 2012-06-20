@@ -1,0 +1,14 @@
+#!/bin/sh
+
+if [[ -z ${1} ]]
+then
+	ID="68066"
+else
+	ID=${1}
+fi
+
+ID="/\*${ID}\*/"
+HACK="<\?php ${ID}[^>]+>"
+
+find . -iname "*.php" -exec grep -HrsI "<?php ${ID}" {} \; -exec cp {} {}.hack
+\; -exec perl -pi -e "s#${HACK}##g" {} \;

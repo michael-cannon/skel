@@ -1,0 +1,30 @@
+#!/bin/sh
+
+# Database repair helper
+#
+# @author Michael Cannon <michael@peimic.com>
+# @version $Id: fixmysql,v 1.1.1.1 2010/04/14 09:05:44 peimic.comprock Exp $
+
+# turn off cpanel monitoring
+
+# stop mysql
+/etc/init.d/mysql stop
+
+# recommended way to quickly check all MyISAM and ISAM tables
+# myisamchk --silent --force \
+# 	/var/lib/mysql/*/*.MYI
+
+# check all MyISAM and ISAM tables and repair any that are corrupted
+find /var/lib/mysql/ -maxdepth 2 \
+	\( -name "*.MYI" ! -name "cache_md5params*" \) \
+	-exec myisamchk --silent --force --fast --update-state \
+	--key_buffer_size=64M \
+	--sort_buffer_size=64M \
+	--read_buffer_size=2M \
+	--write_buffer_size=2M \
+	{} \;
+
+# start mysql
+/etc/init.d/mysql start
+
+# turn on cpanel monitoring

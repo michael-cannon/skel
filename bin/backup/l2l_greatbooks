@@ -1,0 +1,26 @@
+#!/bin/sh
+
+# Helper for pulling DOMAIN_NAME live to localhost
+#
+# @author Michael Cannon <michael@peimic.com>
+# @version $Id: l2l_greatbooks,v 1.2 2011/09/23 05:13:46 peimic.comprock Exp $
+
+# configuration vars
+DOMAIN_NAME="greatbooks.org"
+REMOTE_SERVER="ubuntu@devgbf.greatbooks.org"
+REMOTE_DIR_WWW="/var/www/www.greatbooks.org"
+RSYNC_MODS="--max-size=2m --include=store/ --exclude=**/store/** --include=MediaContent/ --exclude=**/MediaContent/** --include=pdf/ --exclude=**/pdf/**"
+
+# load live2local function helpers
+source ~/.skel/scripts/live2local.sh
+
+l2l_site_typo3
+l2l_do_sync ${@}
+
+# get crm db
+DB_HOST=${DB_HOST2}
+DB_NAME=${DB_NAME2}
+DB_PW=${DB_PW2}
+DB_USER=${DB_USER2}
+
+l2l_do_db

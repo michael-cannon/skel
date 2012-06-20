@@ -1,0 +1,122 @@
+#!/bin/bash
+
+# Create home shell links
+#
+# @author Michael Cannon, michael@peimic.com
+# @version $Id: shellinks,v 1.3 2010/04/15 13:56:02 peimic.comprock Exp $
+
+cd ~
+
+BAK=".bak"
+DIR_SKEL=".skel"
+
+# Load common to interactive and not
+if [[ -f ${DIR_SKEL}/.bash_var.set ]]
+then
+	. ${DIR_SKEL}/.bash_var.set
+fi
+
+HOSTNAME=`hostname`
+
+ITEMS=".alias
+.alias.ssh
+.bash_completion
+.bash_profile
+.bash_profile.${HOSTNAME}
+.bash_profile.${HOSTNAME}.${USER}
+.bashrc
+.bashrc.${HOSTNAME}
+.bashrc.${HOSTNAME}.${USER}
+.cvsrc
+.inputrc
+.ssh
+.subversion
+.vim
+.vimrc
+bin"
+
+# link startup files
+for ITEM in ${ITEMS}
+do
+	if [[ -e ${DIR_SKEL}/${ITEM} ]]
+	then
+		# rename current real files
+
+		if [[ -L ${ITEM} ]]
+		then
+			rm ${ITEM}
+		elif [[ -e ${ITEM} ]]
+		then
+			mv ${ITEM} ${ITEM}${BAK}
+		fi
+
+		ln -s ${DIR_SKEL}/${ITEM}
+	fi
+done
+
+# .gvimrc
+ITEM='.gvimrc'
+ITEM_HOST_OS="${ITEM}.${HOST_OS}"
+if [[ -e ${DIR_SKEL}/${ITEM_HOST_OS} ]]
+then
+	# rename current real files
+	if [[ -L ${ITEM_HOST_OS} ]]
+	then
+		rm ${ITEM_HOST_OS}
+	elif [[ -e ${ITEM_HOST_OS} ]]
+	then
+		mv ${ITEM_HOST_OS} ${ITEM_HOST_OS}${BAK}
+	fi
+
+	ln -s ${DIR_SKEL}/${ITEM_HOST_OS} ${ITEM}
+else
+	# rename current real files
+	if [[ -L ${ITEM} ]]
+	then
+		rm ${ITEM}
+	elif [[ -e ${ITEM} ]]
+	then
+		mv ${ITEM} ${ITEM}${BAK}
+	fi
+
+	ln -s ${DIR_SKEL}/${ITEM}
+fi
+
+# chmod and link ssh directory
+DIR_SSH="${DIR_SKEL}/.ssh"
+chmod -R a=,u+rwX ${DIR_SSH}
+
+# make tmp dir
+DIR_TMP="tmp"
+
+if ! [[ -d ${DIR_TMP} ]]
+then
+	mkdir ${DIR_TMP}
+fi
+
+# tag ugo
+chmod a=,u+rwX,+t ${DIR_TMP}
+
+# adjust root for bash_completion
+DIR="~/${DIR_SKEL}"
+ITEM="/bin/bash_completion"
+
+if [[ "${LOGNAME}" == "root" ]]
+then
+	if [[ -L ${ITEM} ]]
+	then
+		rm ${ITEM}
+	elif [[ -e ${ITEM} ]]
+	then
+		mv ${ITEM} ${ITEM}${BAK}
+	fi
+
+	ln -s ${DIR}${ITEM} ${ITEM}
+fi
+
+# lock out other users to files
+chmod -R a=,u+rwX ${DIR_SKEL}
+
+# set bin perms
+find .skel/bin -maxdepth 2 -type f -not -iwholename '*.svn/*' -exec chmod u+x {} \;
+find .skel/scripts -maxdepth 1 -type f -not -iwholename '*.svn/*' -exec chmod u+x {} \;

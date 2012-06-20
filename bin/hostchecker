@@ -1,0 +1,44 @@
+#!/bin/sh
+
+# @author Michael Cannon <michael@peimic.com>
+# @version $Id: hostchecker,v 1.1.1.1 2010/04/14 09:05:44 peimic.comprock Exp $
+
+# have an arguement
+if [ ! "$1" ]
+then
+	echo "Usage: `basename $0` [file]"
+	exit 65
+fi
+
+FILE=$1
+
+if [ -n "$2" ]
+then
+	DIG="true"
+else
+	DIG="false"
+fi
+
+if [ -n "$3" ]
+then
+	DIG_CBNS1="true"
+else
+	DIG_CBNS1="false"
+fi
+
+for DOMAIN in `cat ${FILE}`
+do
+	host ${DOMAIN}
+
+	if [[ "true" -eq "${DIG}" ]]
+	then
+		echo dig ${DOMAIN} 
+		dig ${DOMAIN} 
+	fi
+
+	if [[ "true" -eq "${DIG_CBNS1}" ]]
+	then
+		echo dig ${DOMAIN} @ns1.acqal.com
+		dig ${DOMAIN} @ns1.acqal.com
+	fi
+done

@@ -1,0 +1,19 @@
+#!/bin/bash
+
+# @reference http://www.osxfaq.com/tips/unix-tricks/week73/tuesday.ws
+
+if [ "$3" = "" ] || [ "$4" != "" ]; then
+	echo 'Executes "command file.ext1 file.ext2" on each matching file file in'
+	echo '  the directory *hierarchy*'
+	echo '  eg "cp html php" to copy all html files to php equivalents'
+	echo '     "mv html php" to rename all html files to have a php extension'
+	echo "Usage: ${0##*/} command ext1 ext2"
+	exit
+fi
+
+
+for dir in $(find . -type d); do
+	pushd $dir > /dev/null
+	ext $1 $2 $3
+	popd > /dev/null
+done

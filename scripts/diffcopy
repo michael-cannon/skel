@@ -1,0 +1,40 @@
+#!/bin/sh
+
+# Read in a file, vimdiff custom file with original, then cp revised original to
+# custom file name
+#
+# @author Michael Cannon <michael@peimic.com>
+# @version $Id: diffcopy,v 1.2 2011/09/12 19:48:15 peimic.comprock Exp $
+
+if [ -z "${1}" ]
+then
+	echo "Usage: `basename $0` custom_templates_listing"
+	echo Read in a file, vimdiff custom file with original, then cp revised original to custom file name
+	echo 
+	echo "Example: `basename $0` ./customized-files.txt"
+	exit 
+fi
+
+# read in file
+FILE=${1}
+
+# cycle through entries
+for ENTRY in `cat ${FILE}`
+do
+	# ENTRY is custom file
+	# create original file name from custom
+	# remove ".custom" from custom file for original file name
+	ORIGINAL=`echo ${ENTRY} | sed -e "s#\.custom\.#.#g"`
+
+	# create original copy as well prior to editing
+
+	# run vimdiff
+	vimdiff ${ENTRY} ${ORIGINAL}
+
+	# cp custom file to ".custombak" file name
+	CUSTOMBAK=`echo ${ENTRY} | sed -e "s#\.custom\.#.custombak.#g"`
+	cp ${ENTRY} ${CUSTOMBAK}
+
+	# cp new original back to ".custom" file name
+	cp ${ORIGINAL} ${ENTRY}
+done

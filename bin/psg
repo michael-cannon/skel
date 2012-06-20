@@ -1,0 +1,8 @@
+#!/bin/sh
+
+# Grep the process list
+#
+# @author Michael Cannon <michael@peimic.com>
+# @version $Id: psg,v 1.1.1.1 2010/04/14 09:05:44 peimic.comprock Exp $
+
+ps aux | grep ${1} | grep -v grep | grep -v psg

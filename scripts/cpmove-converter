@@ -1,0 +1,33 @@
+#!/bin/bash 
+
+# --------------- CREATE CPMOVE FILE FROM FULL BACKUP --------------------------
+# Written by Kristy (kristy@isp7.net)
+# Use: cpmove-converter name-of-the-backup-file username
+# Example Use:  cpmove-converter backup-9.7.2004_05-56-57_tmc.tar.gz tmc
+# ------------------------------------------------------------------------------
+# @author Michael Cannon, michael@peimic.com
+# @version $Id: cpmove-converter,v 1.1.1.1 2010/04/14 09:05:44 peimic.comprock Exp $
+
+if [ ! ${2} ]
+then
+	FUNCTION=`basename $0`
+
+	echo "Usage: ${FUNCTION} name-of-the-backup-file username"
+	exit
+else
+	# original name
+	PKG_FILE=${1}
+	USER_NAME=${2}
+fi
+
+DEST_DIR="/home"
+CPMOVE_BASE="cpmove-${USER_NAME}"
+CPMOVE_TAR="${CPMOVE_BASE}.tar.gz"
+
+HEAD_NAME=`tar xzvf ${PKG_FILE} | head -1`
+
+mv ${HEAD_NAME} ${CPMOVE_BASE}
+tar -zcf ${CPMOVE_TAR} ${CPMOVE_BASE} 
+mv ${CPMOVE_TAR} ${DEST_DIR}/
+
+echo "Done! ${PKG_FILE} converted to ${DEST_DIR}/${CPMOVE_TAR}"

@@ -1,0 +1,12 @@
+# bash arrow key history
+# "[5A": history-search-backward
+# "[5B": history-search-forward
+
+set completion-ignore-case on
+set mark-directories on
+set show-all-if-ambiguous on
+set visible-stats on
+
+# I love vim, but vi is just fine for command line
+set editing-mode vi
+set keymap vi
