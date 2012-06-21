@@ -1,0 +1,17 @@
+#!/bin/sh
+
+# Helper for pulling ilance website to localhost
+#
+# @author Michael Cannon <michael@peimic.com>
+
+# example configuration vars
+# configuration assumes that server connection is examp@example.com
+DOMAIN_NAME="example.com"
+DOMAIN_USER="examp"
+REMOTE_DIR_WWW="/home3/${DOMAIN_USER}/public_html"
+
+# load live2local function helpers
+source ~/.skel/scripts/live2local.sh
+
+l2l_site_ilance
+l2l_do_sync ${@}

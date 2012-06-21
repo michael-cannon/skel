@@ -1,0 +1,64 @@
+#!/bin/sh
+
+# Helper for pulling TYPO3 website to localhost
+#
+# @author Michael Cannon <michael@peimic.com>
+
+# configuration vars
+DOMAIN_NAME="alpha.beta.charlie.example.com"
+LOCAL_DIR_WWW="/Users/web/dirA/simple"
+REMOTE_DIR_WWW="/var/www/www.example.com"
+REMOTE_SERVER="exam@dev.example.com"
+RSYNC_MODS="--max-size=4m --include=store/ --exclude=**/store/** --include=MediaContent/ --exclude=**/MediaContent/** --include=pdf/ --exclude=**/pdf/**"
+TYPO3_VERSION="4.5.16"
+
+# None standard options
+# simpler version of domain name to use locally
+# DOMAIN_BASE="simple"
+
+# Don't include remote configuration file in pull to local
+# FILE_CONFIG_OVERWRITE_DENY=1
+
+# Don't create local directory, virtual host, /etc/hosts entry or database with
+# user
+# NO_CREATE=1
+
+# Don't create a ~/.ssh/l2l_config/example configuration file. Useful to prevent
+# overwriting when dealing with troublesome configurations
+# CONFIG_NO_CREATE=1
+
+# Dont' create local database and database user
+# DB_NO_CREATE=1
+
+# Don't create local virtual host
+# VHOST_NO_CREATE=1
+
+# Don't create local /etc/hosts entry 
+# HOSTS_NO_CREATE=1
+
+# skip pre-setting and post-setting file and directory permissions
+# SKIP_PERMS=1
+
+# No SSH is possible, therefore use FTP. In this mode no DB transfer or import
+# USE_FTP=1
+
+# load live2local function helpers
+source ~/.skel/scripts/live2local.sh
+
+# post file/media customizations
+LOCAL_MODS[1]="perl -pi -e 's#\broot\b#local_db_user#g' typo3conf/localconf.php"
+LOCAL_MODS[2]="perl -pi -e 's#mysql5.example.de#localhost#g' typo3conf/localconf.php"
+LOCAL_MODS[3]="cp ~/code/svn.in2code/in2code/in2master/trunk/_.htaccess .htaccess"
+LOCAL_MODS[4]="if [[ -e index.html ]]; then mv index.html index.maint.html; fi"
+
+l2l_site_typo3
+l2l_do_sync ${@}
+l2l_typo3_source ${TYPO3_VERSION} ${@}
+
+
+# Grab additional database and import it
+DB_HOST=${DB_HOST2}
+DB_NAME=${DB_NAME2}
+DB_PW=${DB_PW2}
+DB_USER=${DB_USER2}
+l2l_do_db

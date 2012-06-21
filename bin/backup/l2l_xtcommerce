@@ -1,0 +1,14 @@
+#!/bin/sh
+
+# Helper for pulling live DOMAIN_NAME to local
+#
+# @author Michael Cannon <michael@peimic.com>
+
+DOMAIN_NAME="onlineshop.example.de"
+REMOTE_SERVER="demo@example.de"
+REMOTE_DIR_WWW="~/onlineshop"
+
+source ~/.skel/scripts/live2local.sh
+
+l2l_site_xtcommerce
+l2l_do_sync ${@}

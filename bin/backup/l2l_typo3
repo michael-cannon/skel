@@ -1,0 +1,15 @@
+#!/bin/sh
+
+# Helper for pulling TYPO3 website to localhost
+#
+# @author Michael Cannon <michael@peimic.com>
+
+# example configuration vars
+# configuration assumes server connection is example@example.com and the remote directory is /home/example/public_html
+DOMAIN_NAME="example.com"
+
+# load live2local function helpers
+source ~/.skel/scripts/live2local.sh
+
+l2l_site_typo3
+l2l_do_sync ${@}

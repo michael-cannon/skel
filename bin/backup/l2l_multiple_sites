@@ -1,0 +1,43 @@
+#!/bin/sh
+
+# Helper for pulling multiple sites to local
+#
+# @author Michael Cannon <michael@peimic.com>
+
+# This configuration pulls multiple remote sites databases and files to the
+# local system. However, no db imports are performed
+# example.net is running MySQL 4.0 on CLI so, DB_FULL_DUMP is true to
+# prevent mysqldump errors on ignore-table variables
+DB_FULL_DUMP=1
+FILE_CONFIG_OVERWRITE_DENY=1
+NO_CREATE=1
+REMOTE_SERVER="dev@example.net"
+SHOW_COMMANDS=1
+SITES="client"
+WWW_GROUP="nobody"
+LOCAL_MODS[1]="perl -pi -e 's/^(AddType x-mapp-php5 .php)/# \1/g' .htaccess"
+LOCAL_MODS[2]="perl -pi -e 's/^(AddHandler x-mapp-php5 .php)/# \1/g' .htaccess"
+
+# 1st of many migration sites
+DOMAIN_NAME="onlineshop.example.de"
+REMOTE_DIR_WWW="~/onlineshop"
+source ~/.skel/scripts/live2local.sh
+l2l_site_xtcommerce
+l2l_do_sync ${@}
+
+
+# 2nd of many migration sites needs reseting some l2l defaults
+l2l_reset
+DOMAIN_NAME="example.net"
+REMOTE_DIR_WWW="~/typo3_examplenet"
+source ~/.skel/scripts/live2local.sh
+l2l_site_typo3
+l2l_do_sync ${@}
+
+
+l2l_reset
+DOMAIN_NAME="example.com"
+REMOTE_DIR_WWW="~/typo3_example"
+source ~/.skel/scripts/live2local.sh
+l2l_site_typo3
+l2l_do_sync ${@}

@@ -1,0 +1,17 @@
+#!/bin/sh
+
+# Helper for pulling WordPress multisite to localhost
+#
+# @author Michael Cannon <michael@peimic.com>
+
+# example configuration vars
+# configuration assumes server connection is example@example.com and the remote directory is /home/example/public_html
+DOMAIN_NAME="example.com"
+
+# load live2local function helpers
+source ~/.skel/scripts/live2local.sh
+
+LOCAL_DB_MODS[1]="UPDATE wp_2_options SET option_value = 'http://example2.localhost/' WHERE option_value LIKE 'http://example2.com/';"
+
+l2l_site_wordpress_multisite
+l2l_do_sync ${@}
