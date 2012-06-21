@@ -3,7 +3,6 @@
 # Setup mod_pagespeed on cpanel server
 #
 # @author Michael Cannon <michael@typo3vagabond.com>
-# @version $Id:$
 
 
 DIR_APACHE="/usr/local/apache"

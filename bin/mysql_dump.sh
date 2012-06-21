@@ -2,8 +2,7 @@
 
 # Simple MySQL database dumper
 #
-# @author Michael Cannon, michael@peimic.com
-# @version $Id: mysql_dump.sh,v 1.1.1.1 2010/04/14 09:05:44 peimic.comprock Exp $
+# @author Michael Cannon, michael@typo3vagabond.com
 
 # four args
 if [ ! ${4} ]

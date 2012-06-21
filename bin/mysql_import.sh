@@ -2,8 +2,7 @@
 
 # Simple MySQL database script loader
 #
-# @author Michael Cannon, michael@peimic.com
-# @version $Id: mysql_import.sh,v 1.1.1.1 2010/04/14 09:05:44 peimic.comprock Exp $
+# @author Michael Cannon, michael@typo3vagabond.com
 
 # five args
 if [ ! ${5} ]

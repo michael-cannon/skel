@@ -6,8 +6,7 @@
 # 3. Redirect results to some file
 # 4. Open results file for editing
 #
-# @author Michael Cannon <michael@peimic.com>
-# @version $Id: grepit,v 1.1.1.1 2010/04/14 09:05:44 peimic.comprock Exp $
+# @author Michael Cannon <michael@typo3vagabond.com>
 
 
 # boolean helpers
@@ -34,7 +33,7 @@ then
 	rm ${FILE_LOG}
 fi
 
-grep -r -n -I "${PATTERN}" * | grep -v CVS | grep -v svn | grep -v grepit_* > "${FILE_LOG}"
+grep -r -n -I "${PATTERN}" * | grep -v CVS | grep -v git | grep -v svn | grep -v grepit_* > "${FILE_LOG}"
 echo "${PATTERN} search results in ${FILE_LOG}:"
 cat "${FILE_LOG}"
 echo

@@ -1,7 +1,6 @@
 #!/bin/sh
 
-# @author Michael Cannon <michael@peimic.com>
-# @version $Id: hostchecker,v 1.1.1.1 2010/04/14 09:05:44 peimic.comprock Exp $
+# @author Michael Cannon <michael@typo3vagabond.com>
 
 # have an arguement
 if [ ! "$1" ]
@@ -38,7 +37,7 @@ do
 
 	if [[ "true" -eq "${DIG_CBNS1}" ]]
 	then
-		echo dig ${DOMAIN} @ns1.acqal.com
-		dig ${DOMAIN} @ns1.acqal.com
+		echo dig ${DOMAIN} @ns1.typo3vagabond.com
+		dig ${DOMAIN} @ns1.typo3vagabond.com
 	fi
 done

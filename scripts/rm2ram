@@ -3,8 +3,7 @@
 # Read a RealAudio directory and create ram files for each rm file not already
 # having a ram file.
 #
-# @author Michael Cannon <michael@peimic.com>
-# @version $Id: rm2ram,v 1.1.1.1 2010/04/14 09:05:44 peimic.comprock Exp $
+# @author Michael Cannon <michael@typo3vagabond.com>
 
 # in 
 #	ADAME4-13.rm

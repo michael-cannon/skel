@@ -2,8 +2,7 @@
 
 # Comment out none IP lines
 #
-# @author Michael Cannon <michael@peimic.com>
-# @version $Id: ips-only,v 1.1.1.1 2010/04/14 09:05:44 peimic.comprock Exp $
+# @author Michael Cannon <michael@typo3vagabond.com>
 
 PREG="s/^([0-9a-zA-Z]+.+[a-zA-Z]+.+)/# \1/g"
 

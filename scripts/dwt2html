@@ -2,8 +2,7 @@
 
 # Convert Dreamweaver template to HTML
 #
-# @author Michael Cannon, michael@peimic.com
-# @version $Id: dwt2html,v 1.1.1.1 2010/04/14 09:05:44 peimic.comprock Exp $
+# @author Michael Cannon, michael@typo3vagabond.com
 
 # @param string filepath to template
 # @param string html filepath, default index.htm

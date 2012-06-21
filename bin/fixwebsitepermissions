@@ -19,7 +19,6 @@
 # usage: fixwebsitepermissions [mode] [perms_mode] [test_mode] [owner_override]
 #
 # @author Michael Cannon, michael@typo3vagabond.com
-# @version $Id$
 
 # cpanel - used as default
 CHATTR=""

@@ -3,8 +3,7 @@
 #
 # Original author unkown - Probably by Contigex support folks
 #
-# @author Michael Cannon <michael@peimic.com>
-# @version $Id: simple_bu.sh,v 1.5 2011/09/28 07:48:08 peimic.comprock Exp $
+# @author Michael Cannon <michael@typo3vagabond.com>
 
 BACKUP_DIR="/backup/files"
 CONF_FILE="/etc/httpd/vhosts.d/*"

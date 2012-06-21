@@ -1,6 +1,6 @@
 # .bashrc is executed for interactive non-login shells
 #
-# @author Michael Cannon, michael@peimic.com
+# @author Michael Cannon, michael@typo3vagabond.com
 # @version $Id: .bashrc,v 1.5 2011/09/28 07:53:06 peimic.comprock Exp $
 
 # If not running interactively, don't do anything

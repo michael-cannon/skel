@@ -2,8 +2,7 @@
 
 # SCM displayer helper
 #
-# @author Michael Cannon <michael@peimic.com>
-# @version $Id: showcvs,v 1.2 2011/06/23 10:19:46 peimic.comprock Exp $
+# @author Michael Cannon <michael@typo3vagabond.com>
 
 # set exports
 echo

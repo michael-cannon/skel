@@ -54,7 +54,7 @@
 ## l2l_do_sync ${@}
 ## l2l_typo3_source ${TYPO3_VERSION} ${@}
 #
-# @author Michael Cannon <michael@peimic.com>
+# @author Michael Cannon <michael@typo3vagabond.com>
 
 # TODO
 # Enable interactive password handling for non-ssh keyed systems

@@ -1,8 +1,7 @@
 #!/bin/sh
 # stupid simple backup with 1-week remote rotation
 #
-# @author Michael Cannon <michael@peimic.com>
-# @version $Id: simple_bu.sh,v 1.5 2011/09/28 07:48:08 peimic.comprock Exp $
+# @author Michael Cannon <michael@typo3vagabond.com>
 
 
 BACKUP_DIR="/var/www/web0/backup"
@@ -10,12 +9,12 @@ BACKUP_DIR="/var/www/web0/restore"
 CONF_FILE="/etc/httpd/vhosts.d/*"
 DAY=`date '+%a'`
 DB_DIR="/var/lib/mysql/"
-DB_PW="12345q"
+DB_PW="password"
 DB_USER="web0"
 DIR_BACKUPS="/backups"
-FTP_HOST="einpraegsam.net"
-FTP_PW="quest12"
-FTP_USER="quest"
+FTP_HOST="example.com"
+FTP_PW="password"
+FTP_USER="user"
 ROTATOR="/var/www/web0/files/rotate_file.sh"
 
 

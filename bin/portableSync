@@ -2,8 +2,7 @@
 
 # Backup sync for flash drives
 #
-# @author Michael Cannon <michael@peimic.com>
-# @version $Id: portableSync,v 1.15 2011/08/05 04:04:19 peimic.comprock Exp $
+# @author Michael Cannon <michael@typo3vagabond.com>
 
 if [[ -z "${USER}" ]]
 then

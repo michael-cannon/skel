@@ -18,7 +18,6 @@
 # that location and enable the lowest needed write permission.
 #
 # @author Michael Cannon, michael@typo3vagabond.com
-# @version $Id$
 
 PWD=`pwd`
 

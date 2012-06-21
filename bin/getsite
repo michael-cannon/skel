@@ -2,8 +2,7 @@
 
 # Grab websites
 #
-# @author Michael Cannon <michael@peimic.com>
-# @version $Id: getsite,v 1.2 2010/12/11 14:58:07 peimic.comprock Exp $
+# @author Michael Cannon <michael@typo3vagabond.com>
 
 # have an arguement
 if [ ! "$1" ]

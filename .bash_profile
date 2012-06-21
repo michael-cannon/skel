@@ -1,6 +1,6 @@
 # .bash_profile is executed for login shells
 #
-# @author Michael Cannon, michael@peimic.com
+# @author Michael Cannon, michael@typo3vagabond.com
 # @version $Id: .bash_profile,v 1.8 2011/09/28 07:53:06 peimic.comprock Exp $
 
 # .bashrc is executed for interactive non-login shells

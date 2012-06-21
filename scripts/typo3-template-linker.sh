@@ -2,8 +2,7 @@
 
 # Lookup current templates and link to orignal in fieadmin
 #
-# @author Michael Cannon <michael@peimic.com>
-# @version $Id: typo3-template-linker.sh,v 1.1.1.1 2010/04/14 09:05:44 peimic.comprock Exp $
+# @author Michael Cannon <michael@typo3vagabond.com>
 
 # pull in original name
 if [ ! "$1" ]
