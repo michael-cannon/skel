@@ -1,0 +1,6 @@
+#!/bin/sh
+
+# GIT copy file helper script
+cp ${@}
+git add ${@}
+git commit -m "cp ${@}"
