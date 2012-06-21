@@ -3,7 +3,6 @@
 # Helper for pulling DOMAIN_NAME live to localhost
 #
 # @author Michael Cannon <michael@peimic.com>
-# @version $Id: l2l_peimic,v 1.3 2011/09/26 09:59:45 peimic.comprock Exp $
 
 # configuration vars
 DOMAIN_NAME="lifestyl.us"
@@ -11,10 +10,5 @@ DOMAIN_NAME="lifestyl.us"
 # load live2local function helpers
 source ~/.skel/scripts/live2local.sh
 
-# LOCAL_DB_MODS[1]="UPDATE wp_2_options SET option_value = 'http://typo3vagabond.localhost/' WHERE option_value LIKE 'http://typo3vagabond.com/';"
-
-# LOCAL_MODS[1]="open http://typo3vagabond.localhost/wp-admin/plugins.php?plugin_status=active"
-
 l2l_site_wordpress
-# l2l_site_wordpress_multisite
 l2l_do_sync ${@}

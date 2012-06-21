@@ -1,13 +1,13 @@
 #!/bin/sh
 
-# Helper for pulling ExcelAssist.com live to localhost
+# Helper for pulling ilance website to localhost
 #
 # @author Michael Cannon <michael@peimic.com>
-# @version $Id: l2l_excelassist,v 1.2 2011/09/23 05:13:46 peimic.comprock Exp $
 
-# configuration vars
-DOMAIN_NAME="excelassist.com"
-DOMAIN_USER="excelass"
+# example configuration vars
+# configuration assumes that server connection is examp@example.com
+DOMAIN_NAME="example.com"
+DOMAIN_USER="examp"
 REMOTE_DIR_WWW="/home3/${DOMAIN_USER}/public_html"
 
 # load live2local function helpers

@@ -1,0 +1,26 @@
+#!/bin/sh
+
+# Helper for pulling oscommerce website to localhost
+#
+# @author Michael Cannon <michael@peimic.com>
+
+# example configuration vars for none standard access and file location
+DOMAIN_NAME="example.com"
+REMOTE_SERVER="root@127.0.0.1"
+REMOTE_DIR_WWW="/var/www/vhosts/example.com/httpdocs/store"
+
+# Useful for only getting the smaller files
+# RSYNC_MODS="--max-size=4m --include=store/ --exclude=**/store/** --include=MediaContent/ --exclude=**/MediaContent/** --include=pdf/ --exclude=**/pdf/**"
+RSYNC_MODS="--max-size=4m"
+
+# load live2local function helpers
+source ~/.skel/scripts/live2local.sh
+
+# helper mods to enable writing to the configuration file to add error reporting
+LOCAL_MODS[1]="sudo chmod a+w ${FILE_CONFIG} admin/${FILE_CONFIG}"
+LOCAL_MODS[2]="perl -pi -e \"s#'/store#'#g\" ${FILE_CONFIG} admin/${FILE_CONFIG}"
+LOCAL_MODS[3]="echo \"<?php error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED); ?>\" >> ${FILE_CONFIG}"
+LOCAL_MODS[4]="echo \"<?php error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED); ?>\" >> admin/${FILE_CONFIG}"
+
+l2l_site_oscommerce
+l2l_do_sync ${@}

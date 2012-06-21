@@ -3,7 +3,6 @@
 # Helper for pulling live DOMAIN_NAME to local
 #
 # @author Michael Cannon <michael@peimic.com>
-# @version $Id: l2l_biceps_in2code,v 1.1 2011/09/26 13:03:58 peimic.comprock Exp $
 
 # configuration vars
 DOMAIN_NAME="www.tum.de"
