@@ -1,9 +1,8 @@
 #!/bin/sh
 
-# Create basic Typo3 4.0 site
+# Create basic TYPO3 4.0 site
 #
-# @author Michael Cannon <michael@peimic.com>
-# @version $Id: typo3-create-base4,v 1.2 2011/09/12 19:48:15 peimic.comprock Exp $
+# @author Michael Cannon <michael@typo3vagabond.com>
 
 # home dir
 USER=`echo $USER`
