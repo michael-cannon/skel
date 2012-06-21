@@ -3,4 +3,4 @@
 # GIT copy file helper script
 cp ${@}
 git add ${@}
-git commit -m "cp ${@}"
+git commit -m "cp ${@}" ${2}

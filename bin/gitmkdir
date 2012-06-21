@@ -1,24 +1,6 @@
 #!/bin/sh
 
-# SVN mkdir file helper script
-#
-# 1. Given two arguements, source and destination
-# 2. mkdir new-dir
-# 3. svn add new-dir
-# 4. svn ci new-dir
-#
-# @author Michael Cannon <michael@peimic.com>
-# @version $Id: cvsmv,v 1.1.1.1 2010/04/14 09:05:44 peimic.comprock Exp $
-
-# have two arguements?
-if [[ ! ${1} ]]
-then
-	echo "Usage: `basename $0` new-directory"
-	exit 65
-fi
-
+# git mkdir file helper script
 mkdir ${1}
-svn add ${1}
-svn ci -m "Mkdir ${1}"
-
-exit 0
+git add ${1}
+git commit -m "mkdir ${1}" ${1}

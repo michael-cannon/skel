@@ -1,3 +1,5 @@
 #!/bin/sh
-svn add ${@}
-svn ci -m "add ${@}" ${@}
+
+# GIT add file helper script
+git add ${@}
+git commit -m "add ${@}" ${@}

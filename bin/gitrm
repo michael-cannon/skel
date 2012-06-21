@@ -1,39 +1,5 @@
 #!/bin/sh
 
-# SVN remove file helper script
-#
-# 1. Given one arguements, source 
-# 4. svn rm source
-# 5. svn ci source
-#
-# @author Michael Cannon <michael@peimic.com>
-# @version $Id: cvsrm,v 1.1.1.1 2010/04/14 09:05:44 peimic.comprock Exp $
-
-# have an arguement
-if [ ! "$1" ]
-then
-	echo "Usage: `basename $0` [source]"
-	echo "Used to delete and remove a file from SVN"
-	exit 65
-fi
-
-# boolean helpers
-TRUE=1
-FALSE=0
-
-# original name
-# remove /
-DEBUG=$FALSE
-
-# debug or go
-if [ "$FALSE" -eq "$DEBUG" ]
-then
-	svn rm ${@}
-	svn ci -m "Removal of \"${@}\"" ${@}
-
-else
-	echo svn rm ${@}
-	echo svn ci -m \"Removal of \\\"${@}\\\"\" \"${@}\"
-fi
-
-exit 0
+# GIT remove file helper script
+git rm ${@}
+git commit -m "remove ${@}" ${@}
