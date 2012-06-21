@@ -1,0 +1,15 @@
+#!/bin/sh
+
+# Helper for pulling DOMAIN_NAME live to localhost
+#
+# @author Michael Cannon <michael@peimic.com>
+
+# configuration vars
+DOMAIN_NAME="typo3vagabond.com"
+DOMAIN_USER="typo3vb"
+
+# load live2local function helpers
+source ~/.skel/scripts/live2local.sh
+
+l2l_site_wordpress
+l2l_do_sync ${@}

@@ -1,0 +1,19 @@
+#!/bin/sh
+
+# Helper for pulling DOMAIN_NAME live to localhost
+#
+# @author Michael Cannon <michael@peimic.com>
+
+# configuration vars
+DOMAIN_NAME="peimic.com"
+
+# LOCAL_DB_MODS[1]="UPDATE wp_2_options SET option_value = 'http://typo3vagabond.localhost/' WHERE option_value LIKE 'http://typo3vagabond.com/';"
+
+# LOCAL_MODS[1]="open http://typo3vagabond.localhost/wp-admin/plugins.php?plugin_status=active"
+
+# load live2local function helpers
+source ~/.skel/scripts/live2local.sh
+
+l2l_site_wordpress
+# l2l_site_wordpress_multisite
+l2l_do_sync ${@}

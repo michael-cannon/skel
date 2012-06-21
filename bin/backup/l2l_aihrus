@@ -1,0 +1,17 @@
+#!/bin/sh
+
+# Helper for pulling DOMAIN_NAME live to localhost
+#
+# @author Michael Cannon <michael@peimic.com>
+
+# configuration vars
+DOMAIN_NAME="aihr.us"
+DOMAIN_BASE="aihrus"
+DOMAIN_LOCALHOST="aihrus.localhost"
+DOMAIN_USER="aihrus"
+
+# load live2local function helpers
+source ~/.skel/scripts/live2local.sh
+
+l2l_site_typo3
+l2l_do_sync ${@}

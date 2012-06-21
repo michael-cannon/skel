@@ -1,0 +1,14 @@
+#!/bin/sh
+
+# Helper for pulling DOMAIN_NAME live to localhost
+#
+# @author Michael Cannon <michael@peimic.com>
+
+# configuration vars
+DOMAIN_NAME="lifestyl.us"
+
+# load live2local function helpers
+source ~/.skel/scripts/live2local.sh
+
+l2l_site_wordpress
+l2l_do_sync ${@}
