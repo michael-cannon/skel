@@ -19,6 +19,7 @@ fi
 HOSTNAME=`hostname`
 
 ITEMS=".alias
+.alias.conditional
 .alias.ssh
 .bash_completion
 .bash_profile

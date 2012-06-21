@@ -218,29 +218,14 @@ fi
 
 # how many ways to list something are there?
 alias ls="ls ${LS_OPTIONS}"
-alias la="ls -l -a"
-alias lh="ls -A --ignore='[^.]*'"
-alias ll="ls -l"
-alias llr="ll -R"
-alias lr="ls -R --ignore='CVS' --ignore='svn'"
-
-alias df="df -h"
-alias du="du --max-depth=1 -h | sort -r"
-if [[ -e /opt/local/libexec/gnubin/du ]]
-then
-	alias du="du -d 1 -h | sort -rh"
-fi
-alias tail="tail -f -n -20"
 
 if [[ -e /opt/local/bin/grep ]]
 then
-	GREP_OPTIONS="--binary-files=without-match --color=auto --devices=skip --exclude-dir=CVS --exclude-dir=.libs --exclude-dir=.deps --exclude-dir=.svn"
+	GREP_OPTIONS="--binary-files=without-match --color=auto --devices=skip --exclude-dir=CVS --exclude-dir=.libs --exclude-dir=.deps --exclude-dir=.svn --exclude-dir=.git"
 else
-	GREP_OPTIONS="--binary-files=without-match --color=auto --devices=skip --exclude=CVS --exclude=.libs --exclude=.deps --exclude=.svn"
+	GREP_OPTIONS="--binary-files=without-match --color=auto --devices=skip --exclude=CVS --exclude=.libs --exclude=.deps --exclude=.svn --exclude-dir=.git"
 fi
 export GREP_OPTIONS
-
-alias grep="grep -nrsI"
 
 # ruby helpers
 export RUBYOPT=rubygems
@@ -272,6 +257,12 @@ umask 0022
 if [ -f ~/.alias ]
 then
 	. ~/.alias
+fi
+
+# load conditional aliases
+if [ -f ~/.alias.conditional ]
+then
+	. ~/.alias.conditional
 fi
 
 # load ssh aliases

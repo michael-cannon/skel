@@ -1,0 +1,4 @@
+if [[ -e /opt/local/libexec/gnubin/du ]]
+then
+	alias du="du -d 1 -h | sort -rh"
+fi
