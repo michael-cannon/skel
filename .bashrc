@@ -209,7 +209,7 @@ unset BASH BMAJOR BMINOR BASH_COMP
 export CLICOLOR="Yes"
 export LSCOLORS=Exfxcxdxbxegedabagacad
 
-if [[ -e /opt/local/libexec/gnubin/ls ]]
+if [[ -e /opt/local/bin/gls ]]
 then
 	export LS_OPTIONS="--color=tty -F -b -T 0 -h"
 else
