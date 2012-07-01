@@ -271,10 +271,10 @@ then
 	. ~/.alias.ssh
 fi
 
-# load cusotm aliases
-if [ -f ~/.alias.cusotm ]
+# load custom aliases
+if [ -f ~/.alias.custom ]
 then
-	. ~/.alias.cusotm
+	. ~/.alias.custom
 fi
 
 # load host specific settings
