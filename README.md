@@ -17,15 +17,15 @@ Existing directories and files will be replaced with `*.bak` as needed. Therefor
 
 I'm a long-time developer that likes to keep his hands on the keyboard and never got into IDEs. Instead, I use vi, a lot. Even worse, my command line uses vi key bindings. If you have no idea about them, then comment out the respective vi lines in `~/.inputrc`.
 
-### Changing `.bashrc` Defaults
+### Changing `~/.bashrc` Defaults
 
 You're welcome to change `.bashrc` defaults, by adding a custom `~/.bashrc.YOUR_HOSTNAME` file in your home directory. This way, you can redefine command line variables or add other touches as needed.
 
 For my local box, depending upon the network connection, I have two custom `~/.bashrc` files, one called `~/.bashrc.tlf.local` and then a symlink of `~/.bashrc.tlf.fritz.box` to `~/.bashrc.tlf.local`. This way, my local web server information is corect when I reset permissions via `fixwebsitepermissions`.
 
-If you're not sure what your computers hostname is, run `hostname` on the command line. Then append that result to `~/.bashrc.` for your own custom `.bashrc`.
+If you're not sure what your computers hostname is, run `hostname` on the command line. Then append that result to `~/.bashrc.` for your own custom `~/.bashrc`.
 
-I thought of having a single `.bashrc.custom`, but given I can be on serveral different computers and servers everyday, a better method was needed and hence, I came up with `.bashrc.hostname`. There's even support for `.bashrc.hostname.username` if needed.
+I thought of having a single `~/.bashrc.custom`, but given I can be on serveral different computers and servers everyday, a better method was needed and hence, I came up with `~/.bashrc.hostname`. There's even support for `~/.bashrc.hostname.username` if needed.
 
 This is especially useful when your user does sudo or comes in as root via a non-root account.
 
@@ -37,7 +37,7 @@ This means you could write your own script like `hackkill`, place it in `~/.skel
 
 ### `alias` Options
 
-I like keeping `alias` scripts broken out by normal, ssh and conditional. As such, there's…
+I like keeping `alias` scripts broken out by normal, ssh and conditional groupings. As such, there's…
 * `.alias` for normal things like `alias ll="ls -l"`
 * `.alias.ssh` for `alias alias stypo3vb="ssh typo3vb@typo3vagabond.com"`
 * `.alias.conditional` for `alias`'s that are created under certain conditions
