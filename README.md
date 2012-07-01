@@ -29,7 +29,7 @@ There's even support for `~/.bashrc.hostname.username`. This is especially usefu
 
 ### Changing `~/.bash_profile` Defaults
 
-Typically, .bash_profile is called for interactive shell sessions. However, I find that .bash_profile isn't always included when needed. Therefore much of the BASH envrionment settings are handled via `.bashrc`. In anycase, `.bash_profile` is also supported.
+Typically, `.bash_profile` is called for interactive shell sessions. However, I find that `.bash_profile` isn't always included when needed. Therefore much of the BASH envrionment settings are handled via `.bashrc`. In anycase, `.bash_profile` is also supported.
 
 Like `.bashrc`, custom `.bash_profile` is supported via `~/.bash_profile.custom`. Additionally `~/.bash_profile.hostname` and `~/.bash_profile.hostname.username` is supported.
 
