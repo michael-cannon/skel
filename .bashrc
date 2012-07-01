@@ -277,6 +277,12 @@ then
 	. ~/.alias.custom
 fi
 
+# load custom bashrc
+if [ -f ~/.bashrc.custom ]
+then
+	. ~/.bashrc.custom
+fi
+
 # load host specific settings
 if [ -f ~/.bashrc.${HOSTNAME} ]
 then

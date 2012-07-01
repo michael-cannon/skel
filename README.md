@@ -19,15 +19,13 @@ I'm a long-time developer that likes to keep his hands on the keyboard and never
 
 ### Changing `~/.bashrc` Defaults
 
-You're welcome to change `.bashrc` defaults, by adding a custom `~/.bashrc.YOUR_HOSTNAME` file in your home directory. This way, you can redefine command line variables or add other touches as needed.
+You're welcome to change `.bashrc` defaults, by adding a custom `~/.bashrc.custom` file in your home directory. This way, you can redefine command line variables or add your personal touches as needed.
 
-For my local box, depending upon the network connection, I have two custom `~/.bashrc` files, one called `~/.bashrc.tlf.local` and then a symlink of `~/.bashrc.tlf.fritz.box` to `~/.bashrc.tlf.local`. This way, my local web server information is corect when I reset permissions via `fixwebsitepermissions`.
+Additionally, you can setup a `.bashrc` per computer or server via `~/.bashrc.hostname`. If you're not sure what your computers hostname is, run `hostname` on the command line. Then append that result to `~/.bashrc.` for your own custom `~/.bashrc`.
 
-If you're not sure what your computers hostname is, run `hostname` on the command line. Then append that result to `~/.bashrc.` for your own custom `~/.bashrc`.
+For my local box, depending upon the network connection, I have two custom `~/.bashrc` files, one called `~/.bashrc.tlf.local` and then a symlink of `~/.bashrc.tlf.fritz.box` to `~/.bashrc.tlf.local`. This way, my local web server information is correct when I reset permissions via `fixwebsitepermissions`.
 
-I thought of having a single `~/.bashrc.custom`, but given I can be on serveral different computers and servers everyday, a better method was needed and hence, I came up with `~/.bashrc.hostname`. There's even support for `~/.bashrc.hostname.username` if needed.
-
-This is especially useful when your user does sudo or comes in as root via a non-root account.
+There's even support for `~/.bashrc.hostname.username`. This is especially useful when your user does sudo or comes in as root via a non-root account.
 
 ### Custom `bin`
 
