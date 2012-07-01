@@ -1,7 +1,5 @@
 #!/bin/bash
 
-# vi: tw=0
-
 if [ x$2 = x ]; then
 	echo bpm-diff: Print differences in bpm installations
 	echo
