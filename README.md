@@ -27,6 +27,12 @@ For my local box, depending upon the network connection, I have two custom `~/.b
 
 There's even support for `~/.bashrc.hostname.username`. This is especially useful when your user does sudo or comes in as root via a non-root account.
 
+### Changing `~/.bash_profile` Defaults
+
+Typically, .bash_profile is called for interactive shell sessions. However, I find that .bash_profile isn't always included when needed. Therefore much of the BASH envrionment settings are handled via `.bashrc`. In anycase, `.bash_profile` is also supported.
+
+Like `.bashrc`, custom `.bash_profile` is supported via `~/.bash_profile.custom`. Additionally `~/.bash_profile.hostname` and `~/.bash_profile.hostname.username` is supported.
+
 ### Custom `bin`
 
 If you want to add your own bin files, I would suggest adding them to `~/.skel/bin/custom`. The `~/.bashrc` will automatically detect a `~/.skel/bin/custom` directory and add to `$PATH` ahead of `~/.skel/bin`.

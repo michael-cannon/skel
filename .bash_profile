@@ -15,6 +15,12 @@ then
 	. ~/.skel/.bash_var.set
 fi
 
+# load custom settings
+if [[ -f ~/.bash_profile.custom ]]
+then
+	. ~/.bash_profile.custom
+fi
+
 # load server specific settings
 if [[ -f ~/.bash_profile.${HOSTNAME} ]]
 then
