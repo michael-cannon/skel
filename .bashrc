@@ -271,6 +271,12 @@ then
 	. ~/.alias.ssh
 fi
 
+# load cusotm aliases
+if [ -f ~/.alias.cusotm ]
+then
+	. ~/.alias.cusotm
+fi
+
 # load host specific settings
 if [ -f ~/.bashrc.${HOSTNAME} ]
 then
