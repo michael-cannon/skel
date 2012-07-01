@@ -9,13 +9,14 @@ echo
 echo export CVS_RSH=${CVS_RSH}
 echo export CVSROOT=${CVSROOT}
 echo cvs co -d .skel root
+echo
 
 echo
 echo svn co https://peimic.svn.cvsdude.com/skel/trunk .skel
 echo
 
 echo
-echo svn co https://peimic.svn.cvsdude.com/skel/trunk/.ssh
+echo svn co https://peimic.svn.cvsdude.com/skel/trunk/.ssh .
 echo
 
 echo

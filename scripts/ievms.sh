@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# Used for building up Internet Explorer on OSX using Oracle Virtual Box
+
 # Caution is a virtue
 set -o nounset
 set -o errtrace

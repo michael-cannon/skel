@@ -1,11 +1,13 @@
 #!/bin/sh
 
+# 
 # @author Michael Cannon <michael@typo3vagabond.com>
 
 # have an arguement
 if [ ! "$1" ]
 then
-	echo "Usage: `basename $0` [file]"
+	echo "Usage: `basename $0` file [dig] [own dns]"
+	echo "Example: `basename $0` file_of_domain_names_one_per_line 1"
 	exit 65
 fi
 

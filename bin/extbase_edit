@@ -1,9 +1,0 @@
-#!/bin/sh
-
-if [[ -z ${1} ]]
-then
-	echo 'Give me an Entity name like Menu to work with'
-	exit
-fi
-
-vi Configuration/TCA/${1}.php Resources/Private/Templates/${1}/*.html Resources/Private/Language/locallang_db.xml Resources/Private/Language/locallang.xml ext_tables.sql 
