@@ -6,7 +6,7 @@ skel consists of BASH environment skeleton files and command line helper scripts
 
 Open the command line to your home directory and then run the following commands.
 
-* git clone git@github.com:comprock/skel.git .skel
+* git clone git@github.com:typo3-vagabond/skel.git .skel
 * ~/.skel/bin/shellinks
 
 Existing directories and files will be replaced with `*.bak` as needed. Therefore there's no worry about data loss of your current BASH environment.
