@@ -20,9 +20,9 @@ echo svn co https://peimic.svn.cvsdude.com/skel/trunk/.ssh .
 echo
 
 echo
-echo git clone git@github.com:comprock/skel.git .skel
+echo git clone git@github.com:typo3-vagabond/skel.git .skel
 echo
 
 echo
-echo git clone git://github.com/comprock/skel.git .skel
+echo git clone https://github.com/typo3-vagabond/skel.git .skel
 echo

@@ -38,6 +38,7 @@ alias sin2house="ssh in2house@inhouse.in2code.de"
 alias sitalien="ssh ssh-353594-1@46.252.18.137"
 alias sjflesher="ssh flesher@ftp.jflesher.com"
 alias slifestylus="ssh lifestyl@lifestyl.us"
+alias slpdengin="ssh lpdengin@lpdengineering.aihr.us"
 alias smediaburn=sfitvaihrus
 alias speimic="ssh peimic@peimic.com"
 alias speimiccdn="ssh peimic.aihrus@ftp.peimic.aihrus.netdna-cdn.com"
