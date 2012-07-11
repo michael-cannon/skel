@@ -1,5 +1,9 @@
 let g:netrw_dirhistmax  =10
-let g:netrw_dirhist_cnt =3
+let g:netrw_dirhist_cnt =7
 let g:netrw_dirhist_1='/Users/michael/Sites/typo3.your-admins/typo3conf/ext/in2master/Configuration/TypoScript/page'
 let g:netrw_dirhist_2='/Users/michael/Sites/typo3.your-admins/typo3conf/ext/in2client/Resources/Private/Templates'
 let g:netrw_dirhist_3='/Users/michael/Sites/typo3.your-admins/typo3conf/ext/in2client/Configuration/TypoScript/phone/nav/.svn'
+let g:netrw_dirhist_4='/Users/michael/Sites/slides/why-coding-php-fundamentals/css'
+let g:netrw_dirhist_5='/Users/michael/Sites/fitv/wp-content/themes/videozoom/functions/user/custom'
+let g:netrw_dirhist_6='/Users/michael/Sites/fitv/wp-content/themes/videozoom/functions/user'
+let g:netrw_dirhist_7='/Users/michael/Sites/fitv/wp-content/themes/videozoom/functions/user/custom/lib'

@@ -9,8 +9,8 @@
 # *.zip
 *.vi
 *~
-*.sass-cache
-*.netrwhist
+.sass-cache
+.netrwhist
 
 # OS or Editor folders
 .DS_Store
