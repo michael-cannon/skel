@@ -37,3 +37,6 @@ fi
 source ~/.skel/scripts/live2local.sh
 l2l_site_mkvhost
 l2l_access_create
+l2l_display "DocumentRoot ${LOCAL_DIR_WWW}"
+l2l_display "Database connect with…"
+l2l_mysql_local_show
