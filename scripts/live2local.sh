@@ -1576,16 +1576,6 @@ function l2l_typo3_source() {
 function l2l_site_mkvhost() {
 	IS_TYPE="mkvhost"
 	FILE_CONFIG="skip"
-
-	# file mods
-	# LOCAL_BASE_MODS[(( LOCAL_BASE_MODS_I++ ))]="perl -pi -e 's#${DOMAIN_NAME}#${DOMAIN_LOCALHOST}#g' functions/config.php"
-	# LOCAL_BASE_MODS[(( LOCAL_BASE_MODS_I++ ))]="perl -pi -e 's#${REMOTE_DIR_WWW}#${LOCAL_DIR_WWW}#g' functions/config.php"
-
-	# db mods
-	# LOCAL_BASE_DB_MODS[(( LOCAL_BASE_DB_MODS_I++ ))]=""
-
-	# rsync mods
-	# RSYNC_SITE_INC_EXC="--include=cache/ --exclude=**/cache/**"
 }
 
 
