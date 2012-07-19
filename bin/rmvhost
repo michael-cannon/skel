@@ -35,5 +35,4 @@ else
 fi
 
 source ~/.skel/scripts/live2local.sh
-l2l_cd
 l2l_remove_all
