@@ -14,7 +14,7 @@ then
 	DB_PW=${1}
 else
 	echo
-	echo Helper script to create a directory, database and virtual host for website development
+	echo Helper script to remove website development directory, database and virtual host
 	echo `basename ${0}` domain_base
 	echo
 	exit
@@ -35,5 +35,5 @@ else
 fi
 
 source ~/.skel/scripts/live2local.sh
-l2l_site_mkvhost
-l2l_access_create
+l2l_cd
+l2l_remove_all
