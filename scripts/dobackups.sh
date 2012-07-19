@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 DAYS_KEEP="7"
 DIR_BACKUPS="/backups"

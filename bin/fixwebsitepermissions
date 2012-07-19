@@ -1,4 +1,4 @@
-#!/bin/sh 
+#!/bin/bash 
 # Sort through the DIR_HOMES directory and fix permissions for DIR_HTDOCS. Nice
 # wrapper for websitepermissions.
 # 

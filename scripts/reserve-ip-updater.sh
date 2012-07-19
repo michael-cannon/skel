@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # Quick script to grab reserve ipv4 list and create new reserved network file
 #

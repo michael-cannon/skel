@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # GIT add file helper script
 git add ${@}

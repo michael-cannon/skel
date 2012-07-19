@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Helper for pulling live DOMAIN_NAME to local
 #

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 mkdir -p ${1}/branches
 mkdir -p ${1}/tags

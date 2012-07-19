@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # GIT mv file helper script
 git mv ${@}

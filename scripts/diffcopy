@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Read in a file, vimdiff custom file with original, then cp revised original to
 # custom file name

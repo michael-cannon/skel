@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Function helpers for pulling live websites to localhost
 #

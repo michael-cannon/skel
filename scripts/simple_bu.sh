@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # simple backup and rotator script
 #
 # Original author unkown - Probably by Contigex support folks

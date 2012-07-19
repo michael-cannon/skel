@@ -1,4 +1,4 @@
-#!/bin/sh 
+#!/bin/bash 
 # egrep finder helper script
 #
 # 1. Given arguement, search value

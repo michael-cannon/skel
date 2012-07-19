@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Helper script to create a directory, database and virtual host for website development
 #

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Copy live stonebriar websites over to dev box
 #

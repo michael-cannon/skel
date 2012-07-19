@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # stupid simple backup with 1-week remote rotation
 #
 # @author Michael Cannon <michael@typo3vagabond.com>

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Helper for pulling TYPO3 website to localhost
 #

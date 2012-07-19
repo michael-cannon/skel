@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Lookup current templates and link to orignal in fieadmin
 #

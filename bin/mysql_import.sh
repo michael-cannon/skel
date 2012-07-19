@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Simple MySQL database script loader
 #
