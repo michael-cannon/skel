@@ -709,7 +709,7 @@ function l2l_do_sync() {
 		;;
 
 		"site" )
-		echo "${HTTP_PROTOCOL}${DOMAIN_LOCALHOST}"
+		echo "${HTTP_DOMAIN_LOCALHOST}:${APACHE_PORT}"
 		echo
 		exit
 		;;
@@ -920,7 +920,7 @@ function l2l_access_create() {
 	l2l_access_create_hosts
 	l2l_access_create_vhost
 	
-	l2l_display "Setup http://${DOMAIN_LOCALHOST} completed"
+	l2l_display "Setup ${HTTP_DOMAIN_LOCALHOST}:${APACHE_PORT} completed"
 
 	return
 }
@@ -933,7 +933,7 @@ function l2l_remove_all() {
 	l2l_remove_hosts
 	l2l_remove_vhost
 	
-	l2l_display "Removal of http://${DOMAIN_LOCALHOST} completed"
+	l2l_display "Removal of ${HTTP_DOMAIN_LOCALHOST} completed"
 
 	return
 }
