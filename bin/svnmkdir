@@ -18,6 +18,6 @@ fi
 
 mkdir ${1}
 svn add ${1}
-svn ci -m "Mkdir ${1}"
+svn ci -m "Mkdir ${1}" ${1}
 
 exit 0

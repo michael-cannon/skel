@@ -47,10 +47,10 @@ fi
 if [[ "${FALSE}" -eq "${DEBUG}" ]]
 then
 	svn mv ${SOURCE} ${DESTINATION}
-	svn ci -m "Move \"${SOURCE}\" to \"${DESTINATION}\"" "${SOURCE}" "${DESTINATION}"
+	svn ci -m "Move \"${SOURCE}\" to \"${DESTINATION}\"" "${SOURCE}" "${DESTINATION}" ${SOURCE} ${DESTINATION}
 else
 	echo svn mv ${SOURCE} ${DESTINATION}
-	echo svn ci -m \"Move \\\"${SOURCE}\\\" to \\\"${DESTINATION}\\\"\" "${SOURCE}" "${DESTINATION}"
+	echo svn ci -m \"Move \\\"${SOURCE}\\\" to \\\"${DESTINATION}\\\"\" "${SOURCE}" "${DESTINATION}" ${SOURCE} ${DESTINATION}
 fi
 
 exit 0

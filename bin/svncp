@@ -46,10 +46,10 @@ fi
 if [ "$FALSE" -eq "$DEBUG" ]
 then
 	svn cp $SOURCE $DESTINATION
-	svn ci -m "Copy \"$SOURCE\" to \"$DESTINATION\"" "$SOURCE" "$DESTINATION"
+	svn ci -m "Copy \"$SOURCE\" to \"$DESTINATION\"" "$SOURCE" "$DESTINATION" $SOURCE $DESTINATION
 else
 	echo svn cp $SOURCE $DESTINATION
-	echo svn ci -m \"Copy \\\"$SOURCE\\\" to \\\"$DESTINATION\\\"\" "$SOURCE" "$DESTINATION"
+	echo svn ci -m \"Copy \\\"$SOURCE\\\" to \\\"$DESTINATION\\\"\" "$SOURCE" "$DESTINATION" $SOURCE $DESTINATION
 fi
 
 exit 0
