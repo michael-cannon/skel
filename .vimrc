@@ -139,6 +139,7 @@ ab efp print_r(func_get_args()); echo "\n<br />"; echo '' . __LINE__ . ':' . bas
 ab efv var_dump(func_get_args()); echo "\n<br />"; echo '' . __LINE__ . ':' . basename( __FILE__ )  . "\n<br />";
 ab errl error_log( __LINE__ . ':' . basename( __FILE__ ) );
 ab t3dd t3lib_utility::debug( $var, __LINE__ . ':' . basename( __FILE__ ) );
+ab t3dv t3lib_div::devLog( var_export( $, true ), __FUNCTION__, 0, false );
 ab t3df t3lib_div::devLog( true, __FUNCTION__, 0, func_get_args() );
 ab t3dl t3lib_div::devLog( true, __FUNCTION__, 0, false );
 ab t3dr t3lib_utility::debugRows( $rows, __LINE__ . ':' . basename( __FILE__ ) );
