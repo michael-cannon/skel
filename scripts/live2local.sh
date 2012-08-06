@@ -709,6 +709,7 @@ function l2l_do_sync() {
 		;;
 
 		"site" )
+		echo "${LOCAL_DIR_WWW}"
 		echo "${HTTP_DOMAIN_LOCALHOST}:${APACHE_PORT}"
 		echo
 		exit
