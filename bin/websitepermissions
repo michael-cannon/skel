@@ -114,9 +114,9 @@ function detect_system {
 	if [[ -e "typo3conf/localconf.php" || -e "typo3conf/LocalConfiguration.php" ]]
 	then
 		IS_TYPE="TYPO3"
-		DIRS_WRITE="typo3conf"
+		DIRS_WRITE="typo3conf
+			typo3temp"
 		DIRS_WRITE_RECURSIVE="fileadmin
-			typo3temp
 			uploads"
 		FILES_WRITE="typo3conf/ENABLE_INSTALL_TOOL"
 	elif [[ -e "wp-config.php" ]]
