@@ -1,5 +1,5 @@
 #!/bin/bash
 
 # GIT remove file helper script
-git rm ${@}
-git commit -m "remove ${@}" ${@}
+git rm -r ${@}
+git commit -m "remove -r ${@}" ${@}

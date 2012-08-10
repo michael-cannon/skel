@@ -75,7 +75,8 @@ then
 	USERS_DIR="/Users/${USER}"
 
 	BACKUP_DESTS="/Volumes/PEIMIC
-/Volumes/PEICHI4G"
+/Volumes/PEICHI4G
+/Volumes/WOOD"
 
 	DB_HOST="localhost"
 	DB_USER="root"

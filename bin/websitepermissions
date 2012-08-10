@@ -67,6 +67,14 @@ then
 		USER_BIT_FILE="u+rwX"
 		;;
 
+		"devo" )
+		IS_MODE="development"
+		GROUP_BIT_CGI=",g+x"
+		GROUP_BIT_FILE=",g+rwX"
+		OTHER_BIT_FILE=",o+rX"
+		USER_BIT_FILE="u+rwX"
+		;;
+
 		"owner" )
 		IS_MODE="owner"
 		USER_BIT_FILE="u+rwX"
@@ -103,7 +111,7 @@ PERM_WRITE="u+w${GROUP_BIT_WRITE}"
 
 
 function detect_system {
-	if [[ -e "typo3conf/localconf.php" ]]
+	if [[ -e "typo3conf/localconf.php" || -e "typo3conf/LocalConfiguration.php" ]]
 	then
 		IS_TYPE="TYPO3"
 		DIRS_WRITE="typo3conf"

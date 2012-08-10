@@ -1,6 +1,6 @@
 #!/bin/bash
 
 # GIT copy file helper script
-cp ${@}
-git add ${@}
-git commit -m "cp ${@}" ${2}
+cp -r ${@}
+git add ${2}
+git commit -m "cp -r ${@}" ${2}
