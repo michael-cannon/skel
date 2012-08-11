@@ -1,0 +1,39 @@
+#!/bin/bash
+
+# TYPO3 Introduction Package helper tool
+#
+# remove current vhost & db
+# create new vhost & db
+# pull down IP package
+# link up TYPO3
+# touch install tool
+# fix permissions
+#
+# @author Michael Cannon <michael@typo3vagabond.com>
+
+SITES="${HOME}/Sites/"
+TYPO3_MASTER='typo3_src-master'
+VHOST='t3ip'
+
+if [[ -e ${SITES}${VHOST} ]]
+then
+	rmvhost ${VHOST}
+fi
+
+mkvhost ${VHOST}
+
+if [[ ! -e ${SITES}${VHOST} ]]
+then
+	echo Unable to create virtual host instance for ${VHOST}
+fi
+
+cd ${SITES}${VHOST}
+
+git clone git://git.typo3.org/TYPO3v4/Distributions/Introduction.git .
+scp -p review.typo3.org:hooks/commit-msg .git/hooks/
+ln -s ${SITES}${TYPO3_MASTER} typo3_src
+ln -s typo3_src/index.php index.php
+ln -s typo3_src/t3lib t3lib
+ln -s typo3_src/typo3 typo3
+touch typo3conf/ENABLE_INSTALL_TOOL
+sudo websitepermissions michael www devo

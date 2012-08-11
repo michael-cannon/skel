@@ -1,0 +1,9 @@
+#!/bin/bash
+
+SITES="${HOME}/Sites/"
+TYPO3_MASTER='typo3_src-master'
+
+ln -s ${SITES}${TYPO3_MASTER} typo3_src
+ln -s typo3_src/index.php index.php
+ln -s typo3_src/t3lib t3lib
+ln -s typo3_src/typo3 typo3

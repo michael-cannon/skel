@@ -78,6 +78,15 @@ then
 		"owner" )
 		IS_MODE="owner"
 		USER_BIT_FILE="u+rwX"
+		OTHER_BIT_FILE=",o+rX"
+		;;
+
+		"ownero" )
+		IS_MODE="owner"
+		GROUP_BIT_CGI=",g+x"
+		GROUP_BIT_FILE=",g+rX"
+		OTHER_BIT_FILE=",o+rX"
+		USER_BIT_FILE="u+rwX"
 		;;
 
 		"su" )
