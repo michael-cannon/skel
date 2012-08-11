@@ -1,0 +1,26 @@
+#!/bin/bash
+
+# TYPO3 Introduction Package helper tool
+#
+# reset TYPO3 IP package
+# link up TYPO3
+#
+# @author Michael Cannon <michael@typo3vagabond.com>
+
+SITES="${HOME}/Sites/"
+TYPO3_MASTER='typo3_src-master'
+VHOST='t3ip'
+
+if [[ ! -e ${SITES}${VHOST} ]]
+then
+	echo "Virtual host instance ${VHOST} doesn't exist"
+fi
+
+cd ${SITES}${VHOST}
+
+git reset --hard origin/master
+git clean -fd
+ln -s ${SITES}${TYPO3_MASTER} typo3_src
+ln -s typo3_src/index.php index.php
+ln -s typo3_src/t3lib t3lib
+ln -s typo3_src/typo3 typo3
