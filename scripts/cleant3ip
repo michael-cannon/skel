@@ -11,16 +11,42 @@ SITES="${HOME}/Sites/"
 TYPO3_MASTER='typo3_src-master'
 VHOST='t3ip'
 
-if [[ ! -e ${SITES}${VHOST} ]]
+SITES_VHOST="${SITES}${VHOST}"
+
+if [[ ! -e ${SITES_VHOST} ]]
 then
 	echo "Virtual host instance ${VHOST} doesn't exist"
+	exit
 fi
 
-cd ${SITES}${VHOST}
+cd ${SITES_VHOST}
+
+if [[ -e typo3temp/Cache ]]
+then
+	sudo rm -rf typo3temp/Cache
+fi
 
 git reset --hard origin/master
 git clean -fd
-ln -s ${SITES}${TYPO3_MASTER} typo3_src
-ln -s typo3_src/index.php index.php
-ln -s typo3_src/t3lib t3lib
-ln -s typo3_src/typo3 typo3
+
+if [[ ! -e typo3_src ]]
+then
+	ln -s ${SITES}${TYPO3_MASTER} typo3_src
+fi
+
+if [[ ! -e index.php ]]
+then
+	ln -s typo3_src/index.php index.php
+fi
+
+if [[ ! -e t3lib ]]
+then
+	ln -s typo3_src/t3lib t3lib
+fi
+
+if [[ ! -e typo3 ]]
+then
+	ln -s typo3_src/typo3 typo3
+fi
+
+sudo websitepermissions michael www devo

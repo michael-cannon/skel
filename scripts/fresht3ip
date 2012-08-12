@@ -15,19 +15,21 @@ SITES="${HOME}/Sites/"
 TYPO3_MASTER='typo3_src-master'
 VHOST='t3ip'
 
-if [[ -e ${SITES}${VHOST} ]]
+SITES_VHOST="${SITES}${VHOST}"
+
+if [[ -e ${SITES_VHOST} ]]
 then
-	rmvhost ${VHOST}
+	sudo rmvhost ${VHOST}
 fi
 
 mkvhost ${VHOST}
 
-if [[ ! -e ${SITES}${VHOST} ]]
+if [[ ! -e ${SITES_VHOST} ]]
 then
 	echo Unable to create virtual host instance for ${VHOST}
 fi
 
-cd ${SITES}${VHOST}
+cd ${SITES_VHOST}
 
 git clone git://git.typo3.org/TYPO3v4/Distributions/Introduction.git .
 scp -p review.typo3.org:hooks/commit-msg .git/hooks/
@@ -37,3 +39,4 @@ ln -s typo3_src/t3lib t3lib
 ln -s typo3_src/typo3 typo3
 touch typo3conf/ENABLE_INSTALL_TOOL
 sudo websitepermissions michael www devo
+sudo `which apachectl` restart
