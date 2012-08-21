@@ -1,25 +1,15 @@
 #!/bin/bash
 
-# TYPO3 Introduction Package helper tool
+# TYPO3 git reset code to master helper
 #
-# reset TYPO3 IP package
-# link up TYPO3
+# optionally link up to TYPO3
 #
 # @author Michael Cannon <michael@typo3vagabond.com>
 
-SITES="${HOME}/Sites/"
-TYPO3_MASTER='typo3_src-master'
-VHOST='t3ip'
-
-SITES_VHOST="${SITES}${VHOST}"
-
-if [[ ! -e ${SITES_VHOST} ]]
+if [[ ! -e .git ]]
 then
-	echo "Virtual host instance ${VHOST} doesn't exist"
-	exit
+	echo Need to run within top-level Git clone
 fi
-
-cd ${SITES_VHOST}
 
 if [[ -e typo3temp/Cache ]]
 then
@@ -27,26 +17,30 @@ then
 fi
 
 git reset --hard origin/master
-git clean -fd
 
-if [[ ! -e typo3_src ]]
+if [[ -z ${1} ]]
 then
-	ln -s ${SITES}${TYPO3_MASTER} typo3_src
-fi
+	git clean -fd
 
-if [[ ! -e index.php ]]
-then
-	ln -s typo3_src/index.php index.php
-fi
+	if [[ ! -e typo3_src ]]
+	then
+		ln -s ${SITES}${TYPO3_MASTER} typo3_src
+	fi
 
-if [[ ! -e t3lib ]]
-then
-	ln -s typo3_src/t3lib t3lib
-fi
+	if [[ ! -e index.php ]]
+	then
+		ln -s typo3_src/index.php index.php
+	fi
 
-if [[ ! -e typo3 ]]
-then
-	ln -s typo3_src/typo3 typo3
-fi
+	if [[ ! -e t3lib ]]
+	then
+		ln -s typo3_src/t3lib t3lib
+	fi
 
-sudo websitepermissions michael www devo
+	if [[ ! -e typo3 ]]
+	then
+		ln -s typo3_src/typo3 typo3
+	fi
+
+	sudo websitepermissions michael www devo
+fi

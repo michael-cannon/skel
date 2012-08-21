@@ -3,7 +3,38 @@
 SITES="${HOME}/Sites/"
 TYPO3_MASTER='typo3_src-master'
 
+if [[ -L typo3_src ]]
+then
+	rm typo3_src
+elif [[ -d typo3_src ]]
+then
+	rm -rf typo3_src
+fi
 ln -s ${SITES}${TYPO3_MASTER} typo3_src
+
+if [[ -L index.php ]]
+then
+	rm index.php
+elif [[ -e index.php ]]
+then
+	rm index.php
+fi
 ln -s typo3_src/index.php index.php
+
+if [[ -L t3lib ]]
+then
+	rm t3lib
+elif [[ -d t3lib ]]
+then
+	rm -rf t3lib
+fi
 ln -s typo3_src/t3lib t3lib
+
+if [[ -L typo3 ]]
+then
+	rm typo3
+elif [[ -d typo3 ]]
+then
+	rm -rf typo3
+fi
 ln -s typo3_src/typo3 typo3

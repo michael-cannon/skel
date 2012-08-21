@@ -71,3 +71,6 @@ if has("win32")
 		source $VIMRUNTIME/mswin.vim
 	endif
 endif
+
+" for presentations
+" colorscheme delek

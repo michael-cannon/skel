@@ -172,3 +172,6 @@ au BufNewFile,BufRead *.ts setlocal filetype=typoscript
 au BufRead,BufNewFile *.js set ft=php syntax=php
 
 set gfn=Monaco:h13
+
+" for presentations
+" colorscheme delek
