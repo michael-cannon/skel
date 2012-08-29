@@ -43,7 +43,10 @@
 ## TYPO3_VERSION="4.5.15"
 ## WWW_GROUP="www"
 ## WWW_USER="michael"
-## USE_FTP="true"
+## # no ssh possible, do media pull via FTP
+## USE_FTP=1
+## # in case rsync not available, but ssh is, then try scp instead
+## USE_SCP=1
 ##
 ## # load live2local function helpers
 ## source ~/.skel/scripts/live2local.sh
@@ -185,6 +188,11 @@ then
 	RSYNC_MODS=
 fi
 
+if [[ -z ${SCP_MODS} ]]
+then
+	SCP_MODS=
+fi
+
 if [[ -z ${WWW_GROUP} ]]
 then
 	WWW_GROUP="www"
@@ -257,9 +265,14 @@ fi
 if [[ -z ${USE_FTP} ]]
 then
 	CMD_SCP=`which scp`
-	CMD_RSYNC=`which rsync`
+	CMD_RSYNC=
 	CMD_FTP_PULL=
 	CMD_FTP_PUSH=
+
+	if [[ -z ${USE_SCP} ]]
+	then
+		CMD_RSYNC=`which rsync`
+	fi
 else
 	CMD_SCP=
 	CMD_RSYNC=
@@ -288,6 +301,7 @@ REMOTE_FILE_DB_GZ="~/${FILE_DB_GZ}"
 # RSYNC_OPTIONS="-Pahz --stats --delete-excluded"
 RSYNC_OPTIONS="-Pahz -e ssh --stats"
 RSYNC_SITE_INC_EXC=
+SCP_OPTIONS="-r -p -C"
 
 WHICH_SUDO=`which sudo`
 if [[ ${WHICH_SUDO} && "No *" != ${WHICH_SUDO} ]]
@@ -400,7 +414,7 @@ function l2l_pull_remote_db() {
 function l2l_pull_remote_pull() {
 	if [[ -z ${USE_FTP} ]]
 	then
-		${CMD_SCP} ${REMOTE_SERVER}:${1} .
+		${CMD_SCP} ${SCP_OPTIONS} ${REMOTE_SERVER}:${1} .
 	else
 		${CMD_FTP_PULL} ${FTP_OPTIONS} ${FTP_REMOTE_SERVER}${1} .
 	fi
@@ -573,7 +587,12 @@ function l2l_push_remote_media() {
 
 	if [[ -z ${USE_FTP} ]]
 	then
-		${CMD_RSYNC} ${RSYNC_OPTIONS} ${RSYNC_COMMON_INC_EXC} ${RSYNC_SITE_INC_EXC} ${RSYNC_MODS} * ${REMOTE_SERVER}:${REMOTE_DIR_WWW}/.
+		if [[ -z ${USE_SCP} ]]
+		then
+			${CMD_RSYNC} ${RSYNC_OPTIONS} ${RSYNC_COMMON_INC_EXC} ${RSYNC_SITE_INC_EXC} ${RSYNC_MODS} * ${REMOTE_SERVER}:${REMOTE_DIR_WWW}/.
+		else
+			${CMD_SCP} ${SCP_OPTIONS} ${SCP_MODS} * ${REMOTE_SERVER}:${REMOTE_DIR_WWW}/.
+		fi
 	else
 		${CMD_FTP_PUSH} ${FTP_OPTIONS} * ${FTP_REMOTE_SERVER}${REMOTE_DIR_WWW}/.
 	fi
@@ -585,8 +604,14 @@ function l2l_pull_remote_media() {
 
 	if [[ -z ${USE_FTP} ]]
 	then
-		${CMD_RSYNC} ${RSYNC_OPTIONS} ${RSYNC_COMMON_INC_EXC} ${RSYNC_SITE_INC_EXC} ${RSYNC_MODS} ${REMOTE_SERVER}:${REMOTE_DIR_WWW}/* .
-		${CMD_RSYNC} ${RSYNC_OPTIONS} ${RSYNC_COMMON_INC_EXC} ${RSYNC_SITE_INC_EXC} ${RSYNC_MODS} ${REMOTE_SERVER}:${REMOTE_DIR_WWW}/.htaccess* .
+		if [[ -z ${USE_SCP} ]]
+		then
+			${CMD_RSYNC} ${RSYNC_OPTIONS} ${RSYNC_COMMON_INC_EXC} ${RSYNC_SITE_INC_EXC} ${RSYNC_MODS} ${REMOTE_SERVER}:${REMOTE_DIR_WWW}/* .
+			${CMD_RSYNC} ${RSYNC_OPTIONS} ${RSYNC_COMMON_INC_EXC} ${RSYNC_SITE_INC_EXC} ${RSYNC_MODS} ${REMOTE_SERVER}:${REMOTE_DIR_WWW}/.htaccess* .
+		else
+			${CMD_SCP} ${SCP_OPTIONS} ${SCP_MODS} ${REMOTE_SERVER}:${REMOTE_DIR_WWW}/* .
+			${CMD_SCP} ${SCP_OPTIONS} ${SCP_MODS} ${REMOTE_SERVER}:${REMOTE_DIR_WWW}/.htaccess* .
+		fi
 	else
 		${CMD_FTP_PULL} ${FTP_OPTIONS} ${FTP_REMOTE_SERVER}${REMOTE_DIR_WWW}/* .
 		${CMD_FTP_PULL} ${FTP_OPTIONS} ${FTP_REMOTE_SERVER}${REMOTE_DIR_WWW}/.htaccess* .
@@ -703,7 +728,8 @@ function l2l_do_sync() {
 		;;
 
 		"scp" )
-		echo "scp ${REMOTE_SERVER}:${REMOTE_DIR_WWW}"
+		echo "${CMD_SCP} ${REMOTE_SERVER}:${REMOTE_DIR_WWW}/* ${LOCAL_DIR_WWW}/."
+		echo "${CMD_SCP} ${SCP_OPTIONS} ${SCP_MODS} ${REMOTE_SERVER}:${REMOTE_DIR_WWW}/* ${LOCAL_DIR_WWW}/."
 		echo
 		exit
 		;;
@@ -1092,7 +1118,7 @@ function l2l_access_create_config_file() {
 
 		if [[ -z ${USE_FTP} ]]
 		then
-			${CMD_SCP} ${REMOTE_SERVER}:${REMOTE_DIR_WWW}/${FILE_CONFIG} ${FILE_CONFIG}
+			${CMD_SCP} ${SCP_OPTIONS} ${REMOTE_SERVER}:${REMOTE_DIR_WWW}/${FILE_CONFIG} ${FILE_CONFIG}
 		else
 			echo "What is the FTP password? "
 			read
@@ -1247,7 +1273,7 @@ function l2l_access_create_database_user() {
 function l2l_pull_remote_push() {
 	if [[ -z ${USE_FTP} ]]
 	then
-		${CMD_SCP} ${1} ${REMOTE_SERVER}:~/.
+		${CMD_SCP} ${SCP_OPTIONS} ${1} ${REMOTE_SERVER}:~/.
 	else
 		${CMD_FTP_PUSH} ${FTP_OPTIONS} ${1} ${FTP_REMOTE_SERVER}
 	fi
