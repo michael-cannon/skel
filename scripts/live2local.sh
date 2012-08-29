@@ -719,14 +719,13 @@ function l2l_config_push() {
 function l2l_do_sync() {
 	case "${1}" in
 		"rsync" )
-		echo "${CMD_RSYNC} ${RSYNC_OPTIONS} ${RSYNC_COMMON_INC_EXC} ${RSYNC_SITE_INC_EXC} ${RSYNC_MODS} ${REMOTE_SERVER}:${REMOTE_DIR_WWW}/* ${LOCAL_DIR_WWW}/."
+		echo "${CMD_RSYNC} ${RSYNC_OPTIONS} ${RSYNC_COMMON_INC_EXC} ${RSYNC_SITE_INC_EXC} ${RSYNC_MODS} ${LOCAL_DIR_WWW}/. ${REMOTE_SERVER}:${REMOTE_DIR_WWW}/*"
 		echo
 		exit
 		;;
 
 		"scp" )
-		echo "${CMD_SCP} ${REMOTE_SERVER}:${REMOTE_DIR_WWW}/* ${LOCAL_DIR_WWW}/."
-		echo "${CMD_SCP} ${SCP_OPTIONS} ${SCP_MODS} ${REMOTE_SERVER}:${REMOTE_DIR_WWW}/* ${LOCAL_DIR_WWW}/."
+		echo "${CMD_SCP} ${SCP_OPTIONS} ${SCP_MODS} ${LOCAL_DIR_WWW}/. ${REMOTE_SERVER}:${REMOTE_DIR_WWW}/*"
 		echo
 		exit
 		;;
