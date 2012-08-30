@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# Pull down new WordPress installation
+#
+# @author Michael Cannon <michael@typo3vagabond.com>
+
+wget http://wordpress.org/latest.tar.gz
+tar -zxf latest.tar.gz 
+rm latest.tar.gz
+mv wordpress/* .
+rmdir wordpress/
