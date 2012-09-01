@@ -30,3 +30,9 @@ echo
 echo
 echo git clone git_peimic@peimic.git.cloudforge.com/skelcustom.git ~/bin/custom
 echo
+
+echo
+echo mv .skel/ .skel.o
+echo git clone https://github.com/typo3-vagabond/skel.git .skel
+echo sh .skel/bin/shellinks
+echo
