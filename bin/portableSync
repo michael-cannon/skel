@@ -74,9 +74,8 @@ elif [ "${UNAME}" == "Darwin" ]
 then
 	USERS_DIR="/Users/${USER}"
 
-	BACKUP_DESTS="/Volumes/PEIMIC
-/Volumes/PEICHI4G
-/Volumes/WOOD"
+	BACKUP_DESTS="/Volumes/lilthing
+/Volumes/PEICHI4G"
 
 	DB_HOST="localhost"
 	DB_USER="root"
