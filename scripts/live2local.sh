@@ -97,6 +97,13 @@ then
 	FILE_CONFIG_OVERWRITE_DENY=
 fi
 
+if [[ -z ${PERMS_MODE} ]]
+then
+	PERMS_MODE="dev"
+else
+	PERMS_MODE="${PERMS_MODE}"
+fi
+
 if [[ -z ${BIN_MYSQL} ]]
 then
 	BIN_MYSQL=
@@ -677,7 +684,7 @@ function l2l_perms_restore() {
 
 	l2l_display "Update local website permissions to ${WWW_USER}:${WWW_GROUP}"
 
-	${BIN_SUDO} ~/bin/websitepermissions ${WWW_USER} ${WWW_GROUP} dev
+	${BIN_SUDO} ~/bin/websitepermissions ${WWW_USER} ${WWW_GROUP} ${PERMS_MODE}
 
 	if [[ ${DEV_USER} != ${WWW_USER} ]]
 	then
