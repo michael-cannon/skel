@@ -1142,6 +1142,22 @@ function l2l_access_create_config_file() {
 	if [[ -e ${FILE_CONFIG} && -n ${IS_TYPE} ]]
 	then
 		case "${IS_TYPE}" in
+			"ilance" )
+			l2l_get_config_ilance
+			;;
+
+			"oscommerce" )
+			l2l_get_config_oscommerce
+			;;
+
+			"phplist" )
+			l2l_get_config_phplist
+			;;
+			
+			"static" )
+			l2l_get_config_static
+			;;
+
 			"typo3" )
 			l2l_get_config_typo3
 			;;
@@ -1150,20 +1166,12 @@ function l2l_access_create_config_file() {
 			l2l_get_config_wohin
 			;;
 
-			"ilance" )
-			l2l_get_config_ilance
-			;;
-			
-			"oscommerce" )
-			l2l_get_config_oscommerce
+			"wordpress" )
+			l2l_get_config_wordpress
 			;;
 
 			"xtcommerce" )
 			l2l_get_config_xtcommerce
-			;;
-
-			"wordpress" )
-			l2l_get_config_wordpress
 			;;
 		esac
 	elif [[ "mkvhost" == ${IS_TYPE} ]]
@@ -1538,6 +1546,76 @@ function l2l_get_config_wohin {
 function l2l_site_wohin() {
 	IS_TYPE="wohin"
 	FILE_CONFIG="diner2.inc.php"
+
+	# file mods
+	# LOCAL_BASE_MODS[(( LOCAL_BASE_MODS_I++ ))]="perl -pi -e \"s#^(define\('COOKIE_DOMAIN', '${DOMAIN_NAME}'.*$)#// \1#g\" wp-config.php"
+
+	# db mods
+	# LOCAL_BASE_DB_MODS[(( LOCAL_BASE_DB_MODS_I++ ))]=""
+	# LOCAL_BASE_DB_MODS[(( LOCAL_BASE_DB_MODS_I++ ))]="UPDATE sys_domain SET hidden = 1 WHERE domainName NOT LIKE '%.${DOMAIN_LOCALHOST_BASE}';"
+	# LOCAL_BASE_DB_MODS[(( LOCAL_BASE_DB_MODS_I++ ))]="UPDATE sys_domain SET hidden = 0 WHERE domainName LIKE '%.${DOMAIN_LOCALHOST_BASE}';"
+
+	# rsync mods
+	# RSYNC_SITE_INC_EXC="--include=wohintemp/ --exclude=**/wohintemp/** --include=_temp_/ --exclude=**/_temp_/** --exclude=wohinconf/temp_CACHED_*.php --exclude=wohinconf/deprecation_*.log"
+}
+
+
+function l2l_get_config_static {
+	DB_HOST=`grep -P "\bdb_server\b" ${FILE_CONFIG}`
+	DB_HOST=`echo ${DB_HOST} | sed -e 's#");.*##g' -e 's#^.*, "##g'`
+
+	DB_NAME=`grep -P "\bdb_name\b" ${FILE_CONFIG}`
+	DB_NAME=`echo ${DB_NAME} | sed -e 's#");.*##g' -e 's#^.*, "##g'`
+
+	DB_USER=`grep -P "\bdb_user\b" ${FILE_CONFIG}`
+	DB_USER=`echo ${DB_USER} | sed -e 's#");.*##g' -e 's#^.*, "##g'`
+
+	DB_PW=`grep -P "\bdb_passwort\b" ${FILE_CONFIG}`
+	DB_PW=`echo ${DB_PW} | sed -e 's#");.*##g' -e 's#^.*, "##g'`
+	DB_PW=`echo ${DB_PW} | sed -e 's#(#\\\(#g' -e 's#)#\\\)#g'`
+
+	return
+}
+
+
+function l2l_site_static() {
+	IS_TYPE="static"
+	FILE_CONFIG=""
+
+	# file mods
+	# LOCAL_BASE_MODS[(( LOCAL_BASE_MODS_I++ ))]="perl -pi -e \"s#^(define\('COOKIE_DOMAIN', '${DOMAIN_NAME}'.*$)#// \1#g\" wp-config.php"
+
+	# db mods
+	# LOCAL_BASE_DB_MODS[(( LOCAL_BASE_DB_MODS_I++ ))]=""
+	# LOCAL_BASE_DB_MODS[(( LOCAL_BASE_DB_MODS_I++ ))]="UPDATE sys_domain SET hidden = 1 WHERE domainName NOT LIKE '%.${DOMAIN_LOCALHOST_BASE}';"
+	# LOCAL_BASE_DB_MODS[(( LOCAL_BASE_DB_MODS_I++ ))]="UPDATE sys_domain SET hidden = 0 WHERE domainName LIKE '%.${DOMAIN_LOCALHOST_BASE}';"
+
+	# rsync mods
+	# RSYNC_SITE_INC_EXC="--include=wohintemp/ --exclude=**/wohintemp/** --include=_temp_/ --exclude=**/_temp_/** --exclude=wohinconf/temp_CACHED_*.php --exclude=wohinconf/deprecation_*.log"
+}
+
+
+function l2l_get_config_phplist {
+	DB_HOST=`grep -P "\bdatabase_host\b" ${FILE_CONFIG}`
+	DB_HOST=`echo ${DB_HOST} | sed -e 's#");.*##g' -e 's#^.*, "##g'`
+
+	DB_NAME=`grep -P "\bdatabase_name\b" ${FILE_CONFIG}`
+	DB_NAME=`echo ${DB_NAME} | sed -e 's#");.*##g' -e 's#^.*, "##g'`
+
+	DB_USER=`grep -P "\bdatabase_user\b" ${FILE_CONFIG}`
+	DB_USER=`echo ${DB_USER} | sed -e 's#");.*##g' -e 's#^.*, "##g'`
+
+	DB_PW=`grep -P "\bdatabase_password\b" ${FILE_CONFIG}`
+	DB_PW=`echo ${DB_PW} | sed -e 's#");.*##g' -e 's#^.*, "##g'`
+	DB_PW=`echo ${DB_PW} | sed -e 's#(#\\\(#g' -e 's#)#\\\)#g'`
+
+	return
+}
+
+
+function l2l_site_phplist() {
+	IS_TYPE="phplist"
+	FILE_CONFIG="lists/config/config.php"
 
 	# file mods
 	# LOCAL_BASE_MODS[(( LOCAL_BASE_MODS_I++ ))]="perl -pi -e \"s#^(define\('COOKIE_DOMAIN', '${DOMAIN_NAME}'.*$)#// \1#g\" wp-config.php"
