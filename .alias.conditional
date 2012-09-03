@@ -2,3 +2,8 @@
 # then
 # 	alias du="du -d 1 -h | sort -rh"
 # fi
+
+if [[ -e /usr/local/apache/logs/error_log ]]
+then
+	alias terror_log='tail -f /usr/local/apache/logs/error_log'
+fi
