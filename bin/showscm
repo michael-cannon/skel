@@ -28,7 +28,7 @@ echo git clone https://github.com/typo3-vagabond/skel.git .skel
 echo
 
 echo
-echo git clone git_peimic@peimic.git.cloudforge.com/skelcustom.git ~/bin/custom
+echo git clone https://comprock@peimic.git.cloudforge.com/skelcustom.git ~/bin/custom
 echo
 
 echo

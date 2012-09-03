@@ -1,4 +1,4 @@
-if [[ -e /opt/local/bin/gdu ]]
-then
-	alias du="du -d 1 -h | sort -rh"
-fi
+# if [[ -e /opt/local/bin/gdu ]]
+# then
+# 	alias du="du -d 1 -h | sort -rh"
+# fi

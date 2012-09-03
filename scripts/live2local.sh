@@ -800,6 +800,7 @@ function l2l_do_sync() {
 			DB_NO_CREATE=1
 			SHOW_COMMANDS=1
 			l2l_access_create_database_user
+			l2l_remove_database_user
 			echo
 			l2l_pull_remote_db
 			echo
