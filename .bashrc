@@ -213,7 +213,7 @@ if [[ -e /opt/local/bin/gls ]]
 then
 	export LS_OPTIONS="--color=tty -F -b -T 0 -h"
 else
-	export LS_OPTIONS="--color"
+	export LS_OPTIONS="--color -h"
 fi
 
 # how many ways to list something are there?

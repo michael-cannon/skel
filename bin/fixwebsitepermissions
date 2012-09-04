@@ -21,22 +21,22 @@
 # @author Michael Cannon, michael@typo3vagabond.com
 
 # cpanel - used as default
-CHATTR=""
+CHATTR=
 DIR_HOMES="/home"
 DIR_HOMES_RECURSE=1
 DIR_HTDOCS="public_html"
 DIR_HTDOCS_RECURSE="0"
+DO_CHATTR=0
 HTTPD_GROUP="nobody"
 HTTPD_GROUP_OVERRIDE=0
 MODE="cpanel"
 MODE_PERMS="live"
 MODE_TEST=0
-OWNER_OVERRIDE="nobody"
+OWNER_OVERRIDE=
 PERMS_DIR_HTTPD=0750
-PERMS_DIR_USER=0711
 WHICH_CHATTR=`which chattr`
 
-if [[ ${WHICH_CHATTR} ]] && [[ "${WHICH_CHATTR}" != "No *" ]]
+if [[ 1 == ${DO_CHATTR} && "${WHICH_CHATTR}" != "No *" ]]
 then
 	CHATTR=${WHICH_CHATTR}
 fi
@@ -51,10 +51,8 @@ case "${MODE}" in
 		DIR_HOMES="/Users"
 		DIR_HTDOCS="Sites"
 		DIR_HTDOCS_RECURSE="1"
-		# HTTPD_GROUP="staff"
 		HTTPD_GROUP="www"
 		MODE_PERMS="dev"
-		# OWNER_OVERRIDE="www"
 		OWNER_OVERRIDE="michael"
 		PERMS_DIR_HTTPD=0751
 		;;
@@ -85,15 +83,8 @@ case "${MODE}" in
 	"su" )
 		HTTPD_GROUP_OVERRIDE=1
 		MODE_PERMS="su"
-		OWNER_OVERRIDE=""
 		PERMS_DIR_HTTPD=0755
 		;;
-
-	# cpanel
-	* )
-		HTTPD_GROUP_OVERRIDE=1
-		;;
-
 esac
 
 if [[ -n ${2} && "" != ${2} ]]
@@ -152,7 +143,7 @@ do
 				~/bin/websitepermissions ${TEMP_USER} ${HTTPD_GROUP} ${MODE_PERMS}
 			fi
 
-			if [[ "" != ${CHATTR} ]]
+			if [[ 1 = ${DO_CHATTR} && -n ${CHATTR} ]]
 			then
 				echo 2.5 - Remove immutable on ${DIR_WORKING}
 				if [[ 0 = ${MODE_TEST} ]]
@@ -178,7 +169,7 @@ do
 				chmod ${PERMS_DIR_HTTPD} ${DIR_WORKING}
 			fi
 
-			if [[ "" != ${CHATTR} ]]
+			if [[ 1 = ${DO_CHATTR} && -n ${CHATTR} ]]
 			then
 				if [[ 0 = ${MODE_TEST} && "live" = ${MODE_PERMS} ]]
 				then

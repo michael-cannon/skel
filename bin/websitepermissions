@@ -21,22 +21,23 @@
 
 PWD=`pwd`
 
-CHATTR=""
-DIRS_WRITE=""
-DIRS_WRITE_RECURSIVE=""
+CHATTR=
+DIRS_WRITE=
+DIRS_WRITE_RECURSIVE=
 DIR_SITE="${PWD}/"
+DO_CHATTR=0
+FILES_WRITE=
 FILE_HTACCESS=".htaccess"
-FILES_WRITE=""
-GROUP_BIT_CGI=""
-GROUP_BIT_FILE=""
-GROUP_BIT_WRITE=""
+GROUP_BIT_CGI=
+GROUP_BIT_FILE=
+GROUP_BIT_WRITE=
 IS_MODE="production"
 IS_TYPE="no"
-OTHER_BIT_FILE=""
+OTHER_BIT_FILE=
 USER_BIT_FILE="u+rX"
 WHICH_CHATTR=`which chattr`
 
-if [[ ${WHICH_CHATTR} ]] && [[ "${WHICH_CHATTR}" != "No *" ]]
+if [[ 1 = ${DO_CHATTR} && "${WHICH_CHATTR}" != "No *" ]]
 then
 	CHATTR=${WHICH_CHATTR}
 fi
@@ -78,7 +79,7 @@ then
 		"owner" )
 		IS_MODE="owner"
 		USER_BIT_FILE="u+rwX"
-		OTHER_BIT_FILE=",o+rX"
+		# OTHER_BIT_FILE=",o+rX"
 		;;
 
 		"ownero" )
@@ -92,7 +93,7 @@ then
 		"su" )
 		IS_MODE="su"
 		GROUP_BIT_FILE=",g+rX"
-		GROUP_BIT_WRITE=""
+		GROUP_BIT_WRITE=
 		OTHER_BIT_FILE=",o+rX"
 		USER_BIT_FILE="u+rwX"
 		;;
@@ -131,7 +132,7 @@ function detect_system {
 	elif [[ -e "wp-config.php" ]]
 	then
 		IS_TYPE="WordPress"
-		DIRS_WRITE=""
+		DIRS_WRITE=
 		DIRS_WRITE_RECURSIVE="wp-content/blogs.dir/*
 			wp-content/cache
 			wp-content/uploads
@@ -151,7 +152,7 @@ cd ${DIR_SITE}
 detect_system
 echo Configure for ${IS_TYPE} system
 
-if [[ "" != ${CHATTR} ]]
+if [[ 1 = ${DO_CHATTR} && -n ${CHATTR} ]]
 then
 	echo Recursively remove immutable on ${DIR_SITE}
 	${CHATTR} -R -i ${DIR_SITE}
@@ -178,7 +179,7 @@ fi
 echo Enable cgi/sh file execution
 find ${DIR_SITE} -type f \( -name "*.cgi" -o -name "*.fcgi" -o -name "*.sh" -o -name "*.phpcron" -o -name "*.phpsh" \) -exec chmod ${PERM_CGI} {} \;
 
-if [[ "" != ${CHATTR} && "production" = ${IS_MODE} ]]
+if [[ 1 = ${DO_CHATTR} && -n ${CHATTR} && "production" = ${IS_MODE} ]]
 then
 	echo Recursively set immutable on ${DIR_SITE}
 	${CHATTR} -R +i ${DIR_SITE}
@@ -188,7 +189,7 @@ for DIR in ${DIRS_WRITE}
 do
 	if [[ -e ${DIR} ]]
 	then
-		if [[ "" != ${CHATTR} && "production" = ${IS_MODE} ]]
+		if [[ 1 = ${DO_CHATTR} && -n ${CHATTR} && "production" = ${IS_MODE} ]]
 		then
 			echo Remove immutable on ${DIR}
 			${CHATTR} -i ${DIR}
@@ -203,7 +204,7 @@ for DIR in ${DIRS_WRITE_RECURSIVE}
 do
 	if [[ -e ${DIR} ]]
 	then
-		if [[ "" != ${CHATTR} && "production" = ${IS_MODE} ]]
+		if [[ 1 = ${DO_CHATTR} && -n ${CHATTR} && "production" = ${IS_MODE} ]]
 		then
 			echo Recursively remove immutable on ${DIR}
 			${CHATTR} -R -i ${DIR}
@@ -218,7 +219,7 @@ for FILE in ${FILES_WRITE}
 do
 	if [[ -e ${FILE} ]]
 	then
-		if [[ "" != ${CHATTR} && "production" = ${IS_MODE} ]]
+		if [[ 1 = ${DO_CHATTR} && -n ${CHATTR} && "production" = ${IS_MODE} ]]
 		then
 			echo Remove immutable on ${FILE}
 			${CHATTR} -i ${FILE}
