@@ -99,7 +99,7 @@ fi
 
 if [[ -z ${PERMS_MODE} ]]
 then
-	PERMS_MODE="dev"
+	PERMS_MODE="owner"
 else
 	PERMS_MODE="${PERMS_MODE}"
 fi
@@ -360,7 +360,7 @@ function l2l_perms_prepare() {
 function l2l_pull_remote_db() {
 	l2l_display "Creating database dump on ${DOMAIN_NAME}"
 
-	local charset=""
+	local charset=
 	if [[ -n ${DB_UTF8_CONVERT} ]]
 	then
 		local charset="--quote-names --skip-set-charset --default-character-set=latin1"
@@ -483,7 +483,7 @@ function l2l_mysql_local() {
 		local db_user=${DB_USER_LOCAL}
 	fi
 
-	local charset=""
+	local charset=
 	if [[ -n ${DB_UTF8_CONVERT} ]]
 	then
 		local charset="--default-character-set=utf8"
@@ -539,7 +539,7 @@ function l2l_mysql_local_show() {
 
 function l2l_local_db_mods() {
 	local LOCAL_DB_MODS_FILE="DELETE-ME-l2l_local_db_mods"
-	local cmd=""
+	local cmd=
 
 	# by system db mods
 	local count=${#LOCAL_BASE_DB_MODS[@]}
@@ -1409,7 +1409,7 @@ function l2l_site_ilance() {
 	LOCAL_BASE_MODS[(( LOCAL_BASE_MODS_I++ ))]="perl -pi -e 's#${REMOTE_DIR_WWW}#${LOCAL_DIR_WWW}#g' functions/config.php"
 
 	# db mods
-	# LOCAL_BASE_DB_MODS[(( LOCAL_BASE_DB_MODS_I++ ))]=""
+	# LOCAL_BASE_DB_MODS[(( LOCAL_BASE_DB_MODS_I++ ))]=
 
 	# rsync mods
 	RSYNC_SITE_INC_EXC="--include=cache/ --exclude=**/cache/**"
@@ -1516,7 +1516,7 @@ function l2l_site_typo3() {
 	# LOCAL_BASE_MODS[(( LOCAL_BASE_MODS_I++ ))]="perl -pi -e \"s#^(define\('COOKIE_DOMAIN', '${DOMAIN_NAME}'.*$)#// \1#g\" wp-config.php"
 
 	# db mods
-	# LOCAL_BASE_DB_MODS[(( LOCAL_BASE_DB_MODS_I++ ))]=""
+	# LOCAL_BASE_DB_MODS[(( LOCAL_BASE_DB_MODS_I++ ))]=
 	LOCAL_BASE_DB_MODS[(( LOCAL_BASE_DB_MODS_I++ ))]="UPDATE sys_domain SET hidden = 1 WHERE domainName NOT LIKE '%.${DOMAIN_LOCALHOST_BASE}';"
 	LOCAL_BASE_DB_MODS[(( LOCAL_BASE_DB_MODS_I++ ))]="UPDATE sys_domain SET hidden = 0 WHERE domainName LIKE '%.${DOMAIN_LOCALHOST_BASE}';"
 
@@ -1551,7 +1551,7 @@ function l2l_site_wohin() {
 	# LOCAL_BASE_MODS[(( LOCAL_BASE_MODS_I++ ))]="perl -pi -e \"s#^(define\('COOKIE_DOMAIN', '${DOMAIN_NAME}'.*$)#// \1#g\" wp-config.php"
 
 	# db mods
-	# LOCAL_BASE_DB_MODS[(( LOCAL_BASE_DB_MODS_I++ ))]=""
+	# LOCAL_BASE_DB_MODS[(( LOCAL_BASE_DB_MODS_I++ ))]=
 	# LOCAL_BASE_DB_MODS[(( LOCAL_BASE_DB_MODS_I++ ))]="UPDATE sys_domain SET hidden = 1 WHERE domainName NOT LIKE '%.${DOMAIN_LOCALHOST_BASE}';"
 	# LOCAL_BASE_DB_MODS[(( LOCAL_BASE_DB_MODS_I++ ))]="UPDATE sys_domain SET hidden = 0 WHERE domainName LIKE '%.${DOMAIN_LOCALHOST_BASE}';"
 
@@ -1580,13 +1580,13 @@ function l2l_get_config_static {
 
 function l2l_site_static() {
 	IS_TYPE="static"
-	FILE_CONFIG=""
+	FILE_CONFIG=
 
 	# file mods
 	# LOCAL_BASE_MODS[(( LOCAL_BASE_MODS_I++ ))]="perl -pi -e \"s#^(define\('COOKIE_DOMAIN', '${DOMAIN_NAME}'.*$)#// \1#g\" wp-config.php"
 
 	# db mods
-	# LOCAL_BASE_DB_MODS[(( LOCAL_BASE_DB_MODS_I++ ))]=""
+	# LOCAL_BASE_DB_MODS[(( LOCAL_BASE_DB_MODS_I++ ))]=
 	# LOCAL_BASE_DB_MODS[(( LOCAL_BASE_DB_MODS_I++ ))]="UPDATE sys_domain SET hidden = 1 WHERE domainName NOT LIKE '%.${DOMAIN_LOCALHOST_BASE}';"
 	# LOCAL_BASE_DB_MODS[(( LOCAL_BASE_DB_MODS_I++ ))]="UPDATE sys_domain SET hidden = 0 WHERE domainName LIKE '%.${DOMAIN_LOCALHOST_BASE}';"
 
@@ -1597,17 +1597,16 @@ function l2l_site_static() {
 
 function l2l_get_config_phplist {
 	DB_HOST=`grep -P "\bdatabase_host\b" ${FILE_CONFIG}`
-	DB_HOST=`echo ${DB_HOST} | sed -e 's#");.*##g' -e 's#^.*, "##g'`
+	DB_HOST=`echo ${DB_HOST} | sed -e 's#";.*##g' -e 's#^.*"##g'`
 
 	DB_NAME=`grep -P "\bdatabase_name\b" ${FILE_CONFIG}`
-	DB_NAME=`echo ${DB_NAME} | sed -e 's#");.*##g' -e 's#^.*, "##g'`
+	DB_NAME=`echo ${DB_NAME} | sed -e 's#";.*##g' -e 's#^.*"##g'`
 
 	DB_USER=`grep -P "\bdatabase_user\b" ${FILE_CONFIG}`
-	DB_USER=`echo ${DB_USER} | sed -e 's#");.*##g' -e 's#^.*, "##g'`
+	DB_USER=`echo ${DB_USER} | sed -e 's#";.*##g' -e 's#^.*"##g'`
 
 	DB_PW=`grep -P "\bdatabase_password\b" ${FILE_CONFIG}`
-	DB_PW=`echo ${DB_PW} | sed -e 's#");.*##g' -e 's#^.*, "##g'`
-	DB_PW=`echo ${DB_PW} | sed -e 's#(#\\\(#g' -e 's#)#\\\)#g'`
+	DB_PW=`echo ${DB_PW} | sed -e "s#';.*##g" -e "s#^.*'##g"`
 
 	return
 }
@@ -1621,7 +1620,7 @@ function l2l_site_phplist() {
 	# LOCAL_BASE_MODS[(( LOCAL_BASE_MODS_I++ ))]="perl -pi -e \"s#^(define\('COOKIE_DOMAIN', '${DOMAIN_NAME}'.*$)#// \1#g\" wp-config.php"
 
 	# db mods
-	# LOCAL_BASE_DB_MODS[(( LOCAL_BASE_DB_MODS_I++ ))]=""
+	# LOCAL_BASE_DB_MODS[(( LOCAL_BASE_DB_MODS_I++ ))]=
 	# LOCAL_BASE_DB_MODS[(( LOCAL_BASE_DB_MODS_I++ ))]="UPDATE sys_domain SET hidden = 1 WHERE domainName NOT LIKE '%.${DOMAIN_LOCALHOST_BASE}';"
 	# LOCAL_BASE_DB_MODS[(( LOCAL_BASE_DB_MODS_I++ ))]="UPDATE sys_domain SET hidden = 0 WHERE domainName LIKE '%.${DOMAIN_LOCALHOST_BASE}';"
 
@@ -1661,10 +1660,10 @@ function l2l_site_oscommerce() {
 	LOCAL_BASE_MODS[(( LOCAL_BASE_MODS_I++ ))]="perl -pi -e \"s#'ENABLE_SSL_CATALOG', 'true'#'ENABLE_SSL_CATALOG', 'false'#g\" ${FILE_CONFIG} admin/${FILE_CONFIG}"
 
 	# db mods
-	LOCAL_BASE_DB_MODS[(( LOCAL_BASE_DB_MODS_I++ ))]=""
+	LOCAL_BASE_DB_MODS[(( LOCAL_BASE_DB_MODS_I++ ))]=
 
 	# rsync mods
-	RSYNC_SITE_INC_EXC=""
+	RSYNC_SITE_INC_EXC=
 }
 
 
@@ -1696,7 +1695,7 @@ function l2l_site_xtcommerce() {
 	# LOCAL_BASE_MODS[(( LOCAL_BASE_MODS_I++ ))]="perl -pi -e \"s#^(define\('COOKIE_DOMAIN', '${DOMAIN_NAME}'.*$)#// \1#g\" wp-config.php"
 
 	# db mods
-	# LOCAL_BASE_DB_MODS[(( LOCAL_BASE_DB_MODS_I++ ))]=""
+	# LOCAL_BASE_DB_MODS[(( LOCAL_BASE_DB_MODS_I++ ))]=
 	# LOCAL_BASE_DB_MODS[(( LOCAL_BASE_DB_MODS_I++ ))]="UPDATE sys_domain SET hidden = 1 WHERE domainName NOT LIKE '%.${DOMAIN_LOCALHOST_BASE}';"
 	# LOCAL_BASE_DB_MODS[(( LOCAL_BASE_DB_MODS_I++ ))]="UPDATE sys_domain SET hidden = 0 WHERE domainName LIKE '%.${DOMAIN_LOCALHOST_BASE}';"
 
