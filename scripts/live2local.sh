@@ -81,7 +81,7 @@ else
 		;;
 
 		* )
-		echo "${HOST_SERVER} is not defined"
+		l2l_display "${HOST_SERVER} is not defined"
 		exit
 		;;
 	esac
@@ -431,6 +431,11 @@ function l2l_pull_remote_rm() {
 
 
 function l2l_local_import_db() {
+	if [[ "static" == ${IS_TYPE} ]]
+	then
+		return
+	fi
+
 	l2l_display "Updating local database"
 
 	gunzip --force ${FILE_DB_GZ}
@@ -538,6 +543,11 @@ function l2l_mysql_local_show() {
 
 
 function l2l_local_db_mods() {
+	if [[ "static" == ${IS_TYPE} ]]
+	then
+		return
+	fi
+
 	local LOCAL_DB_MODS_FILE="DELETE-ME-l2l_local_db_mods"
 	local cmd=
 
@@ -573,11 +583,11 @@ function l2l_local_db_mods() {
 	then
 		l2l_display "Perform local database modifications"
 
-		l2l_mysql_local ${LOCAL_DB_MODS_FILE}
-
 		echo
 		cat ${LOCAL_DB_MODS_FILE}
 		echo
+
+		l2l_mysql_local ${LOCAL_DB_MODS_FILE}
 
 		rm ${LOCAL_DB_MODS_FILE}
 	else
@@ -663,11 +673,11 @@ function l2l_local_media_mods() {
 	then
 		l2l_display "Perform local website modifications"
 
-		sh ${LOCAL_MODS_FILE}
-
 		echo
 		cat ${LOCAL_MODS_FILE}
 		echo
+
+		sh ${LOCAL_MODS_FILE}
 
 		rm ${LOCAL_MODS_FILE}
 	else
@@ -726,32 +736,29 @@ function l2l_config_push() {
 function l2l_do_sync() {
 	case "${1}" in
 		"rsync" )
-		echo "${CMD_RSYNC} ${RSYNC_OPTIONS} ${RSYNC_COMMON_INC_EXC} ${RSYNC_SITE_INC_EXC} ${RSYNC_MODS} ${LOCAL_DIR_WWW}/. ${REMOTE_SERVER}:${REMOTE_DIR_WWW}/*"
-		echo
+		l2l_display "${CMD_RSYNC} ${RSYNC_OPTIONS} ${RSYNC_COMMON_INC_EXC} ${RSYNC_SITE_INC_EXC} ${RSYNC_MODS} ${LOCAL_DIR_WWW}/. ${REMOTE_SERVER}:${REMOTE_DIR_WWW}/*"
 		exit
 		;;
 
 		"scp" )
-		echo "${CMD_SCP} ${SCP_OPTIONS} ${SCP_MODS} ${LOCAL_DIR_WWW}/. ${REMOTE_SERVER}:${REMOTE_DIR_WWW}/*"
-		echo
+		l2l_display "${CMD_SCP} ${SCP_OPTIONS} ${SCP_MODS} ${LOCAL_DIR_WWW}/. ${REMOTE_SERVER}:${REMOTE_DIR_WWW}/*"
 		exit
 		;;
 
 		"site" )
-		echo "${LOCAL_DIR_WWW}"
-		echo "${HTTP_DOMAIN_LOCALHOST}:${APACHE_PORT}"
-		echo
+		l2l_display "${LOCAL_DIR_WWW}"
+		l2l_display "${HTTP_DOMAIN_LOCALHOST}:${APACHE_PORT}"
 		exit
 		;;
 
 		"ssh" )
-		echo "ssh ${REMOTE_SERVER}"
-		echo
+		l2l_display "ssh ${REMOTE_SERVER}"
 		exit
 		;;
 
 		"access" )
 		cat ${LOCAL_FILE_CONFIG}
+		echo
 		exit
 		;;
 
@@ -790,6 +797,12 @@ function l2l_do_sync() {
 		;;
 
 		"db" )
+		if [[ "static" == ${IS_TYPE} ]]
+		then
+			l2l_display "Static website - No DB operations"
+			return
+		fi
+
 		if [[ -z ${2} ]]
 		then
 			l2l_intro
@@ -856,6 +869,12 @@ function l2l_sudo_session() {
 
 
 function l2l_do_db() {
+	if [[ "static" == ${IS_TYPE} ]]
+	then
+		l2l_display "Static website - No DB operations"
+		return
+	fi
+
 	# not possible to db export/import via FTP
 	if [[ ! -z ${USE_FTP} ]]
 	then
@@ -876,9 +895,9 @@ function l2l_do_db() {
 
 
 function l2l_do_media() {
-	if [[ -n ${FILE_CONFIG_OVERWRITE_DENY} ]]
+	if [[ -n ${FILE_CONFIG_OVERWRITE_DENY} && "static" != ${IS_TYPE} ]]
 	then
-		l2l_display "Warning ${FILE_CONFIG} is excluded from update"
+		l2l_display "Warning '${FILE_CONFIG}' is excluded from update"
 		RSYNC_SITE_INC_EXC="${RSYNC_SITE_INC_EXC} --exclude=${FILE_CONFIG}"
 	fi
 
@@ -899,6 +918,7 @@ function l2l_do_media() {
 
 
 function l2l_display() {
+	echo
 	echo ${1}
 	echo
 }
@@ -906,10 +926,10 @@ function l2l_display() {
 
 function l2l_site_common() {
 	# TODO push search/replace to vars, then create mods based upon IS_PUSH
-	LOCAL_BASE_MODS[(( LOCAL_BASE_MODS_I++ ))]="perl -pi -e 's/^(AddHandler fcgid-script .php)/# \1/g' .htaccess"
+	# LOCAL_BASE_MODS[(( LOCAL_BASE_MODS_I++ ))]="perl -pi -e 's/^(AddHandler fcgid-script .php)/# \1/g' .htaccess"
 	LOCAL_BASE_MODS[(( LOCAL_BASE_MODS_I++ ))]="perl -pi -e 's#${DOMAIN_NAME}#${DOMAIN_LOCALHOST}#g' .htaccess"
 
-	if [[ ${DB_LOCALHOST} != ${DB_HOST} ]]
+	if [[ ${DB_LOCALHOST} != ${DB_HOST} && "static" != ${IS_TYPE} ]]
 	then
 		LOCAL_BASE_MODS[(( LOCAL_BASE_MODS_I++ ))]="perl -pi -e 's#${DB_HOST}#${DB_LOCALHOST}#g' ${FILE_CONFIG}"
 	fi
@@ -946,8 +966,13 @@ function l2l_access_load() {
 function l2l_access_create() {
 	l2l_access_create_document_root
 	l2l_cd
-	l2l_access_create_config_file
-	l2l_access_create_database_user
+
+	if [[ "static" != ${IS_TYPE} ]]
+	then
+		l2l_access_create_config_file
+		l2l_access_create_database_user
+	fi
+
 	l2l_access_create_hosts
 	l2l_access_create_vhost
 	
@@ -960,7 +985,12 @@ function l2l_access_create() {
 function l2l_remove_all() {
 	l2l_remove_document_root
 	l2l_remove_config_file
-	l2l_remove_database_user
+
+	if [[ "static" != ${IS_TYPE} ]]
+	then
+		l2l_remove_database_user
+	fi
+
 	l2l_remove_hosts
 	l2l_remove_vhost
 	
@@ -1731,6 +1761,7 @@ function l2l_reset {
 	unset DB_NAME
 	unset DB_PW
 	unset DB_USER
+	unset DEV_USER
 	unset DOMAIN_BASE
 	unset DOMAIN_LOCALHOST
 	unset DOMAIN_NAME
