@@ -287,7 +287,11 @@ else
 	CMD_FTP_PUSH=`which ncftpput`
 fi
 
-FILE_CONFIG=
+if [[ -z ${FILE_CONFIG} ]]
+then
+	FILE_CONFIG=
+fi
+
 FILE_DB="${DOMAIN_BASE}.sql"
 FILE_DB_GZ="${FILE_DB}.gz"
 FTP_OPTIONS="-F -R -v -z"
@@ -896,7 +900,7 @@ function l2l_do_db() {
 
 function l2l_do_media() {
 	if [[ -n ${FILE_CONFIG_OVERWRITE_DENY} && "static" != ${IS_TYPE} ]]
-	then
+ 	then
 		l2l_display "Warning '${FILE_CONFIG}' is excluded from update"
 		RSYNC_SITE_INC_EXC="${RSYNC_SITE_INC_EXC} --exclude=${FILE_CONFIG}"
 	fi
@@ -988,7 +992,7 @@ function l2l_remove_all() {
 
 	if [[ "static" != ${IS_TYPE} ]]
 	then
-		l2l_remove_database_user
+	 	l2l_remove_database_user
 	fi
 
 	l2l_remove_hosts
@@ -1178,6 +1182,10 @@ function l2l_access_create_config_file() {
 
 			"oscommerce" )
 			l2l_get_config_oscommerce
+			;;
+
+			"openx" )
+			l2l_get_config_openx
 			;;
 
 			"phplist" )
@@ -1611,6 +1619,43 @@ function l2l_get_config_static {
 function l2l_site_static() {
 	IS_TYPE="static"
 	FILE_CONFIG=
+
+	# file mods
+	# LOCAL_BASE_MODS[(( LOCAL_BASE_MODS_I++ ))]="perl -pi -e \"s#^(define\('COOKIE_DOMAIN', '${DOMAIN_NAME}'.*$)#// \1#g\" wp-config.php"
+
+	# db mods
+	# LOCAL_BASE_DB_MODS[(( LOCAL_BASE_DB_MODS_I++ ))]=
+	# LOCAL_BASE_DB_MODS[(( LOCAL_BASE_DB_MODS_I++ ))]="UPDATE sys_domain SET hidden = 1 WHERE domainName NOT LIKE '%.${DOMAIN_LOCALHOST_BASE}';"
+	# LOCAL_BASE_DB_MODS[(( LOCAL_BASE_DB_MODS_I++ ))]="UPDATE sys_domain SET hidden = 0 WHERE domainName LIKE '%.${DOMAIN_LOCALHOST_BASE}';"
+
+	# rsync mods
+	# RSYNC_SITE_INC_EXC="--include=wohintemp/ --exclude=**/wohintemp/** --include=_temp_/ --exclude=**/_temp_/** --exclude=wohinconf/temp_CACHED_*.php --exclude=wohinconf/deprecation_*.log"
+}
+
+
+function l2l_get_config_openx {
+	DB_HOST=`grep -P -m 1 "\bhost\b" ${FILE_CONFIG}`
+	DB_HOST=`echo ${DB_HOST} | sed -e 's#"\?$##g' -e 's#^.*="\?##g'`
+
+	DB_NAME=`grep -P -m 1 "\bname\b" ${FILE_CONFIG}`
+	DB_NAME=`echo ${DB_NAME} | sed -e 's#"\?$##g' -e 's#^.*="\?##g'`
+
+	DB_USER=`grep -P -m 1 "\busername\b" ${FILE_CONFIG}`
+	DB_USER=`echo ${DB_USER} | sed -e 's#"\?$##g' -e 's#^.*="\?##g'`
+
+	DB_PW=`grep -P -m 1 "\bpassword\b" ${FILE_CONFIG}`
+	DB_PW=`echo ${DB_PW} | sed -e 's#"\?$##g' -e 's#^.*="\?##g'`
+
+	return
+}
+
+
+function l2l_site_openx() {
+	IS_TYPE="openx"
+	if [[ -z ${FILE_CONFIG} ]]
+	then
+		FILE_CONFIG="openx/var/www.${DOMAIN_NAME}.conf.php"
+	fi
 
 	# file mods
 	# LOCAL_BASE_MODS[(( LOCAL_BASE_MODS_I++ ))]="perl -pi -e \"s#^(define\('COOKIE_DOMAIN', '${DOMAIN_NAME}'.*$)#// \1#g\" wp-config.php"
