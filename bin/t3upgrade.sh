@@ -88,14 +88,14 @@ then
 	done
 
 	l2l_cd
+	LOCAL_MODS[(( LOCAL_MODS_I++ ))]="rm -f typo3conf/temp_CACHED_*.php"
+	LOCAL_MODS[(( LOCAL_MODS_I++ ))]="rm -rf typo3temp/*"
 	l2l_local_media_mods
-	l2l_perms_restore
+	# l2l_perms_restore
 
 	mv ${DIR} ${BACKUP_DIR}/.
 
-	echo "Backups in ${BACKUP_DIR}"
+	l2l_display "Backups in ${BACKUP_DIR}"
 else
-	echo "${FILE} unable to be downloaded. TYPO3 not upgraded."
+	l2l_display "${FILE} unable to be downloaded. TYPO3 not upgraded."
 fi
-
-echo

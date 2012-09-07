@@ -17,7 +17,7 @@ TYPO3_VERSION="4.5.16"
 # DOMAIN_BASE="simple"
 
 # Don't include remote configuration file in pull to local
-# FILE_CONFIG_OVERWRITE_DENY=1
+# FILE_CONFIG_NO_OVERWRITE=1
 
 # Don't create local directory, virtual host, /etc/hosts entry or database with
 # user

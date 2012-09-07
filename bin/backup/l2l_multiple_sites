@@ -9,7 +9,7 @@
 # example.net is running MySQL 4.0 on CLI so, DB_FULL_DUMP is true to
 # prevent mysqldump errors on ignore-table variables
 DB_FULL_DUMP=1
-FILE_CONFIG_OVERWRITE_DENY=1
+FILE_CONFIG_NO_OVERWRITE=1
 NO_CREATE=1
 REMOTE_SERVER="dev@example.net"
 SHOW_COMMANDS=1
@@ -30,7 +30,6 @@ l2l_do_sync ${@}
 l2l_reset
 DOMAIN_NAME="example.net"
 REMOTE_DIR_WWW="~/typo3_examplenet"
-source ~/.skel/scripts/live2local.sh
 l2l_site_typo3
 l2l_do_sync ${@}
 
@@ -38,6 +37,5 @@ l2l_do_sync ${@}
 l2l_reset
 DOMAIN_NAME="example.com"
 REMOTE_DIR_WWW="~/typo3_example"
-source ~/.skel/scripts/live2local.sh
 l2l_site_typo3
 l2l_do_sync ${@}

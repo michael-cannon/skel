@@ -1,7 +1,9 @@
 #!/bin/bash
 
-# Function helpers for pulling live websites to localhost
+# Function helpers for migrating websites between remote servers or localhosts
 #
+# @author Michael Cannon <michael@typo3vagabond.com>
+
 # Assumptions
 # * Password-less access via SSH is possible to domain account
 # * Using MacPorts or like and including vhosts via DIR_VHOST
@@ -10,6 +12,7 @@
 # * Web group is www via WWW_GROUP
 # * Web user is USER via WWW_USER
 # * MySQL is running on local and remote systems
+# * For FTP operations ncftp is installed
 #
 # Create a script with the following '## ' prepends to use.
 #
@@ -40,7 +43,7 @@
 ## REMOTE_SERVER="user@dev.example.com"
 ## REMOTE_DIR_WWW="/var/www/dev.example.com"
 ## RSYNC_MODS="--include=fileadmin/MediaContent/ --exclude=**/fileadmin/MediaContent/**"
-## TYPO3_VERSION="4.5.15"
+## TYPO3_VERSION="4.5.19"
 ## WWW_GROUP="www"
 ## WWW_USER="michael"
 ## # no ssh possible, do media pull via FTP
@@ -52,272 +55,585 @@
 ## source ~/.skel/scripts/live2local.sh
 ##
 ## # optional type of site
-## [l2l_site_ilance|l2l_site_typo3|l2l_site_wordpress]
+## [l2l_site_static|l2l_site_ilance|l2l_site_typo3|l2l_site_wordpress|l2l_site_phplist|l2l_site_openx]
 ## # you can specify database or media only transfers if desired [db|media|setup|ssh]
 ## l2l_do_sync ${@}
 ## l2l_typo3_source ${TYPO3_VERSION} ${@}
-#
-# @author Michael Cannon <michael@typo3vagabond.com>
 
-# TODO
-# Enable interactive password handling for non-ssh keyed systems
 
-# helps define parameters for the server being used
-# could do some auto-detection, but not
-if [[ -z ${HOST_SERVER} ]]
-then
-	APACHE_CMD=`which apachectl`
-	DIR_VHOST="/opt/local/apache2/conf/vhosts"
-else
-	case "${HOST_SERVER}" in
-		"42" )
-		APACHE_CMD="`which service` apache2"
-		APACHE_PORT="81"
-		DIR_VHOST="/etc/apache2/sites-enabled"
-		DIR_WWW="/var/www"
-		DOMAIN_LOCALHOST_BASE='42.in2code.de'
-		WWW_GROUP="www-data"
-		# WWW_USER="www-data"
+function l2l_do_sync() {
+	l2l_settings_site
+
+	case "${1}" in
+		"rsync" )
+		l2l_display "${CMD_RSYNC} ${RSYNC_OPTIONS} ${RSYNC_COMMON_INC_EXC} ${RSYNC_SITE_INC_EXC} ${RSYNC_MODS} ${LOCAL_DIR_WWW}/. ${REMOTE_SERVER}:${REMOTE_DIR_WWW}/*"
+		exit
 		;;
 
-		* )
-		l2l_display "${HOST_SERVER} is not defined"
+		"scp" )
+		l2l_display "${CMD_SCP} ${SCP_OPTIONS} ${SCP_MODS} ${LOCAL_DIR_WWW}/. ${REMOTE_SERVER}:${REMOTE_DIR_WWW}/*"
+		exit
+		;;
+
+		"site" )
+		l2l_display "${LOCAL_DIR_WWW}"
+		l2l_display "${HTTP_DOMAIN_LOCALHOST}:${APACHE_PORT}"
+		exit
+		;;
+
+		"ssh" )
+		l2l_display "ssh ${REMOTE_SERVER}"
+		exit
+		;;
+
+		"access" )
+		l2l_display ${LOCAL_FILE_CONFIG}
+		cat ${LOCAL_FILE_CONFIG}
+		echo
+		exit
+		;;
+
+		"setup" )
+		l2l_access_create
 		exit
 		;;
 	esac
-fi
 
-if [[ -z ${APACHE_PORT} ]]
-then
-	APACHE_PORT="80"
-fi
+	l2l_cd
 
-if [[ -z ${FILE_CONFIG_OVERWRITE_DENY} ]]
-then
-	FILE_CONFIG_OVERWRITE_DENY=
-fi
-
-if [[ -z ${PERMS_MODE} ]]
-then
-	PERMS_MODE="owner"
-else
-	PERMS_MODE="${PERMS_MODE}"
-fi
-
-if [[ -z ${BIN_MYSQL} ]]
-then
-	BIN_MYSQL=
-else
-	BIN_MYSQL="${BIN_MYSQL}/"
-fi
-
-if [[ -z ${DOMAIN_BASE} ]]
-then
-	# pull off unneeded www, then strip out country code and tld
-	DOMAIN_BASE=`echo ${DOMAIN_NAME} | sed -e "s#^www\.##g" -e "s#\.[a-zA-Z]\{2\}\\$##g" -e "s#\.[a-zA-Z]\{2,4\}\\$##g"`
-fi
-
-if [[ -z ${DOMAIN_USER} ]]
-then
-	DOMAIN_USER=`echo ${DOMAIN_NAME} | sed -e "s#^www\.##g" | awk -F "." '{print $1}'`
-fi
-
-if [[ -z ${DOMAIN_LOCALHOST_BASE} ]]
-then
-	DOMAIN_LOCALHOST_BASE="localhost"
-fi
-
-if [[ -z ${DOMAIN_LOCALHOST} ]]
-then
-	DOMAIN_LOCALHOST="${DOMAIN_BASE}.${DOMAIN_LOCALHOST_BASE}"
-fi
-
-if [[ -z ${DIR_HOME} ]]
-then
-	DIR_HOME=${HOME}
-fi
-
-if [[ -z ${SITES} ]]
-then
-	SITES="Sites"
-fi
-
-if [[ -z ${LOCAL_DIR_WWW} && -z ${DIR_WWW} ]]
-then
-	LOCAL_DIR_WWW="${DIR_HOME}/${SITES}/${DOMAIN_BASE}"
-elif [[ -z ${LOCAL_DIR_WWW} && -n ${DIR_WWW} ]]
-then
-	LOCAL_DIR_WWW="${DIR_WWW}/${DOMAIN_BASE}"
-fi
-
-if [[ -n ${LOCAL_DIR_USE_ROOT} ]]
-then
-	LOCAL_DIR_WWW="/${SITES}/${DOMAIN_BASE}"
-fi
-
-if [[ -z ${DB_HOST} ]]
-then
-	DB_HOST="localhost"
-fi
-
-if [[ -z ${DB_LOCALHOST} ]]
-then
-	DB_LOCALHOST="localhost"
-fi
-
-if [[ -z ${DB_LOCALHOST_IP} ]]
-then
-	DB_LOCALHOST_IP="127.0.0.1"
-fi
-
-if [[ -z ${DB_FULL_DUMP} ]]
-then
-	DB_FULL_DUMP=
-fi
-
-if [[ -z ${REMOTE_SERVER} ]]
-then
-	REMOTE_SERVER="${DOMAIN_USER}@${DOMAIN_NAME}"
-fi
-
-if [[ -z ${REMOTE_SSH} ]]
-then
-	REMOTE_SSH="ssh -t ${REMOTE_SERVER}"
-fi
-
-if [[ -z ${REMOTE_DIR_WWW} ]]
-then
-	REMOTE_DIR_WWW="/home/${DOMAIN_USER}/public_html"
-fi
-
-if [[ -z ${RSYNC_MODS} ]]
-then
-	RSYNC_MODS=
-fi
-
-if [[ -z ${SCP_MODS} ]]
-then
-	SCP_MODS=
-fi
-
-if [[ -z ${WWW_GROUP} ]]
-then
-	WWW_GROUP="www"
-fi
-
-if [[ -z ${WWW_USER} ]]
-then
-	WWW_USER=${USER}
-fi
-
-if [[ -z ${DEV_GROUP} ]]
-then
-	DEV_GROUP="staff"
-fi
-
-if [[ -z ${DEV_USER} ]]
-then
-	DEV_USER=${WWW_USER}
-fi
-
-# Ex: --ignore-table='usr_web0_3'.cache_hash --ignore-table='usr_web0_3'.cache_imagesizes
-if [[ -z ${DB_IGNORE} ]]
-then
-	DB_IGNORE=
-fi
-
-if [[ -z ${DB_UTF8_CONVERT} ]]
-then
-	DB_UTF8_CONVERT=
-fi
-
-# quick way to turn off create routines
-if [[ -n ${NO_CREATE} ]]
-then
-	CONFIG_NO_CREATE=1
-	DB_NO_CREATE=1
-	HOSTS_NO_CREATE=1
-	VHOST_NO_CREATE=1
-fi
-
-if [[ -z ${SKIP_PERMS} ]]
-then
-	SKIP_PERMS=
-fi
-
-# don't create config file
-if [[ -z ${CONFIG_NO_CREATE} ]]
-then
-	CONFIG_NO_CREATE=
-fi
-
-# don't create database or user
-if [[ -z ${DB_NO_CREATE} ]]
-then
-	DB_NO_CREATE=
-fi
-
-# don't create hosts entry
-if [[ -z ${HOSTS_NO_CREATE} ]]
-then
-	HOSTS_NO_CREATE=
-fi
-
-# don't create vhost entry
-if [[ -z ${VHOST_NO_CREATE} ]]
-then
-	VHOST_NO_CREATE=
-fi
-
-if [[ -z ${USE_FTP} ]]
-then
-	CMD_SCP=`which scp`
-	CMD_RSYNC=
-	CMD_FTP_PULL=
-	CMD_FTP_PUSH=
-
-	if [[ -z ${USE_SCP} ]]
+	# TODO allow short/long options to be passed in
+	# let the working environment be configured and then do actual work
+	if [[ -n ${2} ]]
 	then
-		CMD_RSYNC=`which rsync`
+		case "${2}" in
+			"push" )
+			l2l_config_push
+			;;
+		esac
 	fi
-else
-	CMD_SCP=
-	CMD_RSYNC=
-	CMD_FTP_PULL=`which ncftpget`
-	CMD_FTP_PUSH=`which ncftpput`
-fi
+	
+	l2l_access_load
 
-if [[ -z ${FILE_CONFIG} ]]
-then
-	FILE_CONFIG=
-fi
+	case "${1}" in
+		"ftp" )
+		if [[ -n ${2} ]]
+		then
+			${CMD_FTP_PULL} ${FTP_OPTIONS} ${FTP_REMOTE_SERVER}${REMOTE_DIR_WWW}/${2} .
+		else
+			echo "ftp ${FTP_REMOTE_SERVER}"
+			echo
+			echo "${CMD_FTP_PULL} ${FTP_OPTIONS} ${FTP_REMOTE_SERVER}${REMOTE_DIR_WWW}"
+			echo
+		fi
+		;;
 
-FILE_DB="${DOMAIN_BASE}.sql"
-FILE_DB_GZ="${FILE_DB}.gz"
-FTP_OPTIONS="-F -R -v -z"
-FTP_REMOTE_SERVER="ftp://${REMOTE_SERVER}"
-HTTP_PROTOCOL="http://"
-HTTP_DOMAIN_LOCALHOST="${HTTP_PROTOCOL}${DOMAIN_LOCALHOST}"
-HTTP_DOMAIN_NAME="${HTTP_PROTOCOL}${DOMAIN_NAME}"
-IS_PUSH=
-IS_TYPE=
-LOCAL_BASE_DB_MODS_I=1
-LOCAL_BASE_MODS_I=1
-LOCAL_DIR_CONFIG="${DIR_HOME}/.ssh/l2l_config"
-LOCAL_FILE_CONFIG="${LOCAL_DIR_CONFIG}/${DOMAIN_NAME}"
-REMOTE_FILE_DB="${REMOTE_DIR_WWW}/${FILE_DB}"
-REMOTE_FILE_DB_GZ="${REMOTE_DIR_WWW}/${FILE_DB_GZ}"
-RSYNC_OPTIONS="-Pahz -e ssh --stats"
-RSYNC_SITE_INC_EXC=
-SCP_OPTIONS="-r -p -C"
+		"db" )
+		if [[ "static" == ${IS_TYPE} ]]
+		then
+			l2l_display "Static website - No DB operations"
+			return
+		fi
 
-WHICH_SUDO=`which sudo`
-if [[ ${WHICH_SUDO} && "No *" != ${WHICH_SUDO} ]]
-then
-	BIN_SUDO=sudo
-else
-	BIN_SUDO=
-fi
+		if [[ -z ${2} ]]
+		then
+			l2l_intro
+			l2l_site_common
+			l2l_do_db
+			l2l_finish
+		elif [[ 'pull' = ${2} ]]
+		then
+			l2l_pull_remote_db
+			exit
+		elif [[ 'show' = ${2} ]]
+		then
+			l2l_mysql_local_show
+			echo
+			DB_NO_CREATE=1
+			SHOW_COMMANDS=1
+			l2l_access_create_database_user
+			l2l_remove_database_user
+			echo
+			l2l_pull_remote_db
+			echo
+			exit
+		elif [[ 'convert' = ${2} ]]
+		then
+			l2l_mysql_convert_utf8 ${3}
+		else
+			# load locally provided database
+			l2l_mysql_local ${2}
+		fi
+		;;
+
+		"media" )
+		l2l_intro
+		l2l_site_common
+		l2l_do_media
+		l2l_finish
+		;;
+
+		"remove" )
+		cd ${DIR_HOME}
+		l2l_remove_all
+		;;
+
+		* )
+		l2l_intro
+		l2l_site_common
+		l2l_sudo_session
+		l2l_do_db
+		l2l_do_media
+		l2l_finish
+		;;
+
+	esac
+}
+
+
+function l2l_run_once {
+	l2l_reset_type
+	l2l_settings_server
+	
+	WHICH_SUDO=`which sudo`
+	if [[ ${WHICH_SUDO} && "No *" != ${WHICH_SUDO} ]]
+	then
+		BIN_SUDO=sudo
+	else
+		BIN_SUDO=
+	fi
+}
+
+
+function l2l_settings_server {
+	# helps define parameters for the server being used
+	# could do some auto-detection, but not
+	
+	if [[ -z ${HOST_SERVER} ]]
+	then
+		# TODO auto-detect environment
+		# cpanel - /scripts/restartsrv_httpd
+		# assumes MacPorts for now
+		# macports - /opt/local/apache2/bin/apachectl
+	
+		APACHE_CMD=`which apachectl`
+		DIR_VHOST="/opt/local/apache2/conf/vhosts"
+		DEV_GROUP="staff"
+		SITES="Sites"
+
+		if [[ -z ${APACHE_PORT} ]]
+		then
+			APACHE_PORT=80
+		fi
+	else
+		case "${HOST_SERVER}" in
+			"42" )
+			APACHE_CMD="`which service` apache2"
+			APACHE_PORT=81
+			DIR_VHOST="/etc/apache2/sites-enabled"
+			DIR_WWW="/var/www"
+			DOMAIN_LOCALHOST_BASE="42.in2code.de"
+			WWW_GROUP="www-data"
+			# WWW_USER="www-data"
+			;;
+	
+			* )
+			l2l_display "${HOST_SERVER} is not defined"
+			exit
+			;;
+		esac
+	fi
+}
+	
+	
+function l2l_settings_db {
+	if [[ -z ${BIN_MYSQL} ]]
+	then
+		BIN_MYSQL=
+	else
+		BIN_MYSQL="${BIN_MYSQL}/"
+	fi
+
+	if [[ -z ${DB_HOST} ]]
+	then
+		DB_HOST="localhost"
+	fi
+	
+	if [[ -z ${DB_LOCALHOST} ]]
+	then
+		DB_LOCALHOST="localhost"
+	fi
+	
+	if [[ -z ${DB_LOCALHOST_IP} ]]
+	then
+		DB_LOCALHOST_IP="127.0.0.1"
+	fi
+	
+	if [[ -z ${DB_FULL_DUMP} ]]
+	then
+		DB_FULL_DUMP=
+	fi
+	
+	# Ex: --ignore-table='usr_web0_3'.cache_hash --ignore-table='usr_web0_3'.cache_imagesizes
+	if [[ -z ${DB_IGNORE} ]]
+	then
+		DB_IGNORE=
+	fi
+	
+	if [[ -z ${DB_UTF8_CONVERT} ]]
+	then
+		DB_UTF8_CONVERT=
+	fi
+
+	FILE_DB="${DOMAIN_BASE}.sql"
+}
+
+
+function l2l_settings_no {
+	# quick way to turn off create routines
+	if [[ -n ${NO_CREATE} ]]
+	then
+		CONFIG_NO_CREATE=1
+		DB_NO_CREATE=1
+		HOSTS_NO_CREATE=1
+		VHOST_NO_CREATE=1
+	fi
+	
+	# don't create config file
+	if [[ -z ${CONFIG_NO_CREATE} ]]
+	then
+		CONFIG_NO_CREATE=
+	fi
+	
+	# don't create database or user
+	if [[ -z ${DB_NO_CREATE} ]]
+	then
+		DB_NO_CREATE=
+	fi
+	
+	# don't create hosts entry
+	if [[ -z ${HOSTS_NO_CREATE} ]]
+	then
+		HOSTS_NO_CREATE=
+	fi
+	
+	# don't create vhost entry
+	if [[ -z ${VHOST_NO_CREATE} ]]
+	then
+		VHOST_NO_CREATE=
+	fi
+	
+	if [[ -z ${FILE_CONFIG_NO_OVERWRITE} ]]
+	then
+		FILE_CONFIG_NO_OVERWRITE=
+	fi
+	
+	if [[ -z ${SKIP_PERMS} ]]
+	then
+		SKIP_PERMS=
+	fi
+}
+
+
+function l2l_settings_domain {
+	if [[ -z ${DOMAIN_NAME} ]]
+	then
+		l2l_display "DOMAIN_NAME is required. Ex: example.com"
+		exit
+	fi
+
+	if [[ -z ${DOMAIN_BASE} ]]
+	then
+		# pull off unneeded www, then strip out country code and tld
+		DOMAIN_BASE=`echo ${DOMAIN_NAME} | sed -e "s#^www\.##g" -e "s#\.[a-zA-Z]\{2\}\\$##g" -e "s#\.[a-zA-Z]\{2,4\}\\$##g"`
+	fi
+	
+	if [[ -z ${DOMAIN_USER} ]]
+	then
+		DOMAIN_USER=`echo ${DOMAIN_NAME} | sed -e "s#^www\.##g" | awk -F "." '{print $1}'`
+	fi
+	
+	if [[ -z ${DOMAIN_LOCALHOST_BASE} ]]
+	then
+		DOMAIN_LOCALHOST_BASE="localhost"
+	fi
+	
+	if [[ -z ${DOMAIN_LOCALHOST} ]]
+	then
+		DOMAIN_LOCALHOST="${DOMAIN_BASE}.${DOMAIN_LOCALHOST_BASE}"
+	fi
+	
+	if [[ -z ${HTTP_PROTOCOL} ]]
+	then
+		HTTP_PROTOCOL="http://"
+	fi
+
+	if [[ -z ${HTTP_PROTOCOL_LOCAL} ]]
+	then
+		HTTP_PROTOCOL_LOCAL=${HTTP_PROTOCOL}
+	fi
+
+	HTTP_DOMAIN_LOCALHOST="${HTTP_PROTOCOL_LOCAL}${DOMAIN_LOCALHOST}"
+	HTTP_DOMAIN_NAME="${HTTP_PROTOCOL}${DOMAIN_NAME}"
+}
+
+
+function l2l_settings_site {
+	l2l_settings_domain
+	l2l_settings_db
+	l2l_settings_path
+	l2l_settings_perm
+	l2l_settings_remote
+	l2l_settings_transfer
+	l2l_settings_no
+
+	if [[ -z ${FILE_CONFIG} ]]
+	then
+		FILE_CONFIG=
+	fi
+	
+	if [[ -z ${IS_PUSH} ]]
+	then
+		IS_PUSH=
+	fi
+
+	if [[ -n ${IS_TYPE} ]]
+	then
+		LOCAL_FILE_CONFIG="${LOCAL_FILE_CONFIG}-${IS_TYPE}"
+		FILE_DB="${DOMAIN_BASE}-${IS_TYPE}.sql"
+	fi
+
+	FILE_DB_GZ="${FILE_DB}.gz"
+	REMOTE_FILE_DB="${REMOTE_DIR_WWW}/${FILE_DB}"
+	REMOTE_FILE_DB_GZ="${REMOTE_DIR_WWW}/${FILE_DB_GZ}"
+}
+
+
+function l2l_settings_path {
+	if [[ -z ${DIR_HOME} ]]
+	then
+		DIR_HOME=${HOME}
+	fi
+	
+	if [[ -z ${SITES} ]]
+	then
+		SITES="public_html"
+	fi
+	
+	if [[ -z ${LOCAL_DIR_WWW} ]]
+	then
+		if [[ -n ${LOCAL_DIR_USE_ROOT} ]]
+		then
+			LOCAL_DIR_WWW="/${SITES}/${DOMAIN_BASE}"
+		elif [[ -z ${DIR_WWW} ]]
+		then
+			LOCAL_DIR_WWW="${DIR_HOME}/${SITES}/${DOMAIN_BASE}"
+		else
+			LOCAL_DIR_WWW="${DIR_WWW}/${DOMAIN_BASE}"
+		fi
+	fi
+
+	LOCAL_DIR_CONFIG="${DIR_HOME}/.ssh/l2l_config"
+	LOCAL_FILE_CONFIG="${LOCAL_DIR_CONFIG}/${DOMAIN_NAME}"
+}
+
+
+function l2l_settings_remote {
+	if [[ -z ${REMOTE_SERVER} ]]
+	then
+		REMOTE_SERVER="${DOMAIN_USER}@${DOMAIN_NAME}"
+	fi
+	
+	if [[ -z ${REMOTE_SSH} ]]
+	then
+		REMOTE_SSH="ssh -t ${REMOTE_SERVER}"
+	fi
+	
+	if [[ -z ${REMOTE_DIR_WWW} ]]
+	then
+		REMOTE_DIR_WWW="/home/${DOMAIN_USER}/public_html"
+	fi
+}
+
+	
+function l2l_settings_perm {
+	if [[ -z ${PERMS_MODE} ]]
+	then
+		PERMS_MODE="owner"
+	fi
+	
+	if [[ -z ${WWW_GROUP} ]]
+	then
+		WWW_GROUP="www"
+	fi
+	
+	if [[ -z ${WWW_USER} ]]
+	then
+		WWW_USER=${USER}
+	fi
+	
+	if [[ -z ${DEV_GROUP} ]]
+	then
+		DEV_GROUP=${WWW_GROUP}
+	fi
+	
+	if [[ -z ${DEV_USER} ]]
+	then
+		DEV_USER=${WWW_USER}
+	fi
+}
+
+
+function l2l_settings_transfer {
+	if [[ -z ${RSYNC_MODS} ]]
+	then
+		RSYNC_MODS=
+	fi
+
+	if [[ -z ${RSYNC_SITE_INC_EXC} ]]
+	then
+		RSYNC_SITE_INC_EXC=
+	fi
+	
+	if [[ -z ${SCP_MODS} ]]
+	then
+		SCP_MODS=
+	fi
+	
+	if [[ -z ${USE_FTP} ]]
+	then
+		CMD_FTP_PULL=
+		CMD_FTP_PUSH=
+		CMD_RSYNC=
+		CMD_SCP=`which scp`
+	
+		if [[ -z ${USE_SCP} ]]
+		then
+			CMD_RSYNC=`which rsync`
+		fi
+	else
+		CMD_FTP_PULL=`which ncftpget`
+		CMD_FTP_PUSH=`which ncftpput`
+		CMD_RSYNC=
+		CMD_SCP=
+	fi
+
+	FTP_OPTIONS="-F -R -v -z"
+	FTP_REMOTE_SERVER="ftp://${REMOTE_SERVER}"
+	RSYNC_OPTIONS="-Pahz -e ssh --stats"
+	SCP_OPTIONS="-r -p -C"
+}
+
+
+function l2l_reset_all {
+	unset APACHE_CMD
+	unset APACHE_PORT
+	unset BIN_MYSQL
+	unset BIN_SUDO
+	unset CMD_FTP_PULL
+	unset CMD_FTP_PUSH
+	unset CMD_RSYNC
+	unset CMD_SCP
+	unset CONFIG_NO_CREATE
+	unset DB_FULL_DUMP
+	unset DB_HOST
+	unset DB_IGNORE
+	unset DB_LOCALHOST
+	unset DB_LOCALHOST_IP
+	unset DB_NO_CREATE
+	unset DB_UTF8_CONVERT
+	unset DEV_GROUP
+	unset DEV_USER
+	unset DIR_HOME
+	unset DIR_VHOST
+	unset DIR_WWW
+	unset DOMAIN_BASE
+	unset DOMAIN_LOCALHOST
+	unset DOMAIN_LOCALHOST_BASE
+	unset DOMAIN_USER
+	unset FILE_CONFIG
+	unset FILE_CONFIG_NO_OVERWRITE
+	unset FILE_DB
+	unset FILE_DB_GZ
+	unset FTP_OPTIONS
+	unset FTP_REMOTE_SERVER
+	unset HOSTS_NO_CREATE
+	unset HOST_SERVER
+	unset HTTP_DOMAIN_LOCALHOST
+	unset HTTP_DOMAIN_NAME
+	unset HTTP_PROTOCOL_LOCAL
+	unset HTTP_PROTOCOL
+	unset IS_PUSH
+	unset LOCAL_BASE_DB_MODS_I
+	unset LOCAL_BASE_MODS_I
+	unset LOCAL_DIR_CONFIG
+	unset LOCAL_DIR_WWW
+	unset LOCAL_FILE_CONFIG
+	unset PERMS_MODE
+	unset REMOTE_DIR_WWW
+	unset REMOTE_FILE_DB
+	unset REMOTE_FILE_DB_GZ
+	unset REMOTE_SERVER
+	unset REMOTE_SSH
+	unset RSYNC_MODS
+	unset RSYNC_OPTIONS
+	unset RSYNC_SITE_INC_EXC
+	unset SCP_MODS
+	unset SCP_OPTIONS
+	unset SITES
+	unset SKIP_PERMS
+	unset VHOST_NO_CREATE
+	unset WHICH_SUDO
+	unset WWW_GROUP
+	unset WWW_USER
+
+	l2l_reset
+	l2l_run_once
+}
+
+
+function l2l_reset {
+	l2l_reset_db
+	l2l_reset_domain
+	l2l_reset_type
+}
+
+
+function l2l_reset_type {
+	unset IS_TYPE
+	l2l_reset_local_base
+	l2l_reset_local
+}
+
+
+function l2l_reset_local {
+	unset LOCAL_DB_MODS
+	unset LOCAL_MODS
+}
+
+
+function l2l_reset_local_base {
+	LOCAL_BASE_DB_MODS_I=1
+	LOCAL_BASE_MODS_I=1
+	unset LOCAL_BASE_DB_MODS
+	unset LOCAL_BASE_MODS
+}
+
+
+function l2l_reset_domain {
+	unset DOMAIN_BASE
+	unset DOMAIN_LOCALHOST
+	unset DOMAIN_NAME
+	unset LOCAL_DIR_WWW
+	unset REMOTE_DIR_WWW
+}
+
+
+function l2l_reset_db {
+	unset DB_HOST
+	unset DB_NAME
+	unset DB_PW
+	unset DB_USER
+}
 
 
 function l2l_get_sudo_pw() {
@@ -713,7 +1029,7 @@ function l2l_perms_developer() {
 		return
 	fi
 
-	${BIN_SUDO} find . \( -name ".svn" -o -name "CVS" \) -type d -exec chown -R ${DEV_USER} {} \; -exec chmod u+rw {} \;
+	${BIN_SUDO} find . \( -name ".git" -o -name ".svn" -o -name "CVS" \) -type d -exec chown -R ${DEV_USER} {} \; -exec chmod u+rw {} \;
 }
 
 
@@ -734,137 +1050,6 @@ function l2l_config_push() {
 	# l2l_access_load
 
 	# l2l_site_common
-}
-
-
-function l2l_do_sync() {
-	if [[ -n ${IS_TYPE} ]]
-	then
-		LOCAL_FILE_CONFIG="${LOCAL_FILE_CONFIG}-${IS_TYPE}"
-	fi
-
-	case "${1}" in
-		"rsync" )
-		l2l_display "${CMD_RSYNC} ${RSYNC_OPTIONS} ${RSYNC_COMMON_INC_EXC} ${RSYNC_SITE_INC_EXC} ${RSYNC_MODS} ${LOCAL_DIR_WWW}/. ${REMOTE_SERVER}:${REMOTE_DIR_WWW}/*"
-		exit
-		;;
-
-		"scp" )
-		l2l_display "${CMD_SCP} ${SCP_OPTIONS} ${SCP_MODS} ${LOCAL_DIR_WWW}/. ${REMOTE_SERVER}:${REMOTE_DIR_WWW}/*"
-		exit
-		;;
-
-		"site" )
-		l2l_display "${LOCAL_DIR_WWW}"
-		l2l_display "${HTTP_DOMAIN_LOCALHOST}:${APACHE_PORT}"
-		exit
-		;;
-
-		"ssh" )
-		l2l_display "ssh ${REMOTE_SERVER}"
-		exit
-		;;
-
-		"access" )
-		cat ${LOCAL_FILE_CONFIG}
-		echo
-		exit
-		;;
-
-		"setup" )
-		l2l_access_create
-		exit
-		;;
-	esac
-
-	l2l_cd
-
-	# TODO allow short/long options to be passed in
-	# let the working environment be configured and then do actual work
-	if [[ -n ${2} ]]
-	then
-		case "${2}" in
-			"push" )
-			l2l_config_push
-			;;
-		esac
-	fi
-	
-	l2l_access_load
-
-	case "${1}" in
-		"ftp" )
-		if [[ -n ${2} ]]
-		then
-			${CMD_FTP_PULL} ${FTP_OPTIONS} ${FTP_REMOTE_SERVER}${REMOTE_DIR_WWW}/${2} .
-		else
-			echo "ftp ${FTP_REMOTE_SERVER}"
-			echo
-			echo "${CMD_FTP_PULL} ${FTP_OPTIONS} ${FTP_REMOTE_SERVER}${REMOTE_DIR_WWW}"
-			echo
-		fi
-		;;
-
-		"db" )
-		if [[ "static" == ${IS_TYPE} ]]
-		then
-			l2l_display "Static website - No DB operations"
-			return
-		fi
-
-		if [[ -z ${2} ]]
-		then
-			l2l_intro
-			l2l_site_common
-			l2l_do_db
-			l2l_finish
-		elif [[ 'pull' = ${2} ]]
-		then
-			l2l_pull_remote_db
-			exit
-		elif [[ 'show' = ${2} ]]
-		then
-			l2l_mysql_local_show
-			echo
-			DB_NO_CREATE=1
-			SHOW_COMMANDS=1
-			l2l_access_create_database_user
-			l2l_remove_database_user
-			echo
-			l2l_pull_remote_db
-			echo
-			exit
-		elif [[ 'convert' = ${2} ]]
-		then
-			l2l_mysql_convert_utf8 ${3}
-		else
-			# load locally provided database
-			l2l_mysql_local ${2}
-		fi
-		;;
-
-		"media" )
-		l2l_intro
-		l2l_site_common
-		l2l_do_media
-		l2l_finish
-		;;
-
-		"remove" )
-		cd ${DIR_HOME}
-		l2l_remove_all
-		;;
-
-		* )
-		l2l_intro
-		l2l_site_common
-		l2l_sudo_session
-		l2l_do_db
-		l2l_do_media
-		l2l_finish
-		;;
-
-	esac
 }
 
 
@@ -904,7 +1089,7 @@ function l2l_do_db() {
 
 
 function l2l_do_media() {
-	if [[ -n ${FILE_CONFIG_OVERWRITE_DENY} && "static" != ${IS_TYPE} ]]
+	if [[ -n ${FILE_CONFIG_NO_OVERWRITE} && "static" != ${IS_TYPE} ]]
  	then
 		l2l_display "Warning '${FILE_CONFIG}' is excluded from update"
 		RSYNC_SITE_INC_EXC="${RSYNC_SITE_INC_EXC} --exclude=${FILE_CONFIG}"
@@ -1205,16 +1390,16 @@ function l2l_access_create_config_file() {
 			l2l_get_config_typo3
 			;;
 
-			"wohin" )
-			l2l_get_config_wohin
-			;;
-
 			"wordpress" )
 			l2l_get_config_wordpress
 			;;
 
 			"xtcommerce" )
 			l2l_get_config_xtcommerce
+			;;
+
+			* )
+			l2l_get_config_${IS_TYPE}
 			;;
 		esac
 	elif [[ "mkvhost" == ${IS_TYPE} ]]
@@ -1459,6 +1644,218 @@ function l2l_site_ilance() {
 }
 
 
+function l2l_get_config_typo3 {
+	DB_HOST=`grep -P "\btypo_db_host\b" ${FILE_CONFIG}`
+	DB_HOST=`echo ${DB_HOST} | sed -e "s#';.*##g" -e "s#^.*'##g"`
+
+	DB_NAME=`grep -P "\btypo_db\b" ${FILE_CONFIG}`
+	DB_NAME=`echo ${DB_NAME} | sed -e "s#';.*##g" -e "s#^.*'##g"`
+
+	DB_USER=`grep -P "\btypo_db_username\b" ${FILE_CONFIG}`
+	DB_USER=`echo ${DB_USER} | sed -e "s#';.*##g" -e "s#^.*'##g"`
+
+	DB_PW=`grep -P "\btypo_db_password\b" ${FILE_CONFIG}`
+	DB_PW=`echo ${DB_PW} | sed -e "s#';.*##g" -e "s#^.*'##g"`
+	DB_PW=`echo ${DB_PW} | sed -e 's#(#\\\(#g' -e 's#)#\\\)#g'`
+
+	return
+}
+
+
+function l2l_site_typo3() {
+	IS_TYPE="typo3"
+	FILE_CONFIG="typo3conf/localconf.php"
+
+	# file mods
+	LOCAL_BASE_MODS[(( LOCAL_BASE_MODS_I++ ))]="rm -f typo3conf/temp_CACHED_*.php"
+	LOCAL_BASE_MODS[(( LOCAL_BASE_MODS_I++ ))]="rm -rf typo3temp/*"
+
+	# db mods
+	# LOCAL_BASE_DB_MODS[(( LOCAL_BASE_DB_MODS_I++ ))]=
+	LOCAL_BASE_DB_MODS[(( LOCAL_BASE_DB_MODS_I++ ))]="UPDATE sys_domain SET hidden = 1 WHERE domainName NOT LIKE '%.${DOMAIN_LOCALHOST_BASE}';"
+	LOCAL_BASE_DB_MODS[(( LOCAL_BASE_DB_MODS_I++ ))]="UPDATE sys_domain SET hidden = 0 WHERE domainName LIKE '%.${DOMAIN_LOCALHOST_BASE}';"
+
+	# rsync mods
+	RSYNC_SITE_INC_EXC="--include=typo3temp/ --exclude=**/typo3temp/** --include=_temp_/ --exclude=**/_temp_/** --exclude=typo3conf/temp_CACHED_*.php --exclude=typo3conf/deprecation_*.log"
+}
+
+
+function l2l_get_config_static {
+	return
+}
+
+
+function l2l_site_static() {
+	IS_TYPE="static"
+	FILE_CONFIG=
+
+	# file mods
+	# LOCAL_BASE_MODS[(( LOCAL_BASE_MODS_I++ ))]=
+
+	# db mods
+	# LOCAL_BASE_DB_MODS[(( LOCAL_BASE_DB_MODS_I++ ))]=
+
+	# rsync mods
+	# RSYNC_SITE_INC_EXC=
+}
+
+
+function l2l_get_config_openx {
+	DB_HOST=`grep -P -m 1 "\bhost\b" ${FILE_CONFIG}`
+	DB_HOST=`echo ${DB_HOST} | sed -e 's#"\?$##g' -e 's#^.*="\?##g'`
+
+	DB_NAME=`grep -P -m 1 "\bname\b" ${FILE_CONFIG}`
+	DB_NAME=`echo ${DB_NAME} | sed -e 's#"\?$##g' -e 's#^.*="\?##g'`
+
+	DB_USER=`grep -P -m 1 "\busername\b" ${FILE_CONFIG}`
+	DB_USER=`echo ${DB_USER} | sed -e 's#"\?$##g' -e 's#^.*="\?##g'`
+
+	DB_PW=`grep -P -m 1 "\bpassword\b" ${FILE_CONFIG}`
+	DB_PW=`echo ${DB_PW} | sed -e 's#"\?$##g' -e 's#^.*="\?##g'`
+
+	return
+}
+
+
+function l2l_site_openx() {
+	IS_TYPE="openx"
+	if [[ -z ${FILE_CONFIG} ]]
+	then
+		FILE_CONFIG="openx/var/www.${DOMAIN_NAME}.conf.php"
+	fi
+
+	# file mods
+	# LOCAL_BASE_MODS[(( LOCAL_BASE_MODS_I++ ))]=
+
+	# db mods
+	# LOCAL_BASE_DB_MODS[(( LOCAL_BASE_DB_MODS_I++ ))]=
+
+	# rsync mods
+	# RSYNC_SITE_INC_EXC=
+}
+
+
+function l2l_get_config_phplist {
+	DB_HOST=`grep -P "\bdatabase_host\b" ${FILE_CONFIG}`
+	DB_HOST=`echo ${DB_HOST} | sed -e 's#";.*##g' -e 's#^.*"##g'`
+
+	DB_NAME=`grep -P "\bdatabase_name\b" ${FILE_CONFIG}`
+	DB_NAME=`echo ${DB_NAME} | sed -e 's#";.*##g' -e 's#^.*"##g'`
+
+	DB_USER=`grep -P "\bdatabase_user\b" ${FILE_CONFIG}`
+	DB_USER=`echo ${DB_USER} | sed -e 's#";.*##g' -e 's#^.*"##g'`
+
+	DB_PW=`grep -P "\bdatabase_password\b" ${FILE_CONFIG}`
+	DB_PW=`echo ${DB_PW} | sed -e "s#';.*##g" -e "s#^.*'##g"`
+
+	return
+}
+
+
+function l2l_site_phplist() {
+	IS_TYPE="phplist"
+	FILE_CONFIG="lists/config/config.php"
+
+	# file mods
+	# LOCAL_BASE_MODS[(( LOCAL_BASE_MODS_I++ ))]=
+
+	# db mods
+	# LOCAL_BASE_DB_MODS[(( LOCAL_BASE_DB_MODS_I++ ))]=
+
+	# rsync mods
+	# RSYNC_SITE_INC_EXC=
+}
+
+
+function l2l_get_config_oscommerce {
+	DB_HOST=`grep -P "\bDB_SERVER\b" ${FILE_CONFIG}`
+	DB_HOST=`echo ${DB_HOST} | sed -e "s#');.*##g" -e "s#^.*, '##g"`
+
+	DB_NAME=`grep -P "\bDB_DATABASE\b" ${FILE_CONFIG}`
+	DB_NAME=`echo ${DB_NAME} | sed -e "s#');.*##g" -e "s#^.*, '##g"`
+
+	DB_USER=`grep -P "\bDB_SERVER_USERNAME\b" ${FILE_CONFIG}`
+	DB_USER=`echo ${DB_USER} | sed -e "s#');.*##g" -e "s#^.*, '##g"`
+
+	DB_PW=`grep -P "\bDB_SERVER_PASSWORD\b" ${FILE_CONFIG}`
+	DB_PW=`echo ${DB_PW} | sed -e "s#');.*##g" -e "s#^.*, '##g"`
+	DB_PW=`echo ${DB_PW} | sed -e 's#(#\\\(#g' -e 's#)#\\\)#g'`
+
+	return
+}
+
+
+function l2l_site_oscommerce() {
+	IS_TYPE="oscommerce"
+	FILE_CONFIG="includes/configure.php"
+
+	# file mods
+	LOCAL_BASE_MODS[(( LOCAL_BASE_MODS_I++ ))]="perl -pi -e \"s#${REMOTE_DIR_WWW}#${LOCAL_DIR_WWW}#g\" ${FILE_CONFIG} admin/${FILE_CONFIG}"
+	LOCAL_BASE_MODS[(( LOCAL_BASE_MODS_I++ ))]="perl -pi -e \"s#(www\.)?${DOMAIN_NAME}#${DOMAIN_LOCALHOST}#g\" ${FILE_CONFIG} admin/${FILE_CONFIG}"
+	LOCAL_BASE_MODS[(( LOCAL_BASE_MODS_I++ ))]="perl -pi -e \"s#https#http#g\" ${FILE_CONFIG} admin/${FILE_CONFIG}"
+	LOCAL_BASE_MODS[(( LOCAL_BASE_MODS_I++ ))]="perl -pi -e \"s#'ENABLE_SSL_CATALOG', 'true'#'ENABLE_SSL_CATALOG', 'false'#g\" ${FILE_CONFIG} admin/${FILE_CONFIG}"
+
+	# db mods
+	# LOCAL_BASE_DB_MODS[(( LOCAL_BASE_DB_MODS_I++ ))]=
+
+	# rsync mods
+	# RSYNC_SITE_INC_EXC=
+}
+
+
+function l2l_typo3_source() {
+	local typo3_version=${1}
+	local mode=${2}
+
+	if [[ -z ${mode} || "media" == ${mode} ]]
+	then
+		cd ${LOCAL_DIR_WWW}
+		t3upgrade.sh ${typo3_version}
+		rm -rf zzz-typo3-backup-*
+		l2l_perms_restore
+	fi
+}
+
+
+function l2l_site_mkvhost() {
+	IS_TYPE="mkvhost"
+	FILE_CONFIG="skip"
+}
+
+
+function l2l_site_xtcommerce() {
+	IS_TYPE="xtcommerce"
+	FILE_CONFIG="includes/configure.php"
+
+	# file mods
+	# LOCAL_BASE_MODS[(( LOCAL_BASE_MODS_I++ ))]=
+
+	# db mods
+	# LOCAL_BASE_DB_MODS[(( LOCAL_BASE_DB_MODS_I++ ))]=
+
+	# rsync mods
+	# RSYNC_SITE_INC_EXC=
+}
+
+
+function l2l_get_config_xtcommerce {
+	DB_HOST=`grep -P "\bDB_SERVER\b" ${FILE_CONFIG}`
+	DB_HOST=`echo ${DB_HOST} | sed -e "s#');.*##g" -e "s#^.*, '##g"`
+
+	DB_NAME=`grep -P "\bDB_DATABASE\b" ${FILE_CONFIG}`
+	DB_NAME=`echo ${DB_NAME} | sed -e "s#');.*##g" -e "s#^.*, '##g"`
+
+	DB_USER=`grep -P "\bDB_SERVER_USERNAME\b" ${FILE_CONFIG}`
+	DB_USER=`echo ${DB_USER} | sed -e "s#');.*##g" -e "s#^.*, '##g"`
+
+	DB_PW=`grep -P "\bDB_SERVER_PASSWORD\b" ${FILE_CONFIG}`
+	DB_PW=`echo ${DB_PW} | sed -e "s#');.*##g" -e "s#^.*, '##g"`
+	DB_PW=`echo ${DB_PW} | sed -e 's#(#\\\(#g' -e 's#)#\\\)#g'`
+
+	return
+}
+
+
 function l2l_get_config_wordpress {
 	DB_HOST=`grep -P "\bDB_HOST\b" ${FILE_CONFIG}`
 	DB_HOST=`echo ${DB_HOST} | sed -e "s#');.*##g" -e "s#^.*, '##g"`
@@ -1529,298 +1926,8 @@ function l2l_site_wordpress_multisite() {
 	LOCAL_BASE_DB_MODS[(( LOCAL_BASE_DB_MODS_I++ ))]="UPDATE wp_domain_mapping SET ${domain_sets} ${where};"
 
 	# rsync mods
-	# RSYNC_SITE_INC_EXC="${RSYNC_SITE_INC_EXC}"
+	# RSYNC_SITE_INC_EXC=
 }
 
 
-function l2l_get_config_typo3 {
-	DB_HOST=`grep -P "\btypo_db_host\b" ${FILE_CONFIG}`
-	DB_HOST=`echo ${DB_HOST} | sed -e "s#';.*##g" -e "s#^.*'##g"`
-
-	DB_NAME=`grep -P "\btypo_db\b" ${FILE_CONFIG}`
-	DB_NAME=`echo ${DB_NAME} | sed -e "s#';.*##g" -e "s#^.*'##g"`
-
-	DB_USER=`grep -P "\btypo_db_username\b" ${FILE_CONFIG}`
-	DB_USER=`echo ${DB_USER} | sed -e "s#';.*##g" -e "s#^.*'##g"`
-
-	DB_PW=`grep -P "\btypo_db_password\b" ${FILE_CONFIG}`
-	DB_PW=`echo ${DB_PW} | sed -e "s#';.*##g" -e "s#^.*'##g"`
-	DB_PW=`echo ${DB_PW} | sed -e 's#(#\\\(#g' -e 's#)#\\\)#g'`
-
-	return
-}
-
-
-function l2l_site_typo3() {
-	IS_TYPE="typo3"
-	FILE_CONFIG="typo3conf/localconf.php"
-
-	# file mods
-	# LOCAL_BASE_MODS[(( LOCAL_BASE_MODS_I++ ))]="perl -pi -e \"s#^(define\('COOKIE_DOMAIN', '${DOMAIN_NAME}'.*$)#// \1#g\" wp-config.php"
-
-	# db mods
-	# LOCAL_BASE_DB_MODS[(( LOCAL_BASE_DB_MODS_I++ ))]=
-	LOCAL_BASE_DB_MODS[(( LOCAL_BASE_DB_MODS_I++ ))]="UPDATE sys_domain SET hidden = 1 WHERE domainName NOT LIKE '%.${DOMAIN_LOCALHOST_BASE}';"
-	LOCAL_BASE_DB_MODS[(( LOCAL_BASE_DB_MODS_I++ ))]="UPDATE sys_domain SET hidden = 0 WHERE domainName LIKE '%.${DOMAIN_LOCALHOST_BASE}';"
-
-	# rsync mods
-	RSYNC_SITE_INC_EXC="--include=typo3temp/ --exclude=**/typo3temp/** --include=_temp_/ --exclude=**/_temp_/** --exclude=typo3conf/temp_CACHED_*.php --exclude=typo3conf/deprecation_*.log"
-}
-
-
-function l2l_get_config_wohin {
-	DB_HOST=`grep -P "\bdb_server\b" ${FILE_CONFIG}`
-	DB_HOST=`echo ${DB_HOST} | sed -e 's#");.*##g' -e 's#^.*, "##g'`
-
-	DB_NAME=`grep -P "\bdb_name\b" ${FILE_CONFIG}`
-	DB_NAME=`echo ${DB_NAME} | sed -e 's#");.*##g' -e 's#^.*, "##g'`
-
-	DB_USER=`grep -P "\bdb_user\b" ${FILE_CONFIG}`
-	DB_USER=`echo ${DB_USER} | sed -e 's#");.*##g' -e 's#^.*, "##g'`
-
-	DB_PW=`grep -P "\bdb_passwort\b" ${FILE_CONFIG}`
-	DB_PW=`echo ${DB_PW} | sed -e 's#");.*##g' -e 's#^.*, "##g'`
-	DB_PW=`echo ${DB_PW} | sed -e 's#(#\\\(#g' -e 's#)#\\\)#g'`
-
-	return
-}
-
-
-function l2l_site_wohin() {
-	IS_TYPE="wohin"
-	FILE_CONFIG="diner2.inc.php"
-
-	# file mods
-	# LOCAL_BASE_MODS[(( LOCAL_BASE_MODS_I++ ))]="perl -pi -e \"s#^(define\('COOKIE_DOMAIN', '${DOMAIN_NAME}'.*$)#// \1#g\" wp-config.php"
-
-	# db mods
-	# LOCAL_BASE_DB_MODS[(( LOCAL_BASE_DB_MODS_I++ ))]=
-	# LOCAL_BASE_DB_MODS[(( LOCAL_BASE_DB_MODS_I++ ))]="UPDATE sys_domain SET hidden = 1 WHERE domainName NOT LIKE '%.${DOMAIN_LOCALHOST_BASE}';"
-	# LOCAL_BASE_DB_MODS[(( LOCAL_BASE_DB_MODS_I++ ))]="UPDATE sys_domain SET hidden = 0 WHERE domainName LIKE '%.${DOMAIN_LOCALHOST_BASE}';"
-
-	# rsync mods
-	# RSYNC_SITE_INC_EXC="--include=wohintemp/ --exclude=**/wohintemp/** --include=_temp_/ --exclude=**/_temp_/** --exclude=wohinconf/temp_CACHED_*.php --exclude=wohinconf/deprecation_*.log"
-}
-
-
-function l2l_get_config_static {
-	DB_HOST=`grep -P "\bdb_server\b" ${FILE_CONFIG}`
-	DB_HOST=`echo ${DB_HOST} | sed -e 's#");.*##g' -e 's#^.*, "##g'`
-
-	DB_NAME=`grep -P "\bdb_name\b" ${FILE_CONFIG}`
-	DB_NAME=`echo ${DB_NAME} | sed -e 's#");.*##g' -e 's#^.*, "##g'`
-
-	DB_USER=`grep -P "\bdb_user\b" ${FILE_CONFIG}`
-	DB_USER=`echo ${DB_USER} | sed -e 's#");.*##g' -e 's#^.*, "##g'`
-
-	DB_PW=`grep -P "\bdb_passwort\b" ${FILE_CONFIG}`
-	DB_PW=`echo ${DB_PW} | sed -e 's#");.*##g' -e 's#^.*, "##g'`
-	DB_PW=`echo ${DB_PW} | sed -e 's#(#\\\(#g' -e 's#)#\\\)#g'`
-
-	return
-}
-
-
-function l2l_site_static() {
-	IS_TYPE="static"
-	FILE_CONFIG=
-
-	# file mods
-	# LOCAL_BASE_MODS[(( LOCAL_BASE_MODS_I++ ))]="perl -pi -e \"s#^(define\('COOKIE_DOMAIN', '${DOMAIN_NAME}'.*$)#// \1#g\" wp-config.php"
-
-	# db mods
-	# LOCAL_BASE_DB_MODS[(( LOCAL_BASE_DB_MODS_I++ ))]=
-	# LOCAL_BASE_DB_MODS[(( LOCAL_BASE_DB_MODS_I++ ))]="UPDATE sys_domain SET hidden = 1 WHERE domainName NOT LIKE '%.${DOMAIN_LOCALHOST_BASE}';"
-	# LOCAL_BASE_DB_MODS[(( LOCAL_BASE_DB_MODS_I++ ))]="UPDATE sys_domain SET hidden = 0 WHERE domainName LIKE '%.${DOMAIN_LOCALHOST_BASE}';"
-
-	# rsync mods
-	# RSYNC_SITE_INC_EXC="--include=wohintemp/ --exclude=**/wohintemp/** --include=_temp_/ --exclude=**/_temp_/** --exclude=wohinconf/temp_CACHED_*.php --exclude=wohinconf/deprecation_*.log"
-}
-
-
-function l2l_get_config_openx {
-	DB_HOST=`grep -P -m 1 "\bhost\b" ${FILE_CONFIG}`
-	DB_HOST=`echo ${DB_HOST} | sed -e 's#"\?$##g' -e 's#^.*="\?##g'`
-
-	DB_NAME=`grep -P -m 1 "\bname\b" ${FILE_CONFIG}`
-	DB_NAME=`echo ${DB_NAME} | sed -e 's#"\?$##g' -e 's#^.*="\?##g'`
-
-	DB_USER=`grep -P -m 1 "\busername\b" ${FILE_CONFIG}`
-	DB_USER=`echo ${DB_USER} | sed -e 's#"\?$##g' -e 's#^.*="\?##g'`
-
-	DB_PW=`grep -P -m 1 "\bpassword\b" ${FILE_CONFIG}`
-	DB_PW=`echo ${DB_PW} | sed -e 's#"\?$##g' -e 's#^.*="\?##g'`
-
-	return
-}
-
-
-function l2l_site_openx() {
-	IS_TYPE="openx"
-	if [[ -z ${FILE_CONFIG} ]]
-	then
-		FILE_CONFIG="openx/var/www.${DOMAIN_NAME}.conf.php"
-	fi
-
-	# file mods
-	# LOCAL_BASE_MODS[(( LOCAL_BASE_MODS_I++ ))]="perl -pi -e \"s#^(define\('COOKIE_DOMAIN', '${DOMAIN_NAME}'.*$)#// \1#g\" wp-config.php"
-
-	# db mods
-	# LOCAL_BASE_DB_MODS[(( LOCAL_BASE_DB_MODS_I++ ))]=
-	# LOCAL_BASE_DB_MODS[(( LOCAL_BASE_DB_MODS_I++ ))]="UPDATE sys_domain SET hidden = 1 WHERE domainName NOT LIKE '%.${DOMAIN_LOCALHOST_BASE}';"
-	# LOCAL_BASE_DB_MODS[(( LOCAL_BASE_DB_MODS_I++ ))]="UPDATE sys_domain SET hidden = 0 WHERE domainName LIKE '%.${DOMAIN_LOCALHOST_BASE}';"
-
-	# rsync mods
-	# RSYNC_SITE_INC_EXC="--include=wohintemp/ --exclude=**/wohintemp/** --include=_temp_/ --exclude=**/_temp_/** --exclude=wohinconf/temp_CACHED_*.php --exclude=wohinconf/deprecation_*.log"
-}
-
-
-function l2l_get_config_phplist {
-	DB_HOST=`grep -P "\bdatabase_host\b" ${FILE_CONFIG}`
-	DB_HOST=`echo ${DB_HOST} | sed -e 's#";.*##g' -e 's#^.*"##g'`
-
-	DB_NAME=`grep -P "\bdatabase_name\b" ${FILE_CONFIG}`
-	DB_NAME=`echo ${DB_NAME} | sed -e 's#";.*##g' -e 's#^.*"##g'`
-
-	DB_USER=`grep -P "\bdatabase_user\b" ${FILE_CONFIG}`
-	DB_USER=`echo ${DB_USER} | sed -e 's#";.*##g' -e 's#^.*"##g'`
-
-	DB_PW=`grep -P "\bdatabase_password\b" ${FILE_CONFIG}`
-	DB_PW=`echo ${DB_PW} | sed -e "s#';.*##g" -e "s#^.*'##g"`
-
-	return
-}
-
-
-function l2l_site_phplist() {
-	IS_TYPE="phplist"
-	FILE_CONFIG="lists/config/config.php"
-
-	# file mods
-	# LOCAL_BASE_MODS[(( LOCAL_BASE_MODS_I++ ))]="perl -pi -e \"s#^(define\('COOKIE_DOMAIN', '${DOMAIN_NAME}'.*$)#// \1#g\" wp-config.php"
-
-	# db mods
-	# LOCAL_BASE_DB_MODS[(( LOCAL_BASE_DB_MODS_I++ ))]=
-	# LOCAL_BASE_DB_MODS[(( LOCAL_BASE_DB_MODS_I++ ))]="UPDATE sys_domain SET hidden = 1 WHERE domainName NOT LIKE '%.${DOMAIN_LOCALHOST_BASE}';"
-	# LOCAL_BASE_DB_MODS[(( LOCAL_BASE_DB_MODS_I++ ))]="UPDATE sys_domain SET hidden = 0 WHERE domainName LIKE '%.${DOMAIN_LOCALHOST_BASE}';"
-
-	# rsync mods
-	# RSYNC_SITE_INC_EXC="--include=wohintemp/ --exclude=**/wohintemp/** --include=_temp_/ --exclude=**/_temp_/** --exclude=wohinconf/temp_CACHED_*.php --exclude=wohinconf/deprecation_*.log"
-}
-
-
-function l2l_get_config_oscommerce {
-	DB_HOST=`grep -P "\bDB_SERVER\b" ${FILE_CONFIG}`
-	DB_HOST=`echo ${DB_HOST} | sed -e "s#');.*##g" -e "s#^.*, '##g"`
-
-	DB_NAME=`grep -P "\bDB_DATABASE\b" ${FILE_CONFIG}`
-	DB_NAME=`echo ${DB_NAME} | sed -e "s#');.*##g" -e "s#^.*, '##g"`
-
-	DB_USER=`grep -P "\bDB_SERVER_USERNAME\b" ${FILE_CONFIG}`
-	DB_USER=`echo ${DB_USER} | sed -e "s#');.*##g" -e "s#^.*, '##g"`
-
-	DB_PW=`grep -P "\bDB_SERVER_PASSWORD\b" ${FILE_CONFIG}`
-	DB_PW=`echo ${DB_PW} | sed -e "s#');.*##g" -e "s#^.*, '##g"`
-	DB_PW=`echo ${DB_PW} | sed -e 's#(#\\\(#g' -e 's#)#\\\)#g'`
-
-	return
-}
-
-
-function l2l_site_oscommerce() {
-	IS_TYPE="oscommerce"
-	FILE_CONFIG="includes/configure.php"
-	# WWW_USER=${WWW_GROUP}
-
-	# file mods
-	# need to disable this in wp-config.php, else no login
-	LOCAL_BASE_MODS[(( LOCAL_BASE_MODS_I++ ))]="perl -pi -e \"s#${REMOTE_DIR_WWW}#${LOCAL_DIR_WWW}#g\" ${FILE_CONFIG} admin/${FILE_CONFIG}"
-	LOCAL_BASE_MODS[(( LOCAL_BASE_MODS_I++ ))]="perl -pi -e \"s#(www\.)?${DOMAIN_NAME}#${DOMAIN_LOCALHOST}#g\" ${FILE_CONFIG} admin/${FILE_CONFIG}"
-	LOCAL_BASE_MODS[(( LOCAL_BASE_MODS_I++ ))]="perl -pi -e \"s#https#http#g\" ${FILE_CONFIG} admin/${FILE_CONFIG}"
-	LOCAL_BASE_MODS[(( LOCAL_BASE_MODS_I++ ))]="perl -pi -e \"s#'ENABLE_SSL_CATALOG', 'true'#'ENABLE_SSL_CATALOG', 'false'#g\" ${FILE_CONFIG} admin/${FILE_CONFIG}"
-
-	# db mods
-	LOCAL_BASE_DB_MODS[(( LOCAL_BASE_DB_MODS_I++ ))]=
-
-	# rsync mods
-	RSYNC_SITE_INC_EXC=
-}
-
-
-function l2l_typo3_source() {
-	local typo3_version=${1}
-	local mode=${2}
-
-	if [[ -z ${mode} || "media" == ${mode} ]]
-	then
-		cd ${LOCAL_DIR_WWW}
-		t3upgrade.sh ${typo3_version}
-		rm -rf zzz-typo3-backup-*
-		l2l_perms_restore
-	fi
-}
-
-
-function l2l_site_mkvhost() {
-	IS_TYPE="mkvhost"
-	FILE_CONFIG="skip"
-}
-
-
-function l2l_site_xtcommerce() {
-	IS_TYPE="xtcommerce"
-	FILE_CONFIG="includes/configure.php"
-
-	# file mods
-	# LOCAL_BASE_MODS[(( LOCAL_BASE_MODS_I++ ))]="perl -pi -e \"s#^(define\('COOKIE_DOMAIN', '${DOMAIN_NAME}'.*$)#// \1#g\" wp-config.php"
-
-	# db mods
-	# LOCAL_BASE_DB_MODS[(( LOCAL_BASE_DB_MODS_I++ ))]=
-	# LOCAL_BASE_DB_MODS[(( LOCAL_BASE_DB_MODS_I++ ))]="UPDATE sys_domain SET hidden = 1 WHERE domainName NOT LIKE '%.${DOMAIN_LOCALHOST_BASE}';"
-	# LOCAL_BASE_DB_MODS[(( LOCAL_BASE_DB_MODS_I++ ))]="UPDATE sys_domain SET hidden = 0 WHERE domainName LIKE '%.${DOMAIN_LOCALHOST_BASE}';"
-
-	# rsync mods
-	# RSYNC_SITE_INC_EXC="--include=typo3temp/ --exclude=**/typo3temp/** --include=_temp_/ --exclude=**/_temp_/** --exclude=typo3conf/temp_CACHED_*.php --exclude=typo3conf/deprecation_*.log"
-	if [[ -n ${FILE_CONFIG_OVERWRITE_DENY} ]]
-	then
-		RSYNC_SITE_INC_EXC="--exclude=${FILE_CONFIG}"
-	fi
-}
-
-
-function l2l_get_config_xtcommerce {
-	DB_HOST=`grep -P "\bDB_SERVER\b" ${FILE_CONFIG}`
-	DB_HOST=`echo ${DB_HOST} | sed -e "s#');.*##g" -e "s#^.*, '##g"`
-
-	DB_NAME=`grep -P "\bDB_DATABASE\b" ${FILE_CONFIG}`
-	DB_NAME=`echo ${DB_NAME} | sed -e "s#');.*##g" -e "s#^.*, '##g"`
-
-	DB_USER=`grep -P "\bDB_SERVER_USERNAME\b" ${FILE_CONFIG}`
-	DB_USER=`echo ${DB_USER} | sed -e "s#');.*##g" -e "s#^.*, '##g"`
-
-	DB_PW=`grep -P "\bDB_SERVER_PASSWORD\b" ${FILE_CONFIG}`
-	DB_PW=`echo ${DB_PW} | sed -e "s#');.*##g" -e "s#^.*, '##g"`
-	DB_PW=`echo ${DB_PW} | sed -e 's#(#\\\(#g' -e 's#)#\\\)#g'`
-
-	return
-}
-
-
-function l2l_reset {
-	l2l_reset_db
-
-	unset DEV_USER
-	unset DOMAIN_BASE
-	unset DOMAIN_LOCALHOST
-	unset DOMAIN_NAME
-	unset LOCAL_DIR_WWW
-	unset REMOTE_DIR_WWW
-}
-
-
-function l2l_reset_db {
-	unset DB_HOST
-	unset DB_NAME
-	unset DB_PW
-	unset DB_USER
-}
+l2l_run_once
