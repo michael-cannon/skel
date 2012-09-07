@@ -36,3 +36,13 @@ CVS
 .CVS
 .idea
 node_modules
+
+# custom
+.bashrc.tlf.local
+.ssh/comprock.id_dsa.ppk
+.ssh/config
+.ssh/gbfaws.pem
+.ssh/id_dsa
+.ssh/known_hosts
+.ssh/l2l_config/
+bin/custom
