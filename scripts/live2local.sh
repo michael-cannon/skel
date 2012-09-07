@@ -2,6 +2,9 @@
 
 # Function helpers for migrating websites between remote servers or localhosts
 #
+# TODO
+# * LIVE_MODE - typo3/wordpress don't clear domain settings
+#
 # @author Michael Cannon <michael@typo3vagabond.com>
 
 # Assumptions
@@ -15,15 +18,15 @@
 # * For FTP operations ncftp is installed
 #
 # Create a script with the following '## ' prepends to use.
-#
+
 # Basic script
 ## DOMAIN_NAME="example.com"
 ## source ~/.skel/scripts/live2local.sh
 ## 
 ## l2l_site_typo3
 ## l2l_do_sync ${@}
-#
-#
+
+
 # Advanced script
 ## DOMAIN_NAME="example.com"
 ##
@@ -64,7 +67,15 @@
 function l2l_do_sync() {
 	l2l_settings_site
 
+	# single line helpers
 	case "${1}" in
+		"access" )
+		l2l_display ${LOCAL_FILE_CONFIG}
+		cat ${LOCAL_FILE_CONFIG}
+		echo
+		exit
+		;;
+
 		"rsync" )
 		l2l_display "${CMD_RSYNC} ${RSYNC_OPTIONS} ${RSYNC_COMMON_INC_EXC} ${RSYNC_SITE_INC_EXC} ${RSYNC_MODS} ${LOCAL_DIR_WWW}/. ${REMOTE_SERVER}:${REMOTE_DIR_WWW}/*"
 		exit
@@ -72,6 +83,11 @@ function l2l_do_sync() {
 
 		"scp" )
 		l2l_display "${CMD_SCP} ${SCP_OPTIONS} ${SCP_MODS} ${LOCAL_DIR_WWW}/. ${REMOTE_SERVER}:${REMOTE_DIR_WWW}/*"
+		exit
+		;;
+
+		"setup" )
+		l2l_access_create
 		exit
 		;;
 
@@ -85,21 +101,7 @@ function l2l_do_sync() {
 		l2l_display "ssh ${REMOTE_SERVER}"
 		exit
 		;;
-
-		"access" )
-		l2l_display ${LOCAL_FILE_CONFIG}
-		cat ${LOCAL_FILE_CONFIG}
-		echo
-		exit
-		;;
-
-		"setup" )
-		l2l_access_create
-		exit
-		;;
 	esac
-
-	l2l_cd
 
 	# TODO allow short/long options to be passed in
 	# let the working environment be configured and then do actual work
@@ -113,20 +115,9 @@ function l2l_do_sync() {
 	fi
 	
 	l2l_access_load
+	l2l_cd
 
 	case "${1}" in
-		"ftp" )
-		if [[ -n ${2} ]]
-		then
-			${CMD_FTP_PULL} ${FTP_OPTIONS} ${FTP_REMOTE_SERVER}${REMOTE_DIR_WWW}/${2} .
-		else
-			echo "ftp ${FTP_REMOTE_SERVER}"
-			echo
-			echo "${CMD_FTP_PULL} ${FTP_OPTIONS} ${FTP_REMOTE_SERVER}${REMOTE_DIR_WWW}"
-			echo
-		fi
-		;;
-
 		"db" )
 		if [[ "static" == ${IS_TYPE} ]]
 		then
@@ -165,11 +156,34 @@ function l2l_do_sync() {
 		fi
 		;;
 
+		"ftp" )
+		if [[ -n ${2} ]]
+		then
+			${CMD_FTP_PULL} ${FTP_OPTIONS} ${FTP_REMOTE_SERVER}${REMOTE_DIR_WWW}/${2} .
+		else
+			echo "ftp ${FTP_REMOTE_SERVER}"
+			echo
+			echo "${CMD_FTP_PULL} ${FTP_OPTIONS} ${FTP_REMOTE_SERVER}${REMOTE_DIR_WWW}"
+			echo
+		fi
+		;;
+
 		"media" )
 		l2l_intro
 		l2l_site_common
 		l2l_do_media
 		l2l_finish
+		;;
+
+		"perms" )
+		if [[ -z ${2} ]]
+		then
+			l2l_cd
+			l2l_perms_prepare
+		else
+			l2l_display "${BIN_SUDO} ~/bin/websitepermissions ${DEV_USER} ${DEV_GROUP} dev"
+		fi
+		exit
 		;;
 
 		"remove" )
@@ -185,12 +199,11 @@ function l2l_do_sync() {
 		l2l_do_media
 		l2l_finish
 		;;
-
 	esac
 }
 
 
-function l2l_run_once {
+function l2l_run_once() {
 	l2l_reset_type
 	l2l_settings_server
 	
@@ -204,7 +217,7 @@ function l2l_run_once {
 }
 
 
-function l2l_settings_server {
+function l2l_settings_server() {
 	# helps define parameters for the server being used
 	# could do some auto-detection, but not
 	
@@ -245,7 +258,7 @@ function l2l_settings_server {
 }
 	
 	
-function l2l_settings_db {
+function l2l_settings_db() {
 	if [[ -z ${BIN_MYSQL} ]]
 	then
 		BIN_MYSQL=
@@ -288,7 +301,7 @@ function l2l_settings_db {
 }
 
 
-function l2l_settings_no {
+function l2l_settings_no() {
 	# quick way to turn off create routines
 	if [[ -n ${NO_CREATE} ]]
 	then
@@ -334,7 +347,7 @@ function l2l_settings_no {
 }
 
 
-function l2l_settings_domain {
+function l2l_settings_domain() {
 	if [[ -z ${DOMAIN_NAME} ]]
 	then
 		l2l_display "DOMAIN_NAME is required. Ex: example.com"
@@ -377,7 +390,7 @@ function l2l_settings_domain {
 }
 
 
-function l2l_settings_site {
+function l2l_settings_site() {
 	l2l_settings_domain
 	l2l_settings_db
 	l2l_settings_path
@@ -389,6 +402,11 @@ function l2l_settings_site {
 	if [[ -z ${FILE_CONFIG} ]]
 	then
 		FILE_CONFIG=
+	fi
+	
+	if [[ -z ${IS_LIVE} ]]
+	then
+		IS_LIVE=
 	fi
 	
 	if [[ -z ${IS_PUSH} ]]
@@ -408,7 +426,7 @@ function l2l_settings_site {
 }
 
 
-function l2l_settings_path {
+function l2l_settings_path() {
 	if [[ -z ${DIR_HOME} ]]
 	then
 		DIR_HOME=${HOME}
@@ -437,7 +455,7 @@ function l2l_settings_path {
 }
 
 
-function l2l_settings_remote {
+function l2l_settings_remote() {
 	if [[ -z ${REMOTE_SERVER} ]]
 	then
 		REMOTE_SERVER="${DOMAIN_USER}@${DOMAIN_NAME}"
@@ -455,7 +473,7 @@ function l2l_settings_remote {
 }
 
 	
-function l2l_settings_perm {
+function l2l_settings_perm() {
 	if [[ -z ${PERMS_MODE} ]]
 	then
 		PERMS_MODE="owner"
@@ -483,7 +501,7 @@ function l2l_settings_perm {
 }
 
 
-function l2l_settings_transfer {
+function l2l_settings_transfer() {
 	if [[ -z ${RSYNC_MODS} ]]
 	then
 		RSYNC_MODS=
@@ -524,7 +542,7 @@ function l2l_settings_transfer {
 }
 
 
-function l2l_reset_all {
+function l2l_reset_all() {
 	unset APACHE_CMD
 	unset APACHE_PORT
 	unset BIN_MYSQL
@@ -535,7 +553,6 @@ function l2l_reset_all {
 	unset CMD_SCP
 	unset CONFIG_NO_CREATE
 	unset DB_FULL_DUMP
-	unset DB_HOST
 	unset DB_IGNORE
 	unset DB_LOCALHOST
 	unset DB_LOCALHOST_IP
@@ -546,8 +563,6 @@ function l2l_reset_all {
 	unset DIR_HOME
 	unset DIR_VHOST
 	unset DIR_WWW
-	unset DOMAIN_BASE
-	unset DOMAIN_LOCALHOST
 	unset DOMAIN_LOCALHOST_BASE
 	unset DOMAIN_USER
 	unset FILE_CONFIG
@@ -563,13 +578,9 @@ function l2l_reset_all {
 	unset HTTP_PROTOCOL_LOCAL
 	unset HTTP_PROTOCOL
 	unset IS_PUSH
-	unset LOCAL_BASE_DB_MODS_I
-	unset LOCAL_BASE_MODS_I
 	unset LOCAL_DIR_CONFIG
-	unset LOCAL_DIR_WWW
 	unset LOCAL_FILE_CONFIG
 	unset PERMS_MODE
-	unset REMOTE_DIR_WWW
 	unset REMOTE_FILE_DB
 	unset REMOTE_FILE_DB_GZ
 	unset REMOTE_SERVER
@@ -591,27 +602,28 @@ function l2l_reset_all {
 }
 
 
-function l2l_reset {
+function l2l_reset() {
 	l2l_reset_db
 	l2l_reset_domain
 	l2l_reset_type
 }
 
 
-function l2l_reset_type {
+function l2l_reset_type() {
 	unset IS_TYPE
+	unset IS_LIVE
 	l2l_reset_local_base
 	l2l_reset_local
 }
 
 
-function l2l_reset_local {
+function l2l_reset_local() {
 	unset LOCAL_DB_MODS
 	unset LOCAL_MODS
 }
 
 
-function l2l_reset_local_base {
+function l2l_reset_local_base() {
 	LOCAL_BASE_DB_MODS_I=1
 	LOCAL_BASE_MODS_I=1
 	unset LOCAL_BASE_DB_MODS
@@ -619,7 +631,7 @@ function l2l_reset_local_base {
 }
 
 
-function l2l_reset_domain {
+function l2l_reset_domain() {
 	unset DOMAIN_BASE
 	unset DOMAIN_LOCALHOST
 	unset DOMAIN_NAME
@@ -628,7 +640,7 @@ function l2l_reset_domain {
 }
 
 
-function l2l_reset_db {
+function l2l_reset_db() {
 	unset DB_HOST
 	unset DB_NAME
 	unset DB_PW
@@ -1119,6 +1131,13 @@ function l2l_display() {
 
 
 function l2l_site_common() {
+	RSYNC_COMMON_INC_EXC="--include=.htaccess* --include=temp/ --exclude=**/temp/** --include=tmp*/ --exclude=**/tmp*/** --include=zzz*/ --exclude=**/zzz*/** --exclude=error_log"
+
+	if [[ -n ${IS_LIVE} ]]
+	then
+		return
+	fi
+
 	# TODO push search/replace to vars, then create mods based upon IS_PUSH
 	# LOCAL_BASE_MODS[(( LOCAL_BASE_MODS_I++ ))]="perl -pi -e 's/^(AddHandler fcgid-script .php)/# \1/g' .htaccess"
 	LOCAL_BASE_MODS[(( LOCAL_BASE_MODS_I++ ))]="perl -pi -e 's#${DOMAIN_NAME}#${DOMAIN_LOCALHOST}#g' .htaccess"
@@ -1127,8 +1146,6 @@ function l2l_site_common() {
 	then
 		LOCAL_BASE_MODS[(( LOCAL_BASE_MODS_I++ ))]="perl -pi -e 's#${DB_HOST}#${DB_LOCALHOST}#g' ${FILE_CONFIG}"
 	fi
-
-	RSYNC_COMMON_INC_EXC="--include=.htaccess* --include=temp/ --exclude=**/temp/** --include=tmp*/ --exclude=**/tmp*/** --include=zzz*/ --exclude=**/zzz*/** --exclude=error_log"
 }
 
 
@@ -1632,15 +1649,20 @@ function l2l_site_ilance() {
 	IS_TYPE="ilance"
 	FILE_CONFIG="functions/connect.php"
 
+	# rsync mods
+	RSYNC_SITE_INC_EXC="--include=cache/ --exclude=**/cache/**"
+
+	if [[ -n ${IS_LIVE} ]]
+	then
+		return
+	fi
+
 	# file mods
 	LOCAL_BASE_MODS[(( LOCAL_BASE_MODS_I++ ))]="perl -pi -e 's#${DOMAIN_NAME}#${DOMAIN_LOCALHOST}#g' functions/config.php"
 	LOCAL_BASE_MODS[(( LOCAL_BASE_MODS_I++ ))]="perl -pi -e 's#${REMOTE_DIR_WWW}#${LOCAL_DIR_WWW}#g' functions/config.php"
 
 	# db mods
 	# LOCAL_BASE_DB_MODS[(( LOCAL_BASE_DB_MODS_I++ ))]=
-
-	# rsync mods
-	RSYNC_SITE_INC_EXC="--include=cache/ --exclude=**/cache/**"
 }
 
 
@@ -1666,6 +1688,14 @@ function l2l_site_typo3() {
 	IS_TYPE="typo3"
 	FILE_CONFIG="typo3conf/localconf.php"
 
+	# rsync mods
+	RSYNC_SITE_INC_EXC="--include=typo3temp/ --exclude=**/typo3temp/** --include=_temp_/ --exclude=**/_temp_/** --exclude=typo3conf/temp_CACHED_*.php --exclude=typo3conf/deprecation_*.log"
+
+	if [[ -n ${IS_LIVE} ]]
+	then
+		return
+	fi
+
 	# file mods
 	LOCAL_BASE_MODS[(( LOCAL_BASE_MODS_I++ ))]="rm -f typo3conf/temp_CACHED_*.php"
 	LOCAL_BASE_MODS[(( LOCAL_BASE_MODS_I++ ))]="rm -rf typo3temp/*"
@@ -1674,9 +1704,6 @@ function l2l_site_typo3() {
 	# LOCAL_BASE_DB_MODS[(( LOCAL_BASE_DB_MODS_I++ ))]=
 	LOCAL_BASE_DB_MODS[(( LOCAL_BASE_DB_MODS_I++ ))]="UPDATE sys_domain SET hidden = 1 WHERE domainName NOT LIKE '%.${DOMAIN_LOCALHOST_BASE}';"
 	LOCAL_BASE_DB_MODS[(( LOCAL_BASE_DB_MODS_I++ ))]="UPDATE sys_domain SET hidden = 0 WHERE domainName LIKE '%.${DOMAIN_LOCALHOST_BASE}';"
-
-	# rsync mods
-	RSYNC_SITE_INC_EXC="--include=typo3temp/ --exclude=**/typo3temp/** --include=_temp_/ --exclude=**/_temp_/** --exclude=typo3conf/temp_CACHED_*.php --exclude=typo3conf/deprecation_*.log"
 }
 
 
@@ -1689,14 +1716,19 @@ function l2l_site_static() {
 	IS_TYPE="static"
 	FILE_CONFIG=
 
+	# rsync mods
+	# RSYNC_SITE_INC_EXC=
+
+	if [[ -n ${IS_LIVE} ]]
+	then
+		return
+	fi
+
 	# file mods
 	# LOCAL_BASE_MODS[(( LOCAL_BASE_MODS_I++ ))]=
 
 	# db mods
 	# LOCAL_BASE_DB_MODS[(( LOCAL_BASE_DB_MODS_I++ ))]=
-
-	# rsync mods
-	# RSYNC_SITE_INC_EXC=
 }
 
 
@@ -1724,14 +1756,19 @@ function l2l_site_openx() {
 		FILE_CONFIG="openx/var/www.${DOMAIN_NAME}.conf.php"
 	fi
 
+	# rsync mods
+	# RSYNC_SITE_INC_EXC=
+
+	if [[ -n ${IS_LIVE} ]]
+	then
+		return
+	fi
+
 	# file mods
 	# LOCAL_BASE_MODS[(( LOCAL_BASE_MODS_I++ ))]=
 
 	# db mods
 	# LOCAL_BASE_DB_MODS[(( LOCAL_BASE_DB_MODS_I++ ))]=
-
-	# rsync mods
-	# RSYNC_SITE_INC_EXC=
 }
 
 
@@ -1756,14 +1793,19 @@ function l2l_site_phplist() {
 	IS_TYPE="phplist"
 	FILE_CONFIG="lists/config/config.php"
 
+	# rsync mods
+	# RSYNC_SITE_INC_EXC=
+
+	if [[ -n ${IS_LIVE} ]]
+	then
+		return
+	fi
+
 	# file mods
 	# LOCAL_BASE_MODS[(( LOCAL_BASE_MODS_I++ ))]=
 
 	# db mods
 	# LOCAL_BASE_DB_MODS[(( LOCAL_BASE_DB_MODS_I++ ))]=
-
-	# rsync mods
-	# RSYNC_SITE_INC_EXC=
 }
 
 
@@ -1789,6 +1831,14 @@ function l2l_site_oscommerce() {
 	IS_TYPE="oscommerce"
 	FILE_CONFIG="includes/configure.php"
 
+	# rsync mods
+	# RSYNC_SITE_INC_EXC=
+
+	if [[ -n ${IS_LIVE} ]]
+	then
+		return
+	fi
+
 	# file mods
 	LOCAL_BASE_MODS[(( LOCAL_BASE_MODS_I++ ))]="perl -pi -e \"s#${REMOTE_DIR_WWW}#${LOCAL_DIR_WWW}#g\" ${FILE_CONFIG} admin/${FILE_CONFIG}"
 	LOCAL_BASE_MODS[(( LOCAL_BASE_MODS_I++ ))]="perl -pi -e \"s#(www\.)?${DOMAIN_NAME}#${DOMAIN_LOCALHOST}#g\" ${FILE_CONFIG} admin/${FILE_CONFIG}"
@@ -1797,9 +1847,6 @@ function l2l_site_oscommerce() {
 
 	# db mods
 	# LOCAL_BASE_DB_MODS[(( LOCAL_BASE_DB_MODS_I++ ))]=
-
-	# rsync mods
-	# RSYNC_SITE_INC_EXC=
 }
 
 
@@ -1827,14 +1874,19 @@ function l2l_site_xtcommerce() {
 	IS_TYPE="xtcommerce"
 	FILE_CONFIG="includes/configure.php"
 
+	# rsync mods
+	# RSYNC_SITE_INC_EXC=
+
+	if [[ -n ${IS_LIVE} ]]
+	then
+		return
+	fi
+
 	# file mods
 	# LOCAL_BASE_MODS[(( LOCAL_BASE_MODS_I++ ))]=
 
 	# db mods
 	# LOCAL_BASE_DB_MODS[(( LOCAL_BASE_DB_MODS_I++ ))]=
-
-	# rsync mods
-	# RSYNC_SITE_INC_EXC=
 }
 
 
@@ -1879,6 +1931,14 @@ function l2l_site_wordpress() {
 	FILE_CONFIG="wp-config.php"
 	WWW_USER=${WWW_GROUP}
 
+	# rsync mods
+	RSYNC_SITE_INC_EXC="--include=wp-content/cache/ --exclude=**/wp-content/cache/** --include=wp-content/w3tc/ --exclude=**/wp-content/w3tc/**"
+
+	if [[ -n ${IS_LIVE} ]]
+	then
+		return
+	fi
+
 	# file mods
 	# need to disable this in wp-config.php, else no login
 	LOCAL_BASE_MODS[(( LOCAL_BASE_MODS_I++ ))]="perl -pi -e \"s#^(define\(\s?'COOKIE_DOMAIN', '${DOMAIN_NAME}'.*$)#// \1#g\" wp-config.php"
@@ -1893,14 +1953,19 @@ function l2l_site_wordpress() {
 	LOCAL_BASE_DB_MODS[(( LOCAL_BASE_DB_MODS_I++ ))]="UPDATE wp_options SET option_value = '${HTTP_DOMAIN_LOCALHOST}' WHERE option_value LIKE '${HTTP_DOMAIN_NAME}/';"
 
 	LOCAL_BASE_DB_MODS[(( LOCAL_BASE_DB_MODS_I++ ))]="UPDATE wp_posts SET post_content = REPLACE(post_content, '${HTTP_DOMAIN_NAME}', '${HTTP_DOMAIN_LOCALHOST}') ;"
-
-	# rsync mods
-	RSYNC_SITE_INC_EXC="--include=wp-content/cache/ --exclude=**/wp-content/cache/** --include=wp-content/w3tc/ --exclude=**/wp-content/w3tc/**"
 }
 
 
 function l2l_site_wordpress_multisite() {
 	l2l_site_wordpress
+
+	# rsync mods
+	# RSYNC_SITE_INC_EXC=
+
+	if [[ -n ${IS_LIVE} ]]
+	then
+		return
+	fi
 
 	# file mods
 	# need to disable this in wp-config.php, else no login
@@ -1924,9 +1989,6 @@ function l2l_site_wordpress_multisite() {
 	LOCAL_BASE_DB_MODS[(( LOCAL_BASE_DB_MODS_I++ ))]="UPDATE wp_blogs SET ${domain_sets} ${where};"
 
 	LOCAL_BASE_DB_MODS[(( LOCAL_BASE_DB_MODS_I++ ))]="UPDATE wp_domain_mapping SET ${domain_sets} ${where};"
-
-	# rsync mods
-	# RSYNC_SITE_INC_EXC=
 }
 
 
