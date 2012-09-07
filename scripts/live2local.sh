@@ -738,6 +738,11 @@ function l2l_config_push() {
 
 
 function l2l_do_sync() {
+	if [[ -n ${IS_TYPE} ]]
+	then
+		LOCAL_FILE_CONFIG="${LOCAL_FILE_CONFIG}-${IS_TYPE}"
+	fi
+
 	case "${1}" in
 		"rsync" )
 		l2l_display "${CMD_RSYNC} ${RSYNC_OPTIONS} ${RSYNC_COMMON_INC_EXC} ${RSYNC_SITE_INC_EXC} ${RSYNC_MODS} ${LOCAL_DIR_WWW}/. ${REMOTE_SERVER}:${REMOTE_DIR_WWW}/*"
