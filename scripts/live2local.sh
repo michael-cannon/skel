@@ -230,7 +230,7 @@ function l2l_settings_server() {
 	
 		APACHE_CMD=`which apachectl`
 		DIR_VHOST="/opt/local/apache2/conf/vhosts"
-		DEV_GROUP="staff"
+		DEV_GROUP="www"
 		SITES="Sites"
 
 		if [[ -z ${APACHE_PORT} ]]
@@ -246,7 +246,6 @@ function l2l_settings_server() {
 			DIR_WWW="/var/www"
 			DOMAIN_LOCALHOST_BASE="42.in2code.de"
 			WWW_GROUP="www-data"
-			# WWW_USER="www-data"
 			;;
 	
 			* )
@@ -1932,7 +1931,6 @@ function l2l_get_config_wordpress {
 function l2l_site_wordpress() {
 	IS_TYPE="wordpress"
 	FILE_CONFIG="wp-config.php"
-	WWW_USER=${WWW_GROUP}
 
 	# rsync mods
 	RSYNC_SITE_INC_EXC="--include=wp-content/cache/ --exclude=**/wp-content/cache/** --include=wp-content/w3tc/ --exclude=**/wp-content/w3tc/**"
