@@ -9,7 +9,7 @@ if [ ! "$1" ]
 then
 	echo "Usage: `basename $0` url"
 	echo "	Save url to local drive. Useful for mirroring website locally."
-	exit 65
+	exit
 fi
 
 # boolean helpers

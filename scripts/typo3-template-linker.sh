@@ -9,7 +9,7 @@ if [ ! "$1" ]
 then
 	echo "Usage: `basename $0` template-uri"
 	echo "Example: \"bpm@bsg:+min/uploads/tx_ttnews $ typo3-template-linker.sh ../../bpminstitute.org/news_template.roundtable.tmpl\""
-	exit 65
+	exit
 fi
 
 BAK=".bak"

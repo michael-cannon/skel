@@ -6,4 +6,10 @@
 if [[ -e /usr/local/apache/logs/error_log ]]
 then
 	alias terror_log='tail -f /usr/local/apache/logs/error_log'
+elif [[ -e /etc/httpd/logs/error_log ]]
+then
+	alias terror_log='tail -f /etc/httpd/logs/error_log'
+elif [[ -e /opt/local/apache2/logs/error_log ]]
+then
+	alias terror_log='tail -f /opt/local/apache2/logs/error_log'
 fi

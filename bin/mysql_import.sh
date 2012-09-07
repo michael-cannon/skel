@@ -10,7 +10,7 @@ then
 	FUNCTION=`basename $0`
 	echo "Usage: ${FUNCTION} host user password database sql-file"
 	echo Simple MySQL database script loader
-	exit 65
+	exit
 fi
 
 nice mysql \

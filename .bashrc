@@ -174,19 +174,12 @@ export PROMPT_COMMAND=prompt_command
 # Save each command right after it has been executed, not at the end of the session.
 export PROMPT_COMMAND="history -a;${PROMPT_COMMAND}"
 
-# Source completion code
-BASH_COMP="~/bin/bash_completion"
-BASH=${BASH_VERSION%.*}
-BMAJOR=${BASH%.*}
-BMINOR=${BASH#*.}
-
 # root mods
 if [ "${LOGNAME}" = "root" ]
 then
  	alias rm='rm -i'
  	alias cp='cp -i'
  	alias mv='mv -i'
-	BASH_COMP="~/.skel/bin/bash_completion"
 fi
 
 # comprock@lilg4:~/Documents $ 
@@ -195,15 +188,24 @@ fi
 # comprock@lilg4:...ts/projects/zzz-projects $
 export PS1="\u@\h:\${NEW_PWD} \$ "
 
-if [ "${PS1}" ] && [ -f ${BASH_COMP} ]
-then
-	if [ ${BMAJOR} -eq 2 ] && [ ${BMINOR} '>' 04 ] || [ ${BMAJOR} -gt 2 ]
-	then
-		${BASH_COMP}
+# Check for recent enough version of bash.
+bash=${BASH_VERSION%.*}; bmajor=${bash%.*}; bminor=${bash#*.}
+
+# Check for interactive shell.
+if [ -n "$PS1" ]; then
+	if [ $bmajor -eq 2 -a $bminor '>' 04 ] || [ $bmajor -gt 2 ]; then
+		if [ -r ~/bin/bash_completion ]; then
+			# Source completion code.
+			source ~/bin/bash_completion
+
+			if [[ -e ~/.bash_completion ]]
+			then
+				source ~/.bash_completion
+			fi
+		fi
 	fi
 fi
-
-unset BASH BMAJOR BMINOR BASH_COMP
+unset bash bminor bmajor
 
 # colors - see man ls for designations
 export CLICOLOR="Yes"

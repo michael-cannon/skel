@@ -1,5 +1,8 @@
 #! /bin/bash
-# helper script for pulling down latest TYPO3 zip archive and updating things
+#
+# helper script for pulling down TYPO3 zip archive and updating
+# also possible to install baseline system
+#
 # @author Michael Cannon <michael@typo3vagabond.com>
 
 # TYPO3 version to pull

@@ -1,6 +1,7 @@
 <?php 
-/*	lookforbadguys.php		 2011-09-27
-	Copyright (C)2011 Karen Chun, Steven Whitney.
+# http://25yearsofprogramming.com/php/lookforbadguys.txt
+/*	lookforbadguys.php		 2012-04-09
+	Copyright (C)2012 Karen Chun, Steven Whitney.
 	Initially published by http://25yearsofprogramming.com.
 
 	This program is free software; you can redistribute it and/or
@@ -89,6 +90,13 @@ CHANGELOG:
   1. Revised the base64_decode regex to show more matched text, if present.
   2. Revised the backtick operator regex to be less greedy and show individual occurrences.
 
+--2012-04-09 Steven Whitney
+  1. Added regexes to $SuspiciousSnippets array to find preg_replace with /e (eval) modifier.
+  2. New user configuration option: date_default_timezone_set().
+  3. Output lines showing filenames now also show the file's last-modified timestamp.
+  4. New search routine can report all files modified within a specified date/time range.
+  5. Output colors are defined in an array to make it easier to change them.
+  
 ----
   
 */ 
@@ -103,7 +111,8 @@ It allows you to put the script in a public folder but prevent others from runni
 Change the IP address to yours. (127.0.0.1 is localhost.) 
 */
 
-if($_SERVER['REMOTE_ADDR'] !== '217.72.208.132' || $_SERVER['REMOTE_ADDR'] !== '127.0.0.1') exit('Forbidden');
+if($_SERVER['REMOTE_ADDR'] !== '127.0.0.1') exit('Forbidden');
+
 
 /*
 Searches will be done in this directory and all dirs inside it. 
@@ -117,11 +126,11 @@ Always use forward slashes for the path. Windows example: C:/wamp/apache2/htdocs
 $StartPath = './';
 
 
-
 # TRUE  = report shows full file paths such as /home/userid/public_html/blog/...
 # FALSE = report shows relative file paths such as ./blog/...
 
 $UseAbsoluteFilePaths = TRUE;
+
 
 # These set maximum execution time, in seconds. The script can take a while.
 # These have no effect if you run PHP in "safe mode" (safe mode is usually undesirable). 
@@ -132,6 +141,43 @@ ini_set('set_time_limit', '300');
 
 ini_set('display_errors', '1');		# 1=TRUE, ensure that you see errors such as time-outs.
 
+
+/*
+The timezone must be given a value (any legal value) to avoid a PHP warning 
+every time the date() function is called.
+Ideally, you should enter in the line below the correct timezone 
+that your server uses for its file timestamps.
+The PHP manual at http://www.php.net/manual/en/timezones.php 
+has list of supported timezone strings.
+*/
+
+date_default_timezone_set('America/Los_Angeles');
+
+
+/*
+The program can optionally search for files with suspicious last-modified timestamps.
+To use that feature, define here the time window you consider suspicious,
+such as the period during which you know files were being modified by a hack.
+The search for suspicious timestamps is not performed 
+unless you define a more recent time window here than the examples shown.
+
+REQUIRED FORMAT is "YYYY-MM-DD HH:MM:SS" 
+*/
+
+$TimeRangeStart = '1980-04-09 05:01:05';
+$TimeRangeEnd   = '1980-04-10 23:59:59';
+
+
+# TEXT COLORS IN AN ARRAY, TO MAKE IT EASIER TO CHANGE THEM.
+
+$Colors = array
+(
+	'timestamp'  => '#808080',	# FILE TIMESTAMPS
+	'filename'   => 'blue',		# FILE PATHS AND NAMES
+	'suspicious' => 'red',		# WARNINGS, AND REGULAR EXPRESSIONS
+	'status'     => 'green',	# STATUS MESSAGES
+	'snippet'    => 'black'		# TEXT OF SUSPICIOUS SNIPPETS
+);
 
 # ================================================================================
 # GLOBAL VARIABLES
@@ -168,7 +214,7 @@ modified .htaccess that makes images executable, and so on.</p>
 
 $RealPath = GetCanonicalPath($StartPath);
 if($RealPath === FALSE)
-	exit(CleanColorText("Cannot continue. The starting directory is inaccessible to PHP.", 'red') . "<br>");
+	exit(CleanColorText("Cannot continue. The starting directory is inaccessible to PHP.", $Colors['suspicious']) . "<br>");
 if($UseAbsoluteFilePaths)
 	$StartPath = $RealPath;
 
@@ -230,13 +276,19 @@ $FullpathExcludeRegexes = array
 
 function badnames($filename) 
 { 
-	echo CleanColorText($filename, 'blue') . " is a " . CleanColorText('suspicious file name', 'red') . ".<br>"; 
+	global $Colors;
+	
+	echo 
+		CleanColorText(date('Y-m-d H:i:s ', filemtime($filename)), $Colors['timestamp']) . 
+		CleanColorText($filename, $Colors['filename']) . 
+		" is a " . 
+		CleanColorText('suspicious file name', $Colors['suspicious']) . ".<br>"; 
 }   
 
 # --------------------------------------------------------------------------------
 # THIS CODE ACTUALLY DOES THE SEARCH.
 
-echo CleanColorText("Searching for files with suspicious names...", 'green') . "<br>";
+echo CleanColorText("Searching for files with suspicious names...", $Colors['status']) . "<br>";
 
 FindAndProcessFiles($StartPath, $FileMatchRegexes, $FullpathExcludeRegexes, 'badnames'); 
 
@@ -270,13 +322,22 @@ $FullpathExcludeRegexes = array
 # HANDLER FUNCTION - THIS IS THE ACTION PERFORMED ON A FILE WHOSE NAME IS A MATCH.
 function pharma($filename) 
 { 
-	echo CleanColorText($filename, 'blue') . " is most likely a " . CleanColorText('pharma hack', 'red') . ".<br>"; 
+	global $Colors;
+
+	echo 
+		CleanColorText(date('Y-m-d H:i:s ', filemtime($filename)), $Colors['timestamp']) . 
+		CleanColorText($filename, $Colors['filename']) . 
+		" is most likely a " . 
+		CleanColorText('pharma hack', $Colors['suspicious']) . ".<br>"; 
 } 
 
 # --------------------------------------------------------------------------------
 # THIS CODE ACTUALLY DOES THE SEARCH.
 
-echo "<br>" . CleanColorText("Searching for files with names related to Wordpress pharma hack...", 'green') . "<br>";
+echo 
+	"<br>" . 
+	CleanColorText("Searching for files with names related to Wordpress pharma hack...", $Colors['status']) . 
+	"<br>";
 
 FindAndProcessFiles($StartPath, $FileMatchRegexes, $FullpathExcludeRegexes, 'pharma'); 
 
@@ -313,9 +374,11 @@ $FullpathExcludeRegexes = array
 
 function FindMaliciousCodeSnippets($filename) 
 { 
+	global $Colors;
+
 	if(!is_readable($filename))
 	{
-		echo "Warning: Unable to read " . CleanColorText($filename, 'blue') . 
+		echo "Warning: Unable to read " . CleanColorText($filename, $Colors['filename']) . 
 			". Check it manually and check its access permissions.<br>";
 		return;
 	}
@@ -349,8 +412,31 @@ function FindMaliciousCodeSnippets($filename)
 
 		'/system\s*\(/i',		
 
+		# --------------------		
+		# OCCURRENCES OF POSSIBLE PCRE PATTERNS WITH
+		# THE -e (EVAL) PATTERN MODIFIER THAT IS USED BY PREG_REPLACE.
+
+		# (1) VARIABLE DEFINITIONS CONTAINING PCRE PATTERNS USING THE 'e' OPTION,
+		# FOLLOWED FAIRLY CLOSELY BY A CALL TO PREG_REPLACE.
+		# THE 2 VARIATIONS ALLOW FOR SINGLE AND DOUBLE-QUOTES IN THE VARIABLE DECLARATION.
+
+		'#\$\S+\s*=\s*[\x22]([^A-Za-z0-9[:space:]\x5C\x22])[^\x22]{0,75}\1[imsxADSUXJu]*e.{0,75}[pP][rR][eE][gG]_[rR][eE][pP][lL][aA][cC][eE]\s*\(#',	# CASE-SENSITIVE REQUIRED
+
+		'#\$\S+\s*=\s*[\x27]([^A-Za-z0-9[:space:]\x5C\x27])[^\x27]{0,75}\1[imsxADSUXJu]*e.{0,75}[pP][rR][eE][gG]_[rR][eE][pP][lL][aA][cC][eE]\s*\(#',	# CASE-SENSITIVE REQUIRED
+
+		# (2) PREG_REPLACE CALLS THAT USE THE -e OPTION.
+		# THE 2 VARIATIONS ALLOW FOR SINGLE AND DOUBLE-QUOTES AROUND THE PCRE PATTERN.
+
+		'#[pP][rR][eE][gG]_[rR][eE][pP][lL][aA][cC][eE]\s*\(\s*[\x22]([^A-Za-z0-9[:space:]\x5C])[^\x22]{0,75}\1[imsxADSUXJu]*e#',	# CASE-SENSITIVE REQUIRED
+
+		'#[pP][rR][eE][gG]_[rR][eE][pP][lL][aA][cC][eE]\s*\(\s*[\x27]([^A-Za-z0-9[:space:]\x5C])[^\x27]{0,75}\1[imsxADSUXJu]*e#',	# CASE-SENSITIVE REQUIRED
+		# --------------------		
+
 		# PHP BACKTICK OPERATOR INVOKES SYSTEM FUNCTIONS, SAME AS system(),
-		# BUT IT IS ALSO A DATABASE,TABLE,FIELD DELIMITER IN SQL DATABASE QUERIES.
+		# BUT THIS TEST CAN PRODUCE MANY FALSE POSITIVES BECAUSE 
+		# BACKTICKS ARE ALSO DATABASE,TABLE,FIELD NAME DELIMITERS IN SQL QUERIES.
+		# MATCHED TEXT IS SUSPICIOUS IF IT CONTAINS OPERATING SYSTEM COMMANDS.
+		# USUALLY NOT SUSPICIOUS IF IT CONTAINS DATABASE TABLE OR FIELD NAMES.
 
 		'/`[^`]+`/',		
 
@@ -410,7 +496,11 @@ function FindMaliciousCodeSnippets($filename)
 	);
 
 	# ACCUMULATES ALL THE WARNING MESSAGES FOR THIS FILE.
-	$OutputText = array(CleanColorText($filename, 'blue'));
+	$OutputText = array
+	(
+		CleanColorText(date('Y-m-d H:i:s ', filemtime($filename)), $Colors['timestamp']) . 
+		CleanColorText($filename, $Colors['filename'])
+	);
 
 	# SEARCH THE FILE FOR EACH OF THE ABOVE SNIPPETS.
 	foreach($SuspiciousSnippets as $snippet) 
@@ -426,9 +516,9 @@ function FindMaliciousCodeSnippets($filename)
 				$s = substr($file, $occurrence[1], 80);	
 				$newline = (($i === 1) ? '<br><br>' : '<br>');
 				$OutputText[] = $newline . 
-								CleanColorText("Regex ($i of $matchcount): ", 'black') . 
-								CleanColorText($snippet, 'red') . 
-								CleanColorText(": " . $s, 'black'); 
+								CleanColorText("Regex ($i of $matchcount): ", $Colors['snippet']) . 
+								CleanColorText($snippet, $Colors['suspicious']) . 
+								CleanColorText(": " . $s, $Colors['snippet']); 
 			}
 		}
 	}
@@ -447,12 +537,79 @@ function FindMaliciousCodeSnippets($filename)
 # --------------------------------------------------------------------------------
 # THIS CODE ACTUALLY DOES THE SEARCH.
 
-echo "<br>" . CleanColorText("Searching for files containing suspicious code or other text...", 'green') . "<br>";
+echo 
+	"<br>" . 
+	CleanColorText("Searching for files containing suspicious code or other text...", $Colors['status']) . 
+	"<br>";
 
 FindAndProcessFiles($StartPath, $FileMatchRegexes, $FullpathExcludeRegexes, 'FindMaliciousCodeSnippets');
 
+# ================================================================================
+# 4) SUSPICIOUS TIMESTAMPS.
+# If you have found hacked files with timestamps showing that they were all modified
+# at about the same date and time, you can use this routine to locate other files 
+# that were modified at about the same time. 
+# Define the suspicious time range in the User Configuration section near top of this script.
+# Files with timestamps within that date/time range will be reported as suspicious.
+# ================================================================================
+# FILENAMES TO MATCH
+
+$FileMatchRegexes = array
+(
+	'/\.htaccess$/i',
+	'/\.php[45]?$/i',
+	'/\.html?$/i',
+	'/\.aspx?$/i',
+	'/\.inc$/i',
+	'/\.cfm$/i',
+	'/\.js$/i',
+	'/\.txt$/i',
+	'/\.css$/i'
+);
+# AND FULLPATHS TO EXCLUDE FROM EXAMINATION
+
+$FullpathExcludeRegexes = array
+(
+	'#lookforbadguys\.php$#i'
+);
 
 # --------------------------------------------------------------------------------
+# HANDLER FUNCTION - THIS IS THE ACTION PERFORMED ON A FILE WHOSE NAME IS A MATCH.
+
+function SuspiciousTimestamp($filename) 
+{ 
+	global $TimeRangeStart, $TimeRangeEnd, $Colors;
+
+	$lastmod = date('Y-m-d H:i:s', filemtime($filename)); 
+	if(($lastmod >= $TimeRangeStart) && ($lastmod <= $TimeRangeEnd))
+	{
+		echo 
+			CleanColorText($lastmod . ' ', $Colors['timestamp']) . 
+			CleanColorText($filename, $Colors['filename']) . 
+			" has a " . 
+			CleanColorText('suspicious timestamp', $Colors['suspicious']) . ".<br>"; 
+	}
+}   
+
+# --------------------------------------------------------------------------------
+# THIS CODE ACTUALLY DOES THE SEARCH.
+
+# TO AVOID WASTING TIME WHEN A TIMESTAMP SEARCH ISN'T NEEDED,
+# THIS CODE DOES NOT RUN UNTIL A MORE RECENT TIME WINDOW HAS BEEN DEFINED 
+# IN THE USER CONFIGURATION SECTION NEAR THE TOP OF THE SCRIPT.
+
+if(substr($TimeRangeStart, 0, 4) > '1980')
+{
+	echo 
+		"<br>" . 
+		CleanColorText("Searching for files with timestamps in the suspicious date/time range...", 
+			$Colors['status']) .
+		"<br>";
+
+	FindAndProcessFiles($StartPath, $FileMatchRegexes, $FullpathExcludeRegexes, 'SuspiciousTimestamp'); 
+}
+
+# ================================================================================
 # END OF THE SEARCH ROUTINES
 # ================================================================================
 # ================================================================================
@@ -476,7 +633,8 @@ function CleanColorText($text, $color)
 
 function ResetCounts()
 {
-	global $FilesCount, $FilesMatchedCount, $DirectoriesCount, $DirectoriesMatchedCount, $AllFilesToProcess;
+	global $FilesCount, $FilesMatchedCount, 
+			$DirectoriesCount, $DirectoriesMatchedCount, $AllFilesToProcess, $Colors;
 
 	$FilesCount = $FilesMatchedCount = $DirectoriesCount = $DirectoriesMatchedCount = 0;
 	$AllFilesToProcess = array();
@@ -486,14 +644,15 @@ function ResetCounts()
 
 function ShowCounts()
 {
-	global $FilesCount, $FilesMatchedCount, $DirectoriesCount, $DirectoriesMatchedCount;
+	global $FilesCount, $FilesMatchedCount, 
+			$DirectoriesCount, $DirectoriesMatchedCount, $Colors;
 
 	$s =	"Files encountered = $FilesCount" . ', ' . 
 			"Matching regex and processed = $FilesMatchedCount" . '; ' . 
 			"Directories encountered = $DirectoriesCount" . ', ' . 
 			"Matched and processed = $DirectoriesMatchedCount";
 
-	echo CleanColorText($s, 'green') . "<br>";
+	echo CleanColorText($s, $Colors['status']) . "<br>";
 }
 
 # --------------------------------------------------------------------------------
@@ -533,8 +692,9 @@ allows the filesystem to be traversed only once to find all matches (20+% faster
 function BuildFileList($StartDir, $FileMatchRegexes, $FullpathExcludeRegexes) 
 {
 	# NOTE THAT THIS FUNCTION REQUIRES THE GLOBAL VARIABLES DECLARED EARLIER.
-	global $FilesCount, $FilesMatchedCount, $DirectoriesCount, $DirectoriesMatchedCount, 
-			$AllFilesToProcess;
+	global $FilesCount, $FilesMatchedCount, 
+			$DirectoriesCount, $DirectoriesMatchedCount, 
+			$AllFilesToProcess, $Colors;
 
 	# CHANGE BACKSLASHES TO FORWARD, WHICH IS OK IN PHP, EVEN IN WINDOWS.
 	# THEN REMOVE ANY TRAILING SLASHES AND ADD EXACTLY ONE.
@@ -545,14 +705,14 @@ function BuildFileList($StartDir, $FileMatchRegexes, $FullpathExcludeRegexes)
 	# ENSURE THAT THE CURRENT DIRECTORY EXISTS AND IS READABLE BY PHP.
 	if(!is_dir($StartDir))
 	{
-		echo "Warning: Directory does not exist: " . CleanColorText($StartDir, 'blue') . "<br>";
+		echo "Warning: Directory does not exist: " . CleanColorText($StartDir, $Colors['filename']) . "<br>";
 		return;
 	}
 	$DirectoriesCount++;		# COUNT IT AS A DIRECTORY (READABLE OR NOT)
 	if(!is_readable($StartDir))
 	{
-		echo CleanColorText("Warning: Directory is not readable by PHP: ", 'red') . 
-				CleanColorText($StartDir, 'blue') . 
+		echo CleanColorText("Warning: Directory is not readable by PHP: ", $Colors['suspicious']) . 
+				CleanColorText($StartDir, $Colors['filename']) . 
 				". Check its owner/group permissions.<br>";
 		return;
 	}
@@ -637,10 +797,11 @@ function FindAndProcessFiles($StartDir, $FileMatchRegexes, $FullpathExcludeRegex
 # END FUNCTION LIBRARY
 # ================================================================================
 
-echo "<br>" . CleanColorText("Done!", 'green') . "<br>"; 
+echo "<br>" . CleanColorText("Done!", $Colors['status']) . "<br>"; 
 
 ?> 
 
 </p> 
 </body> 
 </html>
+

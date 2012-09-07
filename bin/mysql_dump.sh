@@ -10,7 +10,7 @@ then
 	FUNCTION=`basename $0`
 	echo "Usage: ${FUNCTION} host user password database"
 	echo Simple MySQL database dumper
-	exit 65
+	exit
 fi
 
 DATE=`date +'%F'`

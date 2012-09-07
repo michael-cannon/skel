@@ -3,7 +3,7 @@
 if [[ -z ${4} ]]
 then
 	echo "Usage: `basename $0` db_host db_user db_pw db_name"
-	exit 65
+	exit
 fi
 
 DB_HOST=${1}

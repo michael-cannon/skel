@@ -13,7 +13,7 @@
 if [ ! "$2" ]
 then
 	echo "Usage: `basename $0` source-file destination"
-	exit 65
+	exit
 fi
 
 # boolean helpers

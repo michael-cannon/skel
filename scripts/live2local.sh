@@ -1194,6 +1194,7 @@ function l2l_access_create() {
 
 
 function l2l_remove_all() {
+	l2l_settings_site
 	l2l_remove_document_root
 	l2l_remove_config_file
 
@@ -1867,6 +1868,8 @@ function l2l_typo3_source() {
 function l2l_site_mkvhost() {
 	IS_TYPE="mkvhost"
 	FILE_CONFIG="skip"
+
+	l2l_settings_site
 }
 
 

@@ -8,4 +8,4 @@ wget http://wordpress.org/latest.tar.gz
 tar -zxf latest.tar.gz 
 rm latest.tar.gz
 mv wordpress/* .
-rmdir wordpress/
+rmdir wordpress

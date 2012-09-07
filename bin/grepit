@@ -21,7 +21,7 @@ if [ ! "$1" ]
 then
 	echo "Usage: ${FUNCTION} pattern"
 	echo ${WARN_1}
-	exit 65
+	exit
 else
 	# original name
 	PATTERN="$*"

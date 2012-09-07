@@ -13,7 +13,7 @@ if [ ! "$1" ]
 then
 	echo "Usage: `basename $0` [source]"
 	echo "Used to delete and remove a file from SVN"
-	exit 65
+	exit
 fi
 
 # boolean helpers

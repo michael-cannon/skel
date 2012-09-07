@@ -6,7 +6,7 @@
 if [ ! "$1" ]
 then
 	echo "Usage: `basename $0` [file]"
-	exit 65
+	exit
 fi
 
 FILE=$1

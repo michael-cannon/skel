@@ -8,36 +8,36 @@ if [ ! "$1" ]
 then
 	echo "Usage: `basename $0` file [dig] [own dns]"
 	echo "Example: `basename $0` file_of_domain_names_one_per_line 1"
-	exit 65
+	exit
 fi
 
 FILE=$1
 
 if [ -n "$2" ]
 then
-	DIG="true"
+	DIG=1
 else
-	DIG="false"
+	DIG=
 fi
 
 if [ -n "$3" ]
 then
-	DIG_CBNS1="true"
+	DIG_CBNS1=1
 else
-	DIG_CBNS1="false"
+	DIG_CBNS1=
 fi
 
 for DOMAIN in `cat ${FILE}`
 do
 	host ${DOMAIN}
 
-	if [[ "true" -eq "${DIG}" ]]
+	if [[ -n ${DIG} ]]
 	then
 		echo dig ${DOMAIN} 
 		dig ${DOMAIN} 
 	fi
 
-	if [[ "true" -eq "${DIG_CBNS1}" ]]
+	if [[ -n ${DIG_CBNS1} ]]
 	then
 		echo dig ${DOMAIN} @ns1.typo3vagabond.com
 		dig ${DOMAIN} @ns1.typo3vagabond.com
