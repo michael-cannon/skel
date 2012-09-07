@@ -1807,14 +1807,20 @@ function l2l_get_config_xtcommerce {
 
 
 function l2l_reset {
-	unset DB_HOST
-	unset DB_NAME
-	unset DB_PW
-	unset DB_USER
+	l2l_reset_db
+
 	unset DEV_USER
 	unset DOMAIN_BASE
 	unset DOMAIN_LOCALHOST
 	unset DOMAIN_NAME
 	unset LOCAL_DIR_WWW
 	unset REMOTE_DIR_WWW
+}
+
+
+function l2l_reset_db {
+	unset DB_HOST
+	unset DB_NAME
+	unset DB_PW
+	unset DB_USER
 }
