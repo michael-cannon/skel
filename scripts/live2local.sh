@@ -602,8 +602,13 @@ function l2l_reset_all() {
 
 
 function l2l_reset() {
-	l2l_reset_db
+	l2l_reset_app
 	l2l_reset_domain
+}
+
+
+function l2l_reset_app() {
+	l2l_reset_db
 	l2l_reset_type
 }
 
