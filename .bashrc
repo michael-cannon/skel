@@ -1,3 +1,4 @@
+#!/bin/bash
 # .bashrc is executed for interactive non-login shells
 #
 # @author Michael Cannon, michael@typo3vagabond.com
