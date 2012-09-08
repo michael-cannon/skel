@@ -29,8 +29,8 @@
 
 # number of each to keep... comment out to skip that rotation
 # keepmonthly=3
-keepweekly=6
-keepdaily=7
+# keepweekly=6
+# keepdaily=7
 
 export PATH=$PATH:/usr/local/sbin:/usr/local/bin
 export POSTCPBACKUP=$$
