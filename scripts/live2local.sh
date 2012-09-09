@@ -326,6 +326,11 @@ function l2l_settings_db_local() {
 		return
 	fi
 
+	if [[ -z ${DB_HOST_LOCAL} ]]
+	then
+		DB_HOST_LOCAL="${DB_LOCALHOST}"
+	fi
+
 	if [[ -z ${DB_NAME_LOCAL} ]]
 	then
 		DB_NAME_LOCAL="${WWW_USER}_${IS_TYPE}"
@@ -1243,6 +1248,7 @@ function l2l_access_create() {
 	then
 		l2l_access_create_config_file
 		l2l_settings_db_local
+		l2l_access_create_config_file_local
 		l2l_access_create_database_user
 	fi
 
@@ -1350,14 +1356,14 @@ function l2l_remove_database_user() {
 	fi
 
 	echo "DROP DATABASE IF EXISTS \`${db_name}\`;" >> ${LOCAL_DB_DROP_FILE}
-	echo "DROP USER '${db_user}'@'localhost';" >> ${LOCAL_DB_DROP_FILE}
+	echo "DROP USER '${db_user}'@'${db_host}';" >> ${LOCAL_DB_DROP_FILE}
 	echo "FLUSH PRIVILEGES;" >> ${LOCAL_DB_DROP_FILE}
 
 	if [[ -z ${SHOW_COMMANDS} ]]
 	then
 		local db_local_pw=`l2l_get_mysql_pw`
 		mysql \
-			--host=localhost \
+			--host=${db_host} \
 			--user=root \
 			--password="${db_local_pw}" <  ${LOCAL_DB_DROP_FILE}
 	fi
@@ -1414,6 +1420,30 @@ function l2l_access_create_document_root() {
 		mkdir -p "${LOCAL_DIR_WWW}"
 		chmod 775 ${LOCAL_DIR_WWW}
 		chmod ug+s ${LOCAL_DIR_WWW}
+	fi
+}
+
+
+function l2l_access_create_config_file_local() {
+	if [[ -z ${IS_LOCAL} || ! -e ${FILE_CONFIG} || -n ${FILE_CONFIG_NO_OVERWRITE} ]]
+	then
+		return
+	fi
+	
+	l2l_display "Update ${FILE_CONFIG} with DB_*_LOCAL settings"
+
+	# replace DB_* with DB_*_LOCAL entries in FILE_CONFIG
+	if [[ -z ${SHOW_COMMANDS} ]]
+	then
+		perl -pi -e "s#${DB_HOST}#${DB_HOST_LOCAL}#g" ${FILE_CONFIG}
+		perl -pi -e "s#${DB_NAME}#${DB_NAME_LOCAL}#g" ${FILE_CONFIG}
+		perl -pi -e "s#${DB_USER}#${DB_USER_LOCAL}#g" ${FILE_CONFIG}
+		perl -pi -e "s#${DB_PW}#${DB_PW_LOCAL}#g" ${FILE_CONFIG}
+	else
+		echo "perl -pi -e \"s#${DB_HOST}#${DB_HOST_LOCAL}#g\" ${FILE_CONFIG}"
+		echo "perl -pi -e \"s#${DB_NAME}#${DB_NAME_LOCAL}#g\" ${FILE_CONFIG}"
+		echo "perl -pi -e \"s#${DB_USER}#${DB_USER_LOCAL}#g\" ${FILE_CONFIG}"
+		echo "perl -pi -e \"s#${DB_PW}#${DB_PW_LOCAL}#g\" ${FILE_CONFIG}"
 	fi
 }
 
@@ -1580,16 +1610,16 @@ function l2l_access_create_database_user() {
 	fi
 
 	echo "CREATE DATABASE IF NOT EXISTS \`${db_name}\` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;" >> ${LOCAL_DB_CREATE_FILE}
-	echo "CREATE USER '${db_user}'@'localhost' IDENTIFIED BY '${db_pw}';" >> ${LOCAL_DB_CREATE_FILE}
-	echo "GRANT USAGE ON *.* TO '${db_user}'@'localhost' IDENTIFIED BY '${db_pw}';" >> ${LOCAL_DB_CREATE_FILE}
-	echo "GRANT ALL PRIVILEGES ON \`${db_name}\`.* TO '${db_user}'@'localhost';" >> ${LOCAL_DB_CREATE_FILE}
+	echo "CREATE USER '${db_user}'@'${db_host}' IDENTIFIED BY '${db_pw}';" >> ${LOCAL_DB_CREATE_FILE}
+	echo "GRANT USAGE ON *.* TO '${db_user}'@'${db_host}' IDENTIFIED BY '${db_pw}';" >> ${LOCAL_DB_CREATE_FILE}
+	echo "GRANT ALL PRIVILEGES ON \`${db_name}\`.* TO '${db_user}'@'${db_host}';" >> ${LOCAL_DB_CREATE_FILE}
 	echo "FLUSH PRIVILEGES;" >> ${LOCAL_DB_CREATE_FILE}
 
 	if [[ -z ${DB_NO_CREATE} ]]
 	then
 		local db_local_pw=`l2l_get_mysql_pw`
 		mysql \
-			--host=localhost \
+			--host=${db_host} \
 			--user=root \
 			--password="${db_local_pw}" <  ${LOCAL_DB_CREATE_FILE}
 	fi
@@ -1697,7 +1727,7 @@ function l2l_get_mysql_pw() {
 	if [[ -z ${1} ]]
 	then
 		local db_pw_file="${DIR_HOME}/.ssh/l2l_config/mysql"
-		local db_host="localhost"
+		local db_host="${DB_LOCALHOST}"
 	else
 		local db_pw_file="${DIR_HOME}/.ssh/l2l_config/mysql.${1}"
 		local db_host="${DOMAIN_BASE}"
@@ -1718,7 +1748,7 @@ function l2l_get_mysql_pw() {
 }
 
 
-function l2l_get_config_ilance {
+function l2l_get_config_ilance() {
 	DB_HOST=`grep -P "\bDB_SERVER\b" ${FILE_CONFIG}`
 	DB_HOST=`echo ${DB_HOST} | sed -e "s#');.*##g" -e "s#^.*, '##g"`
 
@@ -1757,7 +1787,7 @@ function l2l_site_ilance() {
 }
 
 
-function l2l_get_config_typo3 {
+function l2l_get_config_typo3() {
 	DB_HOST=`grep -P "\btypo_db_host\b" ${FILE_CONFIG}`
 	DB_HOST=`echo ${DB_HOST} | sed -e "s#';.*##g" -e "s#^.*'##g"`
 
@@ -1798,7 +1828,7 @@ function l2l_site_typo3() {
 }
 
 
-function l2l_get_config_static {
+function l2l_get_config_static() {
 	return
 }
 
@@ -1823,7 +1853,7 @@ function l2l_site_static() {
 }
 
 
-function l2l_get_config_openx {
+function l2l_get_config_openx() {
 	DB_HOST=`grep -P -m 1 "\bhost\b" ${FILE_CONFIG}`
 	DB_HOST=`echo ${DB_HOST} | sed -e 's#"\?$##g' -e 's#^.*="\?##g'`
 
@@ -1863,7 +1893,7 @@ function l2l_site_openx() {
 }
 
 
-function l2l_get_config_phplist {
+function l2l_get_config_phplist() {
 	DB_HOST=`grep -P "\bdatabase_host\b" ${FILE_CONFIG}`
 	DB_HOST=`echo ${DB_HOST} | sed -e 's#";.*##g' -e 's#^.*"##g'`
 
@@ -1900,7 +1930,7 @@ function l2l_site_phplist() {
 }
 
 
-function l2l_get_config_oscommerce {
+function l2l_get_config_oscommerce() {
 	DB_HOST=`grep -P "\bDB_SERVER\b" ${FILE_CONFIG}`
 	DB_HOST=`echo ${DB_HOST} | sed -e "s#');.*##g" -e "s#^.*, '##g"`
 
@@ -1983,7 +2013,7 @@ function l2l_site_xtcommerce() {
 }
 
 
-function l2l_get_config_xtcommerce {
+function l2l_get_config_xtcommerce() {
 	DB_HOST=`grep -P "\bDB_SERVER\b" ${FILE_CONFIG}`
 	DB_HOST=`echo ${DB_HOST} | sed -e "s#');.*##g" -e "s#^.*, '##g"`
 
@@ -2001,7 +2031,7 @@ function l2l_get_config_xtcommerce {
 }
 
 
-function l2l_get_config_wordpress {
+function l2l_get_config_wordpress() {
 	DB_HOST=`grep -P "\bDB_HOST\b" ${FILE_CONFIG}`
 	DB_HOST=`echo ${DB_HOST} | sed -e "s#');.*##g" -e "s#^.*, '##g"`
 

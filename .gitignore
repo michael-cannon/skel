@@ -39,6 +39,8 @@ node_modules
 
 # custom
 .bashrc.tlf.local
+.ssh/authorized_keys
+.ssh/authorized_keys2
 .ssh/comprock.id_dsa.ppk
 .ssh/config
 .ssh/gbfaws.pem
