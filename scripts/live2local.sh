@@ -1182,7 +1182,7 @@ function l2l_access_create() {
 	l2l_access_create_document_root
 	l2l_cd
 
-	if [[ "static" != ${IS_TYPE} ]]
+	if [[ "static" != ${IS_TYPE} && -z ${DB_NO_CREATE} ]]
 	then
 		l2l_access_create_config_file
 		l2l_access_create_database_user
