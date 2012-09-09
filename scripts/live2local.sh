@@ -669,7 +669,6 @@ function l2l_reset_app() {
 
 function l2l_reset_type() {
 	unset IS_TYPE
-	unset IS_LIVE
 	l2l_reset_local_base
 	l2l_reset_local
 }
@@ -693,6 +692,7 @@ function l2l_reset_domain() {
 	unset DOMAIN_BASE
 	unset DOMAIN_LOCALHOST
 	unset DOMAIN_NAME
+	unset IS_LIVE
 	unset LOCAL_DIR_WWW
 	unset REMOTE_DIR_WWW
 }
