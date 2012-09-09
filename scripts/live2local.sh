@@ -297,6 +297,49 @@ function l2l_settings_db() {
 	fi
 
 	FILE_DB="${DOMAIN_BASE}.sql"
+
+	if [[ -z ${DB_HOST_LOCAL} ]]
+	then
+		DB_HOST_LOCAL=
+	fi
+
+	if [[ -z ${DB_NAME_LOCAL} ]]
+	then
+		DB_NAME_LOCAL=
+	fi
+
+	if [[ -z ${DB_PW_LOCAL} ]]
+	then
+		DB_PW_LOCAL=
+	fi
+
+	if [[ -z ${DB_USER_LOCAL} ]]
+	then
+		DB_USER_LOCAL=
+	fi
+}
+	
+	
+function l2l_settings_db_local() {
+	if [[ -z ${IS_LOCAL} ]]
+	then
+		return
+	fi
+
+	if [[ -z ${DB_NAME_LOCAL} ]]
+	then
+		DB_NAME_LOCAL="${WWW_USER}_${IS_TYPE}"
+	fi
+
+	if [[ -z ${DB_PW_LOCAL} ]]
+	then
+		DB_PW_LOCAL="${WWW_USER}_${IS_TYPE}"
+	fi
+
+	if [[ -z ${DB_USER_LOCAL} ]]
+	then
+		DB_USER_LOCAL="${WWW_USER}_${IS_TYPE}"
+	fi
 }
 
 
@@ -390,6 +433,11 @@ function l2l_settings_domain() {
 
 
 function l2l_settings_site() {
+	if [[ -n ${SHOW_COMMANDS} ]]
+	then
+		l2l_display "SHOW_COMMANDS is active - no actual work performed"
+	fi
+
 	l2l_settings_domain
 	l2l_settings_db
 	l2l_settings_path
@@ -577,6 +625,7 @@ function l2l_reset_all() {
 	unset HTTP_PROTOCOL_LOCAL
 	unset HTTP_PROTOCOL
 	unset IS_PUSH
+	unset IS_LOCAL
 	unset LOCAL_DIR_CONFIG
 	unset LOCAL_FILE_CONFIG
 	unset PERMS_MODE
@@ -646,9 +695,13 @@ function l2l_reset_domain() {
 
 function l2l_reset_db() {
 	unset DB_HOST
+	unset DB_HOST_LOCAL
 	unset DB_NAME
+	unset DB_NAME_LOCAL
 	unset DB_PW
+	unset DB_PW_LOCAL
 	unset DB_USER
+	unset DB_USER_LOCAL
 }
 
 
@@ -1157,6 +1210,8 @@ function l2l_access_load() {
 	# access already provided from calling script
 	if [[ -n ${DB_NAME} && -n ${DB_PW} && -n ${DB_USER} ]]
 	then
+		l2l_settings_db_local
+
 		return
 	fi
 
@@ -1174,6 +1229,8 @@ function l2l_access_load() {
 		FTP_OPTIONS="${FTP_OPTIONS} -p ${FTP_PW}"
 	fi
 
+	l2l_settings_db_local
+
 	return
 }
 
@@ -1182,9 +1239,10 @@ function l2l_access_create() {
 	l2l_access_create_document_root
 	l2l_cd
 
-	if [[ "static" != ${IS_TYPE} && -z ${DB_NO_CREATE} ]]
+	if [[ "static" != ${IS_TYPE} ]]
 	then
 		l2l_access_create_config_file
+		l2l_settings_db_local
 		l2l_access_create_database_user
 	fi
 
@@ -1256,6 +1314,34 @@ function l2l_remove_hosts() {
 function l2l_remove_database_user() {
 	l2l_display "Remove database & user"
 
+	if [[ -z ${DB_HOST_LOCAL} ]]
+	then
+		local db_host=${DB_HOST}
+	else
+		local db_host=${DB_HOST_LOCAL}
+	fi
+
+	if [[ -z ${DB_NAME_LOCAL} ]]
+	then
+		local db_name=${DB_NAME}
+	else
+		local db_name=${DB_NAME_LOCAL}
+	fi
+
+	if [[ -z ${DB_PW_LOCAL} ]]
+	then
+		local db_pw=${DB_PW}
+	else
+		local db_pw=${DB_PW_LOCAL}
+	fi
+
+	if [[ -z ${DB_USER_LOCAL} ]]
+	then
+		local db_user=${DB_USER}
+	else
+		local db_user=${DB_USER_LOCAL}
+	fi
+
 	local LOCAL_DB_DROP_FILE="DELETE-ME-l2l_local_db_drop"
 
 	if [[ -e ${LOCAL_DB_DROP_FILE} ]]
@@ -1263,8 +1349,8 @@ function l2l_remove_database_user() {
 		rm ${LOCAL_DB_DROP_FILE}
 	fi
 
-	echo "DROP DATABASE IF EXISTS \`${DB_NAME}\`;" >> ${LOCAL_DB_DROP_FILE}
-	echo "DROP USER '${DB_USER}'@'localhost';" >> ${LOCAL_DB_DROP_FILE}
+	echo "DROP DATABASE IF EXISTS \`${db_name}\`;" >> ${LOCAL_DB_DROP_FILE}
+	echo "DROP USER '${db_user}'@'localhost';" >> ${LOCAL_DB_DROP_FILE}
 	echo "FLUSH PRIVILEGES;" >> ${LOCAL_DB_DROP_FILE}
 
 	if [[ -z ${SHOW_COMMANDS} ]]
@@ -1311,7 +1397,7 @@ function l2l_remove_config_file() {
 
 
 function l2l_remove_document_root() {
-	if [[ -d ${LOCAL_DIR_WWW} ]]
+	if [[ -d ${LOCAL_DIR_WWW} && -z ${VHOST_NO_CREATE} ]]
 	then
 		l2l_display "Remove DocumentRoot"
 
