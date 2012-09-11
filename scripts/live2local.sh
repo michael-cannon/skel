@@ -1528,6 +1528,10 @@ function l2l_access_create_config_file() {
 			l2l_get_config_typo3
 			;;
 
+			"vbulletin" )
+			l2l_get_config_vbulletin
+			;;
+
 			"wordpress" )
 			l2l_get_config_wordpress
 			;;
@@ -1825,6 +1829,51 @@ function l2l_site_typo3() {
 	# LOCAL_BASE_DB_MODS[(( LOCAL_BASE_DB_MODS_I++ ))]=
 	LOCAL_BASE_DB_MODS[(( LOCAL_BASE_DB_MODS_I++ ))]="UPDATE sys_domain SET hidden = 1 WHERE domainName NOT LIKE '%.${DOMAIN_LOCALHOST_BASE}';"
 	LOCAL_BASE_DB_MODS[(( LOCAL_BASE_DB_MODS_I++ ))]="UPDATE sys_domain SET hidden = 0 WHERE domainName LIKE '%.${DOMAIN_LOCALHOST_BASE}';"
+}
+
+
+function l2l_get_config_vbulletin() {
+	DB_HOST=`grep -P "\bservername\b" ${FILE_CONFIG}`
+	DB_HOST=`echo ${DB_HOST} | sed -e "s#';.*##g" -e "s#^.* '##g"`
+
+	DB_NAME=`grep -P "\bdbname\b" ${FILE_CONFIG}`
+	DB_NAME=`echo ${DB_NAME} | sed -e "s#';.*##g" -e "s#^.* '##g"`
+
+	DB_USER=`grep -P "\busername\b" ${FILE_CONFIG}`
+	DB_USER=`echo ${DB_USER} | sed -e "s#';.*##g" -e "s#^.* '##g"`
+
+	DB_PW=`grep -P "\bpassword\b" ${FILE_CONFIG}`
+	DB_PW=`echo ${DB_PW} | sed -e "s#';.*##g" -e "s#^.*' ##g"`
+	DB_PW=`echo ${DB_PW} | sed -e 's#(#\\\(#g' -e 's#)#\\\)#g'`
+
+	return
+}
+
+
+function l2l_site_vbulletin() {
+	IS_TYPE="vbulletin"
+
+	if [[ -z ${FILE_CONFIG} ]]
+	then
+		FILE_CONFIG="includes/config.php"
+	fi
+
+	# rsync mods
+	# RSYNC_SITE_INC_EXC="--include=vbulletintemp/ --exclude=**/vbulletintemp/** --include=_temp_/ --exclude=**/_temp_/** --exclude=vbulletinconf/temp_CACHED_*.php --exclude=vbulletinconf/deprecation_*.log"
+
+	if [[ -n ${IS_LIVE} ]]
+	then
+		return
+	fi
+
+	# file mods
+	# LOCAL_BASE_MODS[(( LOCAL_BASE_MODS_I++ ))]="rm -f vbulletinconf/temp_CACHED_*.php"
+	# LOCAL_BASE_MODS[(( LOCAL_BASE_MODS_I++ ))]="rm -rf vbulletintemp/*"
+
+	# db mods
+	# LOCAL_BASE_DB_MODS[(( LOCAL_BASE_DB_MODS_I++ ))]=
+	# LOCAL_BASE_DB_MODS[(( LOCAL_BASE_DB_MODS_I++ ))]="UPDATE sys_domain SET hidden = 1 WHERE domainName NOT LIKE '%.${DOMAIN_LOCALHOST_BASE}';"
+	# LOCAL_BASE_DB_MODS[(( LOCAL_BASE_DB_MODS_I++ ))]="UPDATE sys_domain SET hidden = 0 WHERE domainName LIKE '%.${DOMAIN_LOCALHOST_BASE}';"
 }
 
 
