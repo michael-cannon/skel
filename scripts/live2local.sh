@@ -1833,18 +1833,17 @@ function l2l_site_typo3() {
 
 
 function l2l_get_config_vbulletin() {
-	DB_HOST=`grep -P "\bservername\b" ${FILE_CONFIG}`
+	DB_HOST=`grep -P "'\bservername\b'" ${FILE_CONFIG}`
 	DB_HOST=`echo ${DB_HOST} | sed -e "s#';.*##g" -e "s#^.* '##g"`
 
-	DB_NAME=`grep -P "\bdbname\b" ${FILE_CONFIG}`
+	DB_NAME=`grep -P "'\bdbname\b'" ${FILE_CONFIG}`
 	DB_NAME=`echo ${DB_NAME} | sed -e "s#';.*##g" -e "s#^.* '##g"`
 
-	DB_USER=`grep -P "\busername\b" ${FILE_CONFIG}`
+	DB_USER=`grep -P "'\busername\b'" ${FILE_CONFIG}`
 	DB_USER=`echo ${DB_USER} | sed -e "s#';.*##g" -e "s#^.* '##g"`
 
-	DB_PW=`grep -P "\bpassword\b" ${FILE_CONFIG}`
-	DB_PW=`echo ${DB_PW} | sed -e "s#';.*##g" -e "s#^.*' ##g"`
-	DB_PW=`echo ${DB_PW} | sed -e 's#(#\\\(#g' -e 's#)#\\\)#g'`
+	DB_PW=`grep -P "'\bpassword\b'" ${FILE_CONFIG}`
+	DB_PW=`echo ${DB_PW} | sed -e "s#';.*##g" -e "s#^.* '##g"`
 
 	return
 }
