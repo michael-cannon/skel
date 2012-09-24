@@ -161,8 +161,8 @@ if has("win32")
 	endif
 else
 	" *nix
-	set backupdir=~/tmp
-	set directory=~/tmp
+	set backupdir=/tmp
+	set directory=/tmp
 endif
 
 " syntax helpers
