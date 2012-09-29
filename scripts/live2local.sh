@@ -1771,6 +1771,8 @@ function l2l_get_config_ilance() {
 
 
 function l2l_site_ilance() {
+	l2l_settings_domain
+
 	IS_TYPE="ilance"
 	FILE_CONFIG="functions/connect.php"
 
@@ -1810,6 +1812,8 @@ function l2l_get_config_typo3() {
 
 
 function l2l_site_typo3() {
+	l2l_settings_domain
+
 	IS_TYPE="typo3"
 	FILE_CONFIG="typo3conf/localconf.php"
 
@@ -1850,6 +1854,8 @@ function l2l_get_config_vbulletin() {
 
 
 function l2l_site_vbulletin() {
+	l2l_settings_domain
+
 	IS_TYPE="vbulletin"
 
 	if [[ -z ${FILE_CONFIG} ]]
@@ -1882,6 +1888,8 @@ function l2l_get_config_static() {
 
 
 function l2l_site_static() {
+	l2l_settings_domain
+
 	IS_TYPE="static"
 	FILE_CONFIG=
 
@@ -1919,6 +1927,8 @@ function l2l_get_config_openx() {
 
 
 function l2l_site_openx() {
+	l2l_settings_domain
+
 	IS_TYPE="openx"
 	if [[ -z ${FILE_CONFIG} ]]
 	then
@@ -1959,6 +1969,8 @@ function l2l_get_config_phplist() {
 
 
 function l2l_site_phplist() {
+	l2l_settings_domain
+
 	IS_TYPE="phplist"
 	FILE_CONFIG="lists/config/config.php"
 
@@ -1997,6 +2009,8 @@ function l2l_get_config_oscommerce() {
 
 
 function l2l_site_oscommerce() {
+	l2l_settings_domain
+
 	IS_TYPE="oscommerce"
 	FILE_CONFIG="includes/configure.php"
 
@@ -2042,6 +2056,8 @@ function l2l_site_mkvhost() {
 
 
 function l2l_site_xtcommerce() {
+	l2l_settings_domain
+
 	IS_TYPE="xtcommerce"
 	FILE_CONFIG="includes/configure.php"
 
@@ -2098,6 +2114,8 @@ function l2l_get_config_wordpress() {
 
 
 function l2l_site_wordpress() {
+	l2l_settings_domain
+
 	IS_TYPE="wordpress"
 	FILE_CONFIG="wp-config.php"
 
