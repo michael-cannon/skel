@@ -25,7 +25,7 @@ CHATTR=
 DIRS_WRITE=
 DIRS_WRITE_RECURSIVE=
 DIR_SITE="${PWD}/"
-DO_CHATTR=0
+DO_CHATTR=1
 FILES_WRITE=
 FILE_HTACCESS=".htaccess"
 GROUP_BIT_CGI=
@@ -179,6 +179,9 @@ fi
 echo Enable cgi/sh file execution
 find ${DIR_SITE} -type f \( -name "*.cgi" -o -name "*.fcgi" -o -name "*.sh" -o -name "*.phpcron" -o -name "*.phpsh" \) -exec chmod ${PERM_CGI} {} \;
 
+echo Enabling exec on ${DIR_SITE}
+chmod a+X ${DIR_SITE}
+
 if [[ 1 = ${DO_CHATTR} && -n ${CHATTR} && "production" = ${IS_MODE} ]]
 then
 	echo Recursively set immutable on ${DIR_SITE}
@@ -241,9 +244,6 @@ then
 	find * -type d ! -type l -exec chmod u+s {} \;
 	chmod ug+s ${DIR_SITE}
 fi
-
-echo Enabling exec on ${DIR_SITE}
-chmod a+X ${DIR_SITE}
 
 echo End ${IS_MODE} website permissions setting
 echo
