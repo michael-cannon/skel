@@ -25,7 +25,7 @@ CHATTR=
 DIRS_WRITE=
 DIRS_WRITE_RECURSIVE=
 DIR_SITE="${PWD}/"
-DO_CHATTR=1
+DO_CHATTR=0
 FILES_WRITE=
 FILE_HTACCESS=".htaccess"
 GROUP_BIT_CGI=
@@ -37,7 +37,7 @@ OTHER_BIT_FILE=
 USER_BIT_FILE="u+rX"
 WHICH_CHATTR=`which chattr`
 
-if [[ 1 = ${DO_CHATTR} && "${WHICH_CHATTR}" != "No *" ]]
+if [[ "${WHICH_CHATTR}" != "No *" ]]
 then
 	CHATTR=${WHICH_CHATTR}
 fi
@@ -152,7 +152,7 @@ cd ${DIR_SITE}
 detect_system
 echo Configure for ${IS_TYPE} system
 
-if [[ 1 = ${DO_CHATTR} && -n ${CHATTR} ]]
+if [[ -n ${CHATTR} ]]
 then
 	echo Recursively remove immutable on ${DIR_SITE}
 	${CHATTR} -R -i ${DIR_SITE}

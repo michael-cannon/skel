@@ -36,7 +36,7 @@ OWNER_OVERRIDE=
 PERMS_DIR_HTTPD=0750
 WHICH_CHATTR=`which chattr`
 
-if [[ 1 == ${DO_CHATTR} && "${WHICH_CHATTR}" != "No *" ]]
+if [[ "${WHICH_CHATTR}" != "No *" ]]
 then
 	CHATTR=${WHICH_CHATTR}
 fi
@@ -143,7 +143,8 @@ do
 				~/bin/websitepermissions ${TEMP_USER} ${HTTPD_GROUP} ${MODE_PERMS}
 			fi
 
-			if [[ 1 = ${DO_CHATTR} && -n ${CHATTR} ]]
+			# if [[ 1 = ${DO_CHATTR} && -n ${CHATTR} ]]
+			if [[ -n ${CHATTR} ]]
 			then
 				echo 2.5 - Remove immutable on ${DIR_WORKING}
 				if [[ 0 = ${MODE_TEST} ]]
