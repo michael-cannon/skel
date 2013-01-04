@@ -13,5 +13,5 @@ DOMAIN_USER="aihrus"
 # load live2local function helpers
 source ~/.skel/scripts/live2local.sh
 
-l2l_site_typo3
+l2l_site_wordpress
 l2l_do_sync ${@}
