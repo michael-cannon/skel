@@ -2132,7 +2132,11 @@ function l2l_site_wordpress() {
 	LOCAL_BASE_MODS[(( LOCAL_BASE_MODS_I++ ))]="perl -pi -e \"s#^(define\(\s?'COOKIE_DOMAIN', '${DOMAIN_NAME}'.*$)#// \1#g\" wp-config.php"
 	LOCAL_BASE_MODS[(( LOCAL_BASE_MODS_I++ ))]="perl -pi -e \"s#^(define\(\s?'WP_HOME'.*$)#// \1#g\" wp-config.php"
 	LOCAL_BASE_MODS[(( LOCAL_BASE_MODS_I++ ))]="perl -pi -e \"s#^(define\(\s?'WP_SITEURL'.*$)#// \1#g\" wp-config.php"
+	LOCAL_BASE_MODS[(( LOCAL_BASE_MODS_I++ ))]="perl -pi -e \"s#^(define\(\s?'WP_CACHE'.*$)#// \1#g\" wp-config.php"
+	LOCAL_BASE_MODS[(( LOCAL_BASE_MODS_I++ ))]="perl -pi -e \"s#^(define\(\s?'WPCACHEHOME'.*$)#// \1#g\" wp-config.php"
     LOCAL_BASE_MODS[(( LOCAL_BASE_MODS_I++ ))]="echo 'Turn off auto-posting and caching like plugins'"
+    # LOCAL_BASE_MODS[(( LOCAL_BASE_MODS_I++ ))]="if [ -e 'wp-content/plugins/cdn-sync-tool/' ]; then chmod a= wp-content/plugins/cdn-sync-tool/; fi;"
+    # LOCAL_BASE_MODS[(( LOCAL_BASE_MODS_I++ ))]="if [ -e 'wp-content/plugins/wp-super-cache/' ]; then chmod a= wp-content/plugins/wp-super-cache/; fi;"
     LOCAL_BASE_MODS[(( LOCAL_BASE_MODS_I++ ))]="open ${HTTP_DOMAIN_LOCALHOST}/wp-admin/plugins.php?plugin_status=active"
 
 	# db mods
