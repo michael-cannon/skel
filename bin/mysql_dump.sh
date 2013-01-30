@@ -2,7 +2,7 @@
 
 # Simple MySQL database dumper
 #
-# @author Michael Cannon, michael@typo3vagabond.com
+# @author Michael Cannon, mc@aihr.us
 
 # four args
 if [ ! ${4} ]

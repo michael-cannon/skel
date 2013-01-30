@@ -4,7 +4,7 @@
 #
 # optionally link up to TYPO3
 #
-# @author Michael Cannon <michael@typo3vagabond.com>
+# @author Michael Cannon <mc@aihr.us>
 
 if [[ ! -e .git ]]
 then

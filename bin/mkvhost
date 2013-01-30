@@ -2,7 +2,7 @@
 
 # Helper script to create a directory, database and virtual host for website development
 #
-# @author Michael Cannon <michael@typo3vagabond.com>
+# @author Michael Cannon <mc@aihr.us>
 
 # Create a vhost file of name ${1}
 if [[ -n ${1} ]]

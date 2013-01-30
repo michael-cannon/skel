@@ -2,7 +2,7 @@
 
 # Backup sync for flash drives
 #
-# @author Michael Cannon <michael@typo3vagabond.com>
+# @author Michael Cannon <mc@aihr.us>
 
 if [[ -z "${USER}" ]]
 then

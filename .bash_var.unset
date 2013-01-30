@@ -2,7 +2,7 @@
 
 # .bash_custom_unset
 #
-# @author Michael Cannon, michael@typo3vagabond.com
+# @author Michael Cannon, mc@aihr.us
 # @version $Id: .bash_var.unset,v 1.1.1.1 2010/04/14 09:05:43 peimic.comprock Exp $
 
 unset HOSTNAME UNAME OS_REDHAT OS_DARWIN

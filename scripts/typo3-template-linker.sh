@@ -2,7 +2,7 @@
 
 # Lookup current templates and link to orignal in fieadmin
 #
-# @author Michael Cannon <michael@typo3vagabond.com>
+# @author Michael Cannon <mc@aihr.us>
 
 # pull in original name
 if [ ! "$1" ]

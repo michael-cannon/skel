@@ -9,7 +9,7 @@
 # touch install tool
 # fix permissions
 #
-# @author Michael Cannon <michael@typo3vagabond.com>
+# @author Michael Cannon <mc@aihr.us>
 
 SITES="${HOME}/Sites/"
 TYPO3_MASTER='typo3_src-master'

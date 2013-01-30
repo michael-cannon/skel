@@ -1,7 +1,7 @@
 #!/bin/bash
 # stupid simple backup with 1-week remote rotation
 #
-# @author Michael Cannon <michael@typo3vagabond.com>
+# @author Michael Cannon <mc@aihr.us>
 
 
 BACKUP_DIR="/var/www/web0/backup"

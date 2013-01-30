@@ -5,7 +5,7 @@
 # TODO
 # * LIVE_MODE - typo3/wordpress don't clear domain settings
 #
-# @author Michael Cannon <michael@typo3vagabond.com>
+# @author Michael Cannon <mc@aihr.us>
 
 # Assumptions
 # * Password-less access via SSH is possible to domain account

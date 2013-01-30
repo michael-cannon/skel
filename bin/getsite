@@ -2,7 +2,7 @@
 
 # Grab websites
 #
-# @author Michael Cannon <michael@typo3vagabond.com>
+# @author Michael Cannon <mc@aihr.us>
 
 # have an arguement
 if [ ! "$1" ]

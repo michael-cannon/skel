@@ -2,7 +2,7 @@
 
 # Copy live stonebriar websites over to dev box
 #
-# @author Michael Cannon <michael@typo3vagabond.com>
+# @author Michael Cannon <mc@aihr.us>
 
 
 DEV="root@stonebriar02"

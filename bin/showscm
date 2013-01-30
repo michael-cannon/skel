@@ -2,7 +2,7 @@
 
 # SCM displayer helper
 #
-# @author Michael Cannon <michael@typo3vagabond.com>
+# @author Michael Cannon <mc@aihr.us>
 
 # set exports
 echo
@@ -20,11 +20,11 @@ echo svn co https://peimic.svn.cvsdude.com/skel/trunk/.ssh .
 echo
 
 echo
-echo git clone git@github.com:typo3-vagabond/skel.git .skel
+echo git clone git@github.com:michael-cannon/skel.git .skel
 echo
 
 echo
-echo git clone https://github.com/typo3-vagabond/skel.git .skel
+echo git clone https://github.com/michael-cannon/skel.git .skel
 echo
 
 echo
@@ -33,6 +33,6 @@ echo
 
 echo
 echo mv .skel/ .skel.o
-echo git clone https://github.com/typo3-vagabond/skel.git .skel
+echo git clone https://github.com/michael-cannon/skel.git .skel
 echo sh .skel/bin/shellinks
 echo

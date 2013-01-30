@@ -3,7 +3,7 @@
 # helper script for pulling down TYPO3 zip archive and updating
 # also possible to install baseline system
 #
-# @author Michael Cannon <michael@typo3vagabond.com>
+# @author Michael Cannon <mc@aihr.us>
 
 # TYPO3 version to pull
 if [[ -n ${1} ]]

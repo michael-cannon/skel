@@ -2,7 +2,7 @@
 
 # Simple MySQL database script loader
 #
-# @author Michael Cannon, michael@typo3vagabond.com
+# @author Michael Cannon, mc@aihr.us
 
 # five args
 if [ ! ${5} ]

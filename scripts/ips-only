@@ -2,7 +2,7 @@
 
 # Comment out none IP lines
 #
-# @author Michael Cannon <michael@typo3vagabond.com>
+# @author Michael Cannon <mc@aihr.us>
 
 PREG="s/^([0-9a-zA-Z]+.+[a-zA-Z]+.+)/# \1/g"
 

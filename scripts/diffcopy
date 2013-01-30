@@ -3,7 +3,7 @@
 # Read in a file, vimdiff custom file with original, then cp revised original to
 # custom file name
 #
-# @author Michael Cannon <michael@typo3vagabond.com>
+# @author Michael Cannon <mc@aihr.us>
 
 if [ -z "${1}" ]
 then

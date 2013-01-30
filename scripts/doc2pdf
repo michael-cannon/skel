@@ -2,7 +2,7 @@
 
 # Word document to pdf helper
 #
-# @author Michael Cannon <michael@typo3vagabond.com>
+# @author Michael Cannon <mc@aihr.us>
 
 FUNCTION=`basename $0`
 WARN_1="Word document to pdf helper"

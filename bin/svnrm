@@ -6,7 +6,7 @@
 # 4. svn rm source
 # 5. svn ci source
 #
-# @author Michael Cannon <michael@typo3vagabond.com>
+# @author Michael Cannon <mc@aihr.us>
 
 # have an arguement
 if [ ! "$1" ]

@@ -2,6 +2,6 @@
 
 # Grep the process list
 #
-# @author Michael Cannon <michael@typo3vagabond.com>
+# @author Michael Cannon <mc@aihr.us>
 
 ps aux | grep ${1} | grep -v grep | grep -v psg

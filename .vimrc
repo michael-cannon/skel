@@ -99,7 +99,7 @@ endif
 
 
 " comprock edits
-" @author Michael Cannon <michael@typo3vagabond.com>
+" @author Michael Cannon <mc@aihr.us>
 
 
 set showmatch
@@ -130,7 +130,7 @@ set fileencodings=ucs-bom,utf8,prc
 set diffopt+=iwhite
 
 " abbreviation helpers
-ab cbhd <?php<CR>/**<CR> SCRIPT_SUMMARY<CR><CR>@author Michael Cannon <michael@typo3vagabond.com><CR>/<CR><CR>?>
+ab cbhd <?php<CR>/**<CR> SCRIPT_SUMMARY<CR><CR>@author Michael Cannon <mc@aihr.us><CR>/<CR><CR>?>
 ab edp print_r(); echo "\n<br />"; echo '' . __LINE__ . ':' . basename( __FILE__ )  . "\n<br />"
 ab edv var_dump(); echo "\n<br />"; echo '' . __LINE__ . ':' . basename( __FILE__ )  . "\n<br />"
 ab eex exit( __LINE__ . ':' . basename( __FILE__ ) . " ERROR<br />\n" )

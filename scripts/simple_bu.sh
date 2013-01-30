@@ -3,7 +3,7 @@
 #
 # Original author unkown - Probably by Contigex support folks
 #
-# @author Michael Cannon <michael@typo3vagabond.com>
+# @author Michael Cannon <mc@aihr.us>
 
 BACKUP_DIR="/backup/files"
 CONF_FILE="/etc/httpd/vhosts.d/*"

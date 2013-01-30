@@ -2,7 +2,7 @@
 #
 # Quick script to grab reserve ipv4 list and create new reserved network file
 #
-# @author Michael Cannon <michael@typo3vagabond.com>
+# @author Michael Cannon <mc@aihr.us>
 
 # URL of reserved ips to retrieve
 RESERVED_URL='http://www.iana.org/assignments/ipv4-address-space'

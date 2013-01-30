@@ -17,7 +17,7 @@
 # WARNING: If your application fails due to a file write, remove immutable for
 # that location and enable the lowest needed write permission.
 #
-# @author Michael Cannon, michael@typo3vagabond.com
+# @author Michael Cannon, mc@aihr.us
 
 PWD=`pwd`
 
