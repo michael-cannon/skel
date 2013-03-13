@@ -81,8 +81,18 @@ function l2l_do_sync() {
 		exit
 		;;
 
+		"rsyncp" )
+		l2l_display "${CMD_RSYNC} ${RSYNC_OPTIONS} ${RSYNC_COMMON_INC_EXC} ${RSYNC_SITE_INC_EXC} ${RSYNC_MODS} ${REMOTE_SERVER}:${REMOTE_DIR_WWW}/* ${LOCAL_DIR_WWW}/."
+		exit
+		;;
+
 		"scp" )
 		l2l_display "${CMD_SCP} ${SCP_OPTIONS} ${SCP_MODS} ${LOCAL_DIR_WWW}/. ${REMOTE_SERVER}:${REMOTE_DIR_WWW}/*"
+		exit
+		;;
+
+		"scpp" )
+		l2l_display "${CMD_SCP} ${SCP_OPTIONS} ${SCP_MODS} ${REMOTE_SERVER}:${REMOTE_DIR_WWW}/* ${LOCAL_DIR_WWW}/."
 		exit
 		;;
 
