@@ -160,6 +160,9 @@ function l2l_do_sync() {
 		elif [[ 'convert' = ${2} ]]
 		then
 			l2l_mysql_convert_utf8 ${3}
+		elif [[ 'local' = ${2} ]]
+		then
+			l2l_pull_local_db
 		else
 			# load locally provided database
 			l2l_mysql_local ${2}
@@ -627,6 +630,7 @@ function l2l_reset_all() {
 	unset DIR_WWW
 	unset DOMAIN_LOCALHOST_BASE
 	unset DOMAIN_USER
+	unset DO_LOCAL
 	unset FILE_CONFIG
 	unset FILE_CONFIG_NO_OVERWRITE
 	unset FILE_DB
@@ -761,9 +765,19 @@ function l2l_perms_prepare() {
 }
 
 
-function l2l_pull_remote_db() {
-	l2l_display "Creating database dump on ${DOMAIN_NAME}"
+function l2l_pull_local_db() {
+	l2l_display "Creating database dump on ${DOMAIN_LOCALHOST}"
 
+	DO_LOCAL=1
+	DB_HOST=${DB_LOCALHOST}
+	REMOTE_FILE_DB="${LOCAL_DIR_WWW}/${DB_LOCALHOST}-${FILE_DB}"
+	REMOTE_FILE_DB_GZ="${LOCAL_DIR_WWW}/${DB_LOCALHOST}-${FILE_DB_GZ}"
+
+	l2l_pull_db
+}
+
+
+function l2l_pull_db() {
 	local charset=
 	if [[ -n ${DB_UTF8_CONVERT} ]]
 	then
@@ -771,6 +785,12 @@ function l2l_pull_remote_db() {
 	fi
 
 	local mysqldump="${BIN_MYSQL}mysqldump --host=${DB_HOST} --user=${DB_USER} --password='${DB_PW}' --opt ${charset}"
+
+	if [[ -n ${DO_LOCAL} ]]
+	then
+		# FIXME need to replace ' with " in mysqldump 
+		echo ""
+	fi
 
 	if [[ -z ${DB_IGNORE} ]]
 	then
@@ -781,8 +801,14 @@ function l2l_pull_remote_db() {
 
 			if [[ -z ${SHOW_COMMANDS} ]]
 			then
-				${REMOTE_SSH} "${mysqldump} --no-data '${DB_NAME}' > ${REMOTE_FILE_DB}"
-				${REMOTE_SSH} "${mysqldump} ${ignore_tables} '${DB_NAME}' >> ${REMOTE_FILE_DB}"
+				if [[ -z ${DO_LOCAL} ]]
+				then
+					${REMOTE_SSH} "${mysqldump} --no-data '${DB_NAME}' > ${REMOTE_FILE_DB}"
+					${REMOTE_SSH} "${mysqldump} ${ignore_tables} '${DB_NAME}' >> ${REMOTE_FILE_DB}"
+				else
+					${mysqldump} --no-data ${DB_NAME} > ${REMOTE_FILE_DB}
+					${mysqldump} ${ignore_tables} ${DB_NAME} >> ${REMOTE_FILE_DB}
+				fi
 			else
 				echo "${mysqldump} --no-data '${DB_NAME}' > ${REMOTE_FILE_DB}"
 				echo "${mysqldump} ${ignore_tables} '${DB_NAME}' >> ${REMOTE_FILE_DB}"
@@ -790,7 +816,13 @@ function l2l_pull_remote_db() {
 		else
 			if [[ -z ${SHOW_COMMANDS} ]]
 			then
-				${REMOTE_SSH} "${mysqldump} '${DB_NAME}' > ${REMOTE_FILE_DB}"
+				if [[ -z ${DO_LOCAL} ]]
+				then
+					${REMOTE_SSH} "${mysqldump} '${DB_NAME}' > ${REMOTE_FILE_DB}"
+				else
+					# FIXME
+					${BIN_MYSQL}mysqldump --host=${DB_HOST} --user=${DB_USER} --password="${DB_PW}" --opt ${charset} ${DB_NAME} > ${REMOTE_FILE_DB}
+				fi
 			else
 				echo "${mysqldump} '${DB_NAME}' > ${REMOTE_FILE_DB}"
 			fi
@@ -798,13 +830,25 @@ function l2l_pull_remote_db() {
 	else
 		if [[ -z ${SHOW_COMMANDS} ]]
 		then
-			${REMOTE_SSH} "${mysqldump} --no-data '${DB_NAME}' > ${REMOTE_FILE_DB}"
-			${REMOTE_SSH} "${mysqldump} ${DB_IGNORE} '${DB_NAME}' >> ${REMOTE_FILE_DB}"
+			if [[ -z ${DO_LOCAL} ]]
+			then
+				${REMOTE_SSH} "${mysqldump} --no-data '${DB_NAME}' > ${REMOTE_FILE_DB}"
+				${REMOTE_SSH} "${mysqldump} ${DB_IGNORE} '${DB_NAME}' >> ${REMOTE_FILE_DB}"
+			else
+				${mysqldump} --no-data ${DB_NAME} > ${REMOTE_FILE_DB}
+				${mysqldump} ${DB_IGNORE} ${DB_NAME} >> ${REMOTE_FILE_DB}
+			fi
 		else
 			echo "${mysqldump} --no-data '${DB_NAME}' > ${REMOTE_FILE_DB}"
 			echo "${mysqldump} ${DB_IGNORE} '${DB_NAME}' >> ${REMOTE_FILE_DB}"
 		fi
 	fi
+}
+
+
+function l2l_pull_remote_db() {
+	l2l_display "Creating database dump on ${DOMAIN_NAME}"
+	l2l_pull_db
 
 	if [[ -z ${SHOW_COMMANDS} ]]
 	then

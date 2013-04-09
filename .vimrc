@@ -137,6 +137,7 @@ ab eex exit( __LINE__ . ':' . basename( __FILE__ ) . " ERROR<br />\n" )
 ab efl echo __LINE__ . ':' . basename( __FILE__ ) . '<br />'
 ab efp print_r(func_get_args()); echo "\n<br />"; echo '' . __LINE__ . ':' . basename( __FILE__ )  . "\n<br />"
 ab efv var_dump(func_get_args()); echo "\n<br />"; echo '' . __LINE__ . ':' . basename( __FILE__ )  . "\n<br />"
+ab edpb echo '<pre>'; debug_print_backtrace(); echo '</pre>'; echo "\n<br />"; echo '' . __LINE__ . ':' . basename( __FILE__ )  . "\n<br />"
 ab errl error_log( __LINE__ . ':' . basename( __FILE__ ) )
 ab t3dd t3lib_utility::debug( $var, __LINE__ . ':' . basename( __FILE__ ) )
 ab t3dv t3lib_div::devLog( var_export( $, true ), __FUNCTION__, 0, false )
