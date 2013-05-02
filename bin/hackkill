@@ -7,8 +7,26 @@ else
 	ID=${1}
 fi
 
-ID="/\*${ID}\*/"
-HACK="<\?php ${ID}[^>]+>"
 
-find . -iname "*.php" -exec grep -HrsI "<?php ${ID}" {} \; -exec cp {} {}.hack
-\; -exec perl -pi -e "s#${HACK}##g" {} \;
+GREP_ID_TEMP="eval(gzinflate(base64_decode('${ID}"
+ID_TEMP="eval\(gzinflate\(base64_decode\('${ID}"
+HACK="<\?php\s?${ID_TEMP}[^>]+>\r?\n?"
+
+if [[ -z ${2} ]]
+then
+	find . -iname "*.php" -exec grep -HrsI "${GREP_ID_TEMP}" {} \;
+else
+	find . -iname "*.php" -exec grep -HrsI "${GREP_ID_TEMP}" {} \; -exec cp {} {}.hack \; -exec perl -pi -e "s#${HACK}##g" {} \;
+fi
+
+
+GREP_ID_TEMP="/\*${ID}\*/"
+ID_TEMP="${GREP_ID_TEMP}"
+HACK="<\?php ${ID_TEMP}[^>]+>\r?"
+
+if [[ -z ${2} ]]
+then
+	find . -iname "*.php" -exec grep -HrsI "<?php ${GREP_ID_TEMP}" {} \;
+else
+	find . -iname "*.php" -exec grep -HrsI "<?php ${GREP_ID_TEMP}" {} \; -exec cp {} {}.hack \; -exec perl -pi -e "s#${HACK}##g" {} \;
+fi
