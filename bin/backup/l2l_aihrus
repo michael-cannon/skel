@@ -9,6 +9,7 @@ DOMAIN_NAME="aihr.us"
 DOMAIN_BASE="aihrus"
 DOMAIN_LOCALHOST="aihrus.localhost"
 DOMAIN_USER="aihrus"
+WWW_USER="www"
 
 # load live2local function helpers
 source ~/.skel/scripts/live2local.sh
