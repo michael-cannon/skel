@@ -541,7 +541,7 @@ function l2l_settings_remote() {
 function l2l_settings_perm() {
 	if [[ -z ${PERMS_MODE} ]]
 	then
-		PERMS_MODE="owner"
+		PERMS_MODE="dev"
 	fi
 	
 	if [[ -z ${WWW_GROUP} ]]
