@@ -1667,7 +1667,7 @@ function l2l_access_create_database_user() {
 		local db_user=${DB_USER_LOCAL}
 	fi
 
-	echo "CREATE DATABASE IF NOT EXISTS \`${db_name}\` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;" >> ${LOCAL_DB_CREATE_FILE}
+	echo "CREATE DATABASE IF NOT EXISTS \`${db_name}\` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;" > ${LOCAL_DB_CREATE_FILE}
 	echo "CREATE USER '${db_user}'@'${db_host}' IDENTIFIED BY '${db_pw}';" >> ${LOCAL_DB_CREATE_FILE}
 	echo "GRANT USAGE ON *.* TO '${db_user}'@'${db_host}' IDENTIFIED BY '${db_pw}';" >> ${LOCAL_DB_CREATE_FILE}
 	echo "GRANT ALL PRIVILEGES ON \`${db_name}\`.* TO '${db_user}'@'${db_host}';" >> ${LOCAL_DB_CREATE_FILE}
