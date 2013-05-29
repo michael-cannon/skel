@@ -601,6 +601,7 @@ function l2l_settings_transfer() {
 	fi
 
 	FTP_OPTIONS="-F -R -v -z"
+	FTP_OPTIONS="-R -v -z"
 	FTP_REMOTE_SERVER="ftp://${REMOTE_SERVER}"
 	RSYNC_OPTIONS="-Pahz -e ssh --stats"
 	SCP_OPTIONS="-r -p -C"
