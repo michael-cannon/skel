@@ -23,7 +23,6 @@ function db2dev {
 	# dump live db
 	local mysqldump="mysqldump --host=localhost --user=${DB_USER} --password=${DB_PW} --opt"
 	${mysqldump} --no-data ${DB_NAME} > ${DB_FILE}
-	echo "${mysqldump} --no-data ${DB_NAME} > ${DB_FILE}"
 	${mysqldump} ${IGNORE_TABLES} ${DB_NAME} >> ${DB_FILE}
 
 	gzip ${DB_FILE}
@@ -35,7 +34,6 @@ function db2dev {
 	# create such if not
 	SQL_FILE="db.sql"
 
-	# FIXME check for db to exists remotely and then only run
 	echo "CREATE DATABASE IF NOT EXISTS \`${DB_NAME}\` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;" > ${SQL_FILE}
 	echo "CREATE USER '${DB_USER}'@'localhost' IDENTIFIED BY '${DB_PW}';" >> ${SQL_FILE}
 	echo "GRANT USAGE ON *.* TO '${DB_USER}'@'localhost' IDENTIFIED BY '${DB_PW}';" >> ${SQL_FILE}
@@ -50,7 +48,7 @@ function db2dev {
 
 	# remove db sql
 	rm ${SQL_FILE}
-	ssh ${DEV} rm -f ${SQL_FILE}
+	# ssh ${DEV} rm -f ${SQL_FILE}
 
 	# prepare dev sql for import
 	ssh ${DEV} gunzip ${DB_FILE}.gz
@@ -60,7 +58,7 @@ function db2dev {
 
 	# remove local and remote db dump
 	rm ${DB_FILE}.gz
-	ssh ${DEV} rm -f ${DB_FILE}
+	# ssh ${DEV} rm -f ${DB_FILE}
 
 	return
 }
@@ -164,7 +162,7 @@ function dburltypo3 {
 
 	# remove update sql
 	rm ${SQL_FILE}
-	ssh ${DEV} rm -f ${SQL_FILE}
+	# ssh ${DEV} rm -f ${SQL_FILE}
 
 	return
 }
@@ -184,6 +182,11 @@ do
 	SUB_DOMAIN=`echo ${DOCROOT} | awk -F "/" '{print $6}'`
 	BASE_DOMAIN=`echo ${DOCROOT} | awk -F "/" '{print $5}'`
 	DOMAIN="${SUB_DOMAIN}.${BASE_DOMAIN}"
+
+	if [[ -n ${1} && ${DOMAIN} != ${1} ]]
+	then
+		continue
+	fi
 
 	echo
 	echo "start ${DOMAIN}"
