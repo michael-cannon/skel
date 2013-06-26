@@ -1562,7 +1562,7 @@ function indent_text(&$tokens, $key, $curly_braces_count, $round_braces_count, $
 	}
 
 	// One indentation level less for "switch ... case ... default"
-	if (
+	if ( 
 		isset($tokens[$key+1]) and
 		is_array($tokens[$key+1]) and (
 			$tokens[$key+1][0] === T_CASE or
