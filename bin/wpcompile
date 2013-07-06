@@ -1,0 +1,83 @@
+#!/bin/bash
+
+# PHP Coding Standard and compilation tests for WordPress plugins
+#
+# @author Michael Cannon <mc@aihr.us>
+
+source ~/.skel/bin/custom/wpinit ${@}
+echo
+
+for PLUGIN in ${PLUGINS}
+do
+	DIR_PLUGIN="${SITE_WP_PLUGINS}/${PLUGIN}"
+	if [[ ! -e ${DIR_PLUGIN} ]]
+	then
+		continue
+	fi
+
+	cd ${DIR_PLUGIN}
+
+	FILE_CODE_QA="000-code-qa.txt"
+	if [[ -e ${FILE_CODE_QA} ]]
+	then
+		rm ${FILE_CODE_QA}
+	fi
+	
+	touch ${FILE_CODE_QA}
+
+	FILES=`find . -type f \( -name "*.php" -o -name "*.inc" \)`
+	for FILE in ${FILES}
+	do
+		# apply WordPress Coding Standards
+		phptidy.php replace ${FILE}
+
+		# todo indent case blocks
+
+		# PHP compile test
+		php -lf ${FILE} >> ${FILE_CODE_QA}
+	done
+
+	# remove phptidy 
+	find . \( -name "*.phptidybak~" -o -name ".phptidy-cache" \) -exec rm {} \;
+
+	echo >> ${FILE_CODE_QA}
+	echo >> ${FILE_CODE_QA}
+	# Anti-virus
+	wpclamav ${DIR_PLUGIN} >> ${FILE_CODE_QA}
+
+	echo >> ${FILE_CODE_QA}
+	echo >> ${FILE_CODE_QA}
+	# code sniffer
+	if [[ -e 'ci/phpcs.ruleset.xml' ]]
+	then
+		phpcs -s --standard=ci/phpcs.ruleset.xml ${DIR_PLUGIN} >> ${FILE_CODE_QA}
+	else
+		phpcs -s --standard=${DIR_RULESETS}/phpcs.ruleset.xml ${DIR_PLUGIN} >> ${FILE_CODE_QA}
+	fi
+
+	echo >> ${FILE_CODE_QA}
+	echo >> ${FILE_CODE_QA}
+	# copy detector
+	phpcpd ${DIR_PLUGIN} >> ${FILE_CODE_QA}
+
+	echo >> ${FILE_CODE_QA}
+	echo >> ${FILE_CODE_QA}
+	# mess detect
+	# @ref https://github.com/manuelpichler/phpmd
+	if [[ -e 'ci/phpmd.ruleset.xml' ]]
+	then
+		phpmd ${DIR_PLUGIN} --exclude Akismet.class.php,class-redrokk-metabox-class.php,video-quick-edit.php text ci/phpmd.ruleset.xml >> ${FILE_CODE_QA}
+	else
+		phpmd ${DIR_PLUGIN} --exclude Akismet.class.php,class-redrokk-metabox-class.php text ${DIR_RULESETS}/phpmd.ruleset.xml >> ${FILE_CODE_QA}
+	fi
+
+	echo >> ${FILE_CODE_QA}
+	echo >> ${FILE_CODE_QA}
+	# lines of type of code
+	phploc ${DIR_PLUGIN} >> ${FILE_CODE_QA}
+
+	# open file for review
+	mvim ${FILE_CODE_QA}
+
+	echo
+done

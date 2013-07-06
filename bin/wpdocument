@@ -1,0 +1,82 @@
+#!/bin/bash
+
+# Assist with documentation of WordPress plugins
+#
+# @author Michael Cannon <mc@aihr.us>
+
+if [[ -z ${1} || -z ${2} || -z ${3} || -z ${4} ]]
+then
+	echo `basename ${0}` plugin-key upload-dir id-post id-product [id-changelog] [id-api] [id-todo] 
+	echo
+	exit 1
+else
+	KEY=${1}
+	DIR_UPLOAD=${2}
+	ID_POST=${3}
+	ID_PRODUCT=${4}
+fi
+
+if [[ -n ${5} ]]
+then
+	ID_CHANGELOG=${5}
+fi
+
+if [[ -n ${6} ]]
+then
+	ID_API=${6}
+fi
+
+if [[ -n ${7} ]]
+then
+	ID_TODO=${7}
+fi
+
+source ~/.skel/bin/custom/wpinit ${KEY}
+echo
+
+if [[ "${PLUGIN}" =~ .*-premium.* ]]
+then
+	IS_PREMIUM=1
+fi
+
+${CMD_SCP} ~/Downloads/zzz-wp/${PLUGIN}.zip aihrus@aihr.us:~/subdomains/updates/update/. || exit 1;
+${CMD_SCP} ~/Downloads/zzz-wp/${PLUGIN}.zip aihrus@aihr.us:~/public_html/wp-content/uploads/edd/${DIR_UPLOAD}/. || exit 1;
+
+# details
+open http://wordpress.org/extend/plugins/about/validator/
+mvim ${SITE_WP_PLUGINS}/${PLUGIN}/readme.txt
+open http://aihr.us/wp-admin/post.php?post=${ID_POST}\&action=edit
+
+# product
+open http://aihr.us/wp-admin/post.php?post=${ID_PRODUCT}\&action=edit
+
+if [[ -n ${ID_CHANGELOG} ]]
+then
+	open https://github.com/michael-cannon/${PLUGIN}/blob/master/CHANGELOG.md
+	open http://aihr.us/wp-admin/post.php?post=${ID_CHANGELOG}\&action=edit
+fi
+
+if [[ -n ${ID_API} ]]
+then
+	open https://github.com/michael-cannon/${PLUGIN}/blob/master/API.md
+	open http://aihr.us/wp-admin/post.php?post=${ID_API}\&action=edit
+fi
+
+if [[ -n ${ID_TODO} ]]
+then
+	open https://github.com/michael-cannon/${PLUGIN}/blob/master/TODO.md
+	open http://aihr.us/wp-admin/post.php?post=${ID_TODO}\&action=edit
+fi
+
+if [[ -n ${IS_PREMIUM} ]]
+then
+	mvim ~/Sites/zzz/testimonials-widget-premium/packages.php
+	echo ${CMD_SCP} ~/Sites/zzz/testimonials-widget-premium/packages.php aihrus@aihr.us:~/subdomains/updates/packages.php
+	echo
+else
+	open http://wordpress.org/extend/plugins/${PLUGIN}/
+fi
+
+# see if updates are ready
+open http://testwp.localhost/wp-admin/update-core.php
+open http://aihr.us/wp-admin/update-core.php

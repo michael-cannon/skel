@@ -1,0 +1,19 @@
+#!/bin/bash
+
+# WordPress Codex grab helper
+
+cd ~/Sites
+rm -rf codex.wordpress.org
+getsite codex.wordpress.org
+cp -r codex.wordpress.org/* codex/.
+cp codex/.htaccess codex.wordpress.org/
+rm -rf codex
+cp -r codex.wordpress.org/ codex
+cd codex
+wget http://wordpress.org/style/wp4.css
+wget http://wordpress.org/style/codex-wp4.css
+wget http://wordpress.org/style/iphone.css
+wget http://wordpress.org/favicon.ico
+wget http://wordpress.org/wp-includes/js/jquery/jquery.js
+find . -type f -exec grep http://wordpress.org/wp-includes/js/jquery/jquery.js {} \; -exec perl -pi -e "s#http://wordpress.org/wp-includes/js/jquery##g" {} \;
+find . -type f -exec grep http://wordpress.org/style {} \; -exec perl -pi -e "s#http://wordpress.org/style##g" {} \;

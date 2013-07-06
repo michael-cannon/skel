@@ -1,0 +1,49 @@
+#!/bin/bash
+
+# Localization preparation for WordPress plugins
+#
+# @author Michael Cannon <mc@aihr.us>
+
+source ~/.skel/bin/custom/wpinit ${@}
+echo
+
+if [[ -n ${2} ]]
+then
+	DO_COMMIT=1
+fi
+
+for PLUGIN in ${PLUGINS}
+do
+	DIR_PLUGIN="${SITE_WP_PLUGINS}/${PLUGIN}"
+	if [[ ! -e ${DIR_PLUGIN} ]]
+	then
+		continue
+	fi
+
+	cd ${DIR_PLUGIN}
+
+	echo Prepare plugin ${PLUGIN} at ${DIR_PLUGIN}
+
+	FILES=`find . -type f \( -name "*.php" -o -name "*.inc" \)`
+	for FILE in ${FILES}
+	do
+		echo Update text domain in ${FILE}
+		php ${SITE_WP_PLUGINS}/i18n.svn.wordpress.org/add-textdomain.php -i ${PLUGIN} ${FILE}
+		# clean up text domain spacing
+		# `' , 'asdf')` to `', 'asdf' )`
+		perl -pi -e "s#('|\") , '${PLUGIN}'\s?\)#\1, '${PLUGIN}' )#g" ${FILE}
+	done
+
+	echo Update localization to languages/${PLUGIN}.pot
+	php ${SITE_WP_PLUGINS}/i18n.svn.wordpress.org/makepot.php wp-plugin ${DIR_PLUGIN} languages/${PLUGIN}.pot
+	echo
+
+	if [[ ${DO_COMMIT} ]]
+	then
+		git add -u || exit 1
+		git commit -m "Update localization" || exit 1
+		git push origin master || exit 1
+	fi
+
+	echo
+done

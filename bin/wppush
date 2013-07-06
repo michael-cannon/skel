@@ -1,0 +1,22 @@
+#!/bin/bash
+
+# Push WordPress plugins to Aihrus
+#
+# @author Michael Cannon <mc@aihr.us>
+
+source ~/.skel/bin/custom/wpinit ${@}
+echo
+
+for PLUGIN in ${PLUGINS}
+do
+	DIR_PLUGIN="${SITE_WP_PLUGINS}/${PLUGIN}"
+	if [[ ! -e ${DIR_PLUGIN} ]]
+	then
+		continue
+	fi
+
+	${CMD_RSYNC} ${DIR_PLUGIN} ${SSH_AIHRUS}:${PATH_AIHRUS}/${DIR_PLUGINS}/. || exit 1;
+	${CMD_SSH} "chmod -R a+rX ${PATH_AIHRUS}/${DIR_PLUGINS}/${PLUGIN}" || exit 1;
+
+	echo
+done
