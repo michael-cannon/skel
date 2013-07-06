@@ -21,8 +21,7 @@ cd ~/code/svn.wordpress
 cd ${PLUGIN}
 svn cleanup . || { echo "Unable to 'svn cleanup'"; exit 1; }
 svn up --force || { echo "Unable to 'svn up --force'"; exit 1; }
-git clone git@github.com:michael-cannon/${PLUGIN}.git || { echo "Unable to 'git
-clone'"; exit 1; }
+git clone git@github.com:michael-cannon/${PLUGIN}.git || { echo "Unable to 'git clone'"; exit 1; }
 cd ${PLUGIN}
 rm -rf .git*
 cp -r * ../trunk/.
