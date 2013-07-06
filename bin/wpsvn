@@ -13,7 +13,7 @@ else
 	VERSION=${2}
 fi
 
-source ~/.skel/bin/custom/wpinit ${@}
+source ~/.skel/bin/wpinit ${@}
 echo
 
 # push svn and do WordPress release

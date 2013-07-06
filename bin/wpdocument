@@ -31,7 +31,7 @@ then
 	ID_TODO=${7}
 fi
 
-source ~/.skel/bin/custom/wpinit ${KEY}
+source ~/.skel/bin/wpinit ${KEY}
 echo
 
 if [[ "${PLUGIN}" =~ .*-premium.* ]]

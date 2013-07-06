@@ -7,7 +7,7 @@
 
 KEY=${1}
 
-source ~/.skel/bin/custom/wpinit ${KEY}
+source ~/.skel/bin/wpinit ${KEY}
 echo
 
 wplocalize ${KEY}

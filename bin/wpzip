@@ -4,7 +4,7 @@
 #
 # @author Michael Cannon <mc@aihr.us>
 
-source ~/.skel/bin/custom/wpinit ${@}
+source ~/.skel/bin/wpinit ${@}
 echo
 
 if [[ -n ${2} ]]
@@ -59,7 +59,7 @@ do
 
 	cd ${DIR_DOWNLOADS}
 
-	if [[ 1 = ${IS_PREMIUM} ]]
+	if [[ 1 == ${IS_PREMIUM} ]]
 	then
 		FILE_ZIP="${PLUGIN}-no-screenshots.zip"
 		if [[ -e ${FILE_ZIP} ]]
