@@ -1,0 +1,44 @@
+#!/bin/bash
+
+# Prepare free WordPress plugin for release
+#
+# @author Michael Cannon <mc@aihr.us>
+
+if [[ -z ${1} || -z ${2} ]]
+then
+	echo `basename ${0}` plugin-key version-number
+	echo
+	exit 1
+else
+	VERSION=${2}
+fi
+
+source ~/.skel/bin/wpinit ${@}
+echo
+
+# push svn and do WordPress release
+cd ~/code/svn.wordpress
+cd ${PLUGIN}
+svn cleanup . || { echo "Unable to 'svn cleanup'"; exit 1; }
+svn up --force || { echo "Unable to 'svn up --force'"; exit 1; }
+git clone git@github.com:michael-cannon/${PLUGIN}.git || { echo "Unable to 'git clone'"; exit 1; }
+cd ${PLUGIN}
+rm -rf .git*
+cp -r * ../trunk/.
+cd ../trunk
+svn add *
+cd ..
+rm -rf ${PLUGIN}
+
+if [[ ! -d "tags/${VERSION}" ]]
+then
+	svn cp trunk tags/${VERSION}
+	svn ci -m "Release version ${VERSION}" || { echo "Unable to 'svn ci'"; exit 1; }
+	svn status
+else
+	echo
+	echo Manually merge SVN files
+	echo "svn cp trunk tags/${VERSION}"
+	echo "svn ci -m \"Release version ${VERSION}\""
+	echo
+fi

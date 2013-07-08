@@ -23,7 +23,6 @@ function db2dev {
 	# dump live db
 	local mysqldump="mysqldump --host=localhost --user=${DB_USER} --password=${DB_PW} --opt"
 	${mysqldump} --no-data ${DB_NAME} > ${DB_FILE}
-	echo "${mysqldump} --no-data ${DB_NAME} > ${DB_FILE}"
 	${mysqldump} ${IGNORE_TABLES} ${DB_NAME} >> ${DB_FILE}
 
 	gzip ${DB_FILE}
@@ -35,7 +34,6 @@ function db2dev {
 	# create such if not
 	SQL_FILE="db.sql"
 
-	# FIXME check for db to exists remotely and then only run
 	echo "CREATE DATABASE IF NOT EXISTS \`${DB_NAME}\` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;" > ${SQL_FILE}
 	echo "CREATE USER '${DB_USER}'@'localhost' IDENTIFIED BY '${DB_PW}';" >> ${SQL_FILE}
 	echo "GRANT USAGE ON *.* TO '${DB_USER}'@'localhost' IDENTIFIED BY '${DB_PW}';" >> ${SQL_FILE}

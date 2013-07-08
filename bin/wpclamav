@@ -1,0 +1,18 @@
+#!/bin/bash
+
+clamscan \
+	--algorithmic-detection=yes \
+	--detect-pua=yes \
+	--detect-structured=yes \
+	--exclude='(pasteword|jquery)\.js' \
+	--infected \
+	--phishing-cloak=yes \
+	--phishing-sigs=yes \
+	--phishing-ssl=yes \
+	--recursive \
+	--scan-archive=yes \
+	--scan-elf=yes \
+	--scan-html=yes \
+	--scan-ole2=yes \
+	--scan-pdf=yes \
+	--scan-pe=yes

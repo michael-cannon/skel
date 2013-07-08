@@ -1,0 +1,89 @@
+#!/bin/bash
+
+# Check WordPress plugins for release version
+#
+# @author Michael Cannon <mc@aihr.us>
+source ~/.skel/bin/wpinit ${@}
+echo
+
+if [[ -z ${2} ]]
+then
+	echo `basename ${0}` plugin-key version-number
+	echo
+	exit 1
+fi
+
+FILES_VALID=1
+PLUGIN_DIR="${SITE_WP_PLUGINS}/${PLUGIN}/"
+VERSION=${2}
+
+
+file_name="readme.txt"
+source_text=`head ${PLUGIN_DIR}/${file_name}`
+version_tag="Stable tag: ${VERSION}"
+if echo "${source_text}" | grep -q "${version_tag}";
+then
+	echo "GOOD ${file_name} contains '${version_tag}'"
+else
+	FILES_VALID=0
+	echo "BAD ${file_name} doesn't contains '${version_tag}'"
+fi
+
+
+file_name="${PLUGIN}.php"
+source_text=`head -n 50 ${PLUGIN_DIR}/${file_name}`
+version_tag="Version: ${VERSION}"
+if echo "${source_text}" | grep -q "${version_tag}";
+then
+	echo "GOOD ${file_name} contains '${version_tag}'"
+else
+	FILES_VALID=0
+	echo "BAD ${file_name} doesn't contains '${version_tag}'"
+fi
+
+version_tag="= '${VERSION}';"
+if echo "${source_text}" | grep -q "${version_tag}";
+then
+	echo "GOOD ${file_name} contains '${version_tag}'"
+else
+	FILES_VALID=0
+	echo "BAD ${file_name} doesn't contains '${version_tag}'"
+fi
+
+if [[ "${file_name}" =~ .*-premium.* ]]
+then
+	echo "CHECK"
+	echo "${source_text}" | grep "REQUIRED_FREE_VERSION";
+fi
+
+
+file_name="changelog.txt"
+file="${PLUGIN_DIR}/${file_name}"
+if [[ -e ${file} ]]
+then
+	version_tag="= ${VERSION} ="
+else
+	file_name="CHANGELOG.md"
+	file="${PLUGIN_DIR}/${file_name}"
+
+	if [[ -e ${file} ]]
+	then
+		version_tag="## ${VERSION}"
+	fi
+fi
+
+source_text=`head ${file}`
+if echo "${source_text}" | grep -q "${version_tag}";
+then
+	echo "GOOD ${file_name} contains '${version_tag}'"
+else
+	FILES_VALID=0
+	echo "BAD ${file_name} doesn't contains '${version_tag}'"
+fi
+
+echo
+
+if [[ 0 == ${FILES_VALID} ]]
+then
+	exit 1
+fi

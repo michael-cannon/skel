@@ -1,0 +1,26 @@
+#!/bin/bash
+
+# Prepare Testimonials Widget for release
+#
+# @author Michael Cannon <mc@aihr.us>
+
+KEY="tw"
+DIR_UPLOAD="2012/11"
+ID_POST=16103
+ID_PRODUCT=16754
+
+source ~/.skel/bin/wpinit ${KEY}
+echo
+
+if [[ -z ${1} ]]
+then
+	echo "What's the version number?"
+	echo
+	exit 1
+else
+	VERSION=${1}
+fi
+
+wprelease ${KEY} ${VERSION} || exit 1;
+wpsvn ${KEY} ${VERSION} || exit 1;
+wpdocument ${KEY} ${DIR_UPLOAD} ${ID_POST} ${ID_PRODUCT}

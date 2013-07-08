@@ -27,6 +27,7 @@ ITEMS=".alias
 .bashrc
 .bashrc.${HOSTNAME}
 .bashrc.${HOSTNAME}.${USER}
+.gitconfig
 .gitignore
 .inputrc
 .ssh

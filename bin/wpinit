@@ -1,0 +1,93 @@
+#!/bin/bash
+
+# Initial variables for WordPress plugins testing & release functions
+#
+# @author Michael Cannon <mc@aihr.us>
+
+SITE="wp"
+l2l_config="/Users/michael/.ssh/l2l_config/${SITE}"
+if [[ -e ${l2l_config} ]]
+then
+	source ${l2l_config}
+	CMD_MYSQL="mysql --host=${DB_HOST} --user=${DB_USER} --password=${DB_PW} ${DB_NAME}"
+else
+	CMD_MYSQL=
+fi
+
+CMD_RSYNC="rsync -Pahz -e ssh --stats --delete-excluded --exclude=**/.git/** --exclude=**/.svn/** --exclude=**/zzz/**"
+CMD_SCP="scp -r -p -C"
+CMD_SSH="ssh -t"
+
+DIR_DOWNLOADS="${HOME}/Downloads/zzz-wp"
+
+if [[ ! -e ${DIR_DOWNLOADS} ]]
+then
+	mkdir ${DIR_DOWNLOADS}
+fi
+
+DIR_PLUGINS="wp-content/plugins"
+DIR_SITES="${HOME}/Sites"
+
+SITE_WP="${DIR_SITES}/${SITE}"
+SITE_WP_PLUGINS="${SITE_WP}/${DIR_PLUGINS}"
+DIR_RULESETS="${SITE_WP_PLUGINS}/testimonials-widget/ci/"
+
+PLUGIN=
+
+SSH_AIHRUS="aihrus@aihr.us"
+PATH_AIHRUS="~/public_html"
+CMD_SSH="${CMD_SSH} ${SSH_AIHRUS}"
+
+case "${1}" in
+
+	"cbqea" )
+		PLUGINS="
+		custom-bulkquick-edit
+		custom-bulkquick-edit-premium
+		"
+		;;
+
+	"cbqe" )
+		PLUGIN="custom-bulkquick-edit"
+		PLUGINS="custom-bulkquick-edit"
+		;;
+
+	"cbqep" )
+		PLUGIN="custom-bulkquick-edit-premium"
+		PLUGINS="custom-bulkquick-edit-premium"
+		;;
+
+	"twa" )
+		PLUGINS="
+		testimonials-widget
+		testimonials-widget-premium
+		"
+		;;
+
+	"tw" )
+		PLUGIN="testimonials-widget"
+		PLUGINS="testimonials-widget"
+		;;
+
+	"twp" )
+		PLUGIN="testimonials-widget-premium"
+		PLUGINS="testimonials-widget-premium"
+		;;
+
+	"ws" )
+		PLUGIN="wordpress-starter"
+		PLUGINS="wordpress-starter"
+		;;
+
+	* )
+		PLUGINS="
+		custom-bulkquick-edit
+		custom-bulkquick-edit-premium
+		flickr-shortcode-importer
+		testimonials-widget
+		testimonials-widget-premium
+		typo3-importer
+		wordpress-starter
+		"
+		;;
+esac
