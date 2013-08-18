@@ -2223,6 +2223,8 @@ function l2l_site_wordpress_multisite() {
 
 	LOCAL_BASE_DB_MODS[(( LOCAL_BASE_DB_MODS_I++ ))]="UPDATE wp_sitemeta SET meta_value = '${HTTP_DOMAIN_LOCALHOST}/' WHERE meta_value LIKE '${HTTP_DOMAIN_NAME}/';"
 
+	LOCAL_BASE_DB_MODS[(( LOCAL_BASE_DB_MODS_I++ ))]="UPDATE wp_1_options SET option_value = '${HTTP_DOMAIN_LOCALHOST}/' WHERE option_value LIKE '${HTTP_DOMAIN_NAME}/';"
+
 	LOCAL_BASE_DB_MODS[(( LOCAL_BASE_DB_MODS_I++ ))]="UPDATE wp_blogs SET domain = '${DOMAIN_LOCALHOST}' WHERE domain LIKE '${DOMAIN_NAME}';"
 
 	LOCAL_BASE_DB_MODS[(( LOCAL_BASE_DB_MODS_I++ ))]="UPDATE wp_site SET domain = '${DOMAIN_LOCALHOST}' WHERE domain LIKE '${DOMAIN_NAME}';"

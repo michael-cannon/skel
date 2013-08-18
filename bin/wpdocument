@@ -4,16 +4,20 @@
 #
 # @author Michael Cannon <mc@aihr.us>
 
-if [[ -z ${1} || -z ${2} || -z ${3} || -z ${4} ]]
+if [[ -z ${1} || -z ${2} || -z ${3} ]]
 then
-	echo `basename ${0}` plugin-key upload-dir id-post id-product [id-changelog] [id-api] [id-todo] 
+	echo `basename ${0}` plugin-key upload-dir id-product [id-post] [id-changelog] [id-api] [id-todo] 
 	echo
 	exit 1
 else
 	KEY=${1}
 	DIR_UPLOAD=${2}
-	ID_POST=${3}
-	ID_PRODUCT=${4}
+	ID_PRODUCT=${3}
+fi
+
+if [[ -n ${4} ]]
+then
+	ID_POST=${4}
 fi
 
 if [[ -n ${5} ]]
@@ -42,13 +46,16 @@ fi
 ${CMD_SCP} ~/Downloads/zzz-wp/${PLUGIN}.zip aihrus@aihr.us:~/subdomains/updates/update/. || exit 1;
 ${CMD_SCP} ~/Downloads/zzz-wp/${PLUGIN}.zip aihrus@aihr.us:~/public_html/wp-content/uploads/edd/${DIR_UPLOAD}/. || exit 1;
 
-# details
+# product
 open http://wordpress.org/extend/plugins/about/validator/
 mvim ${SITE_WP_PLUGINS}/${PLUGIN}/readme.txt
-open http://aihr.us/wp-admin/post.php?post=${ID_POST}\&action=edit
-
-# product
 open http://aihr.us/wp-admin/post.php?post=${ID_PRODUCT}\&action=edit
+
+# details
+if [[ -n ${ID_POST} ]]
+then
+	open http://aihr.us/wp-admin/post.php?post=${ID_POST}\&action=edit
+fi
 
 if [[ -n ${ID_CHANGELOG} ]]
 then

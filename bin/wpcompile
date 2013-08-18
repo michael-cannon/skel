@@ -66,7 +66,7 @@ do
 	# @ref https://github.com/manuelpichler/phpmd
 	if [[ -e 'ci/phpmd.ruleset.xml' ]]
 	then
-		phpmd ${DIR_PLUGIN} --exclude Akismet.class.php,class-redrokk-metabox-class.php,video-quick-edit.php text ci/phpmd.ruleset.xml >> ${FILE_CODE_QA}
+		phpmd ${DIR_PLUGIN} --exclude Akismet.class.php,class-redrokk-metabox-class.php,video-quick-edit.php,inc.flickr.php,screen-meta-links.php text ci/phpmd.ruleset.xml >> ${FILE_CODE_QA}
 	else
 		phpmd ${DIR_PLUGIN} --exclude Akismet.class.php,class-redrokk-metabox-class.php text ${DIR_RULESETS}/phpmd.ruleset.xml >> ${FILE_CODE_QA}
 	fi

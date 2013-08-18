@@ -9,3 +9,4 @@ tar -zxf latest.tar.gz
 rm latest.tar.gz
 mv wordpress/* .
 rmdir wordpress
+wspmwww

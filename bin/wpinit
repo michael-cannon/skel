@@ -57,6 +57,21 @@ case "${1}" in
 		PLUGINS="custom-bulkquick-edit-premium"
 		;;
 
+	"esr" )
+		PLUGIN="edd-sales-recovery"
+		PLUGINS="edd-sales-recovery"
+		;;
+
+	"fsi" )
+		PLUGIN="flickr-shortcode-importer"
+		PLUGINS="flickr-shortcode-importer"
+		;;
+
+	"sbpp" )
+		PLUGIN="stonebriar-podpress"
+		PLUGINS="stonebriar-podpress"
+		;;
+
 	"twa" )
 		PLUGINS="
 		testimonials-widget
