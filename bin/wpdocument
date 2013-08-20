@@ -38,7 +38,7 @@ fi
 source ~/.skel/bin/wpinit ${KEY}
 echo
 
-if [[ "${PLUGIN}" =~ .*-premium.* ]]
+if [[ "${PLUGIN}" =~ .*-premium.* || -n ${8} ]]
 then
 	IS_PREMIUM=1
 fi
