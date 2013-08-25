@@ -35,20 +35,27 @@ then
 	ID_TODO=${7}
 fi
 
-source ~/.skel/bin/wpinit ${KEY}
-echo
-
 if [[ "${PLUGIN}" =~ .*-premium.* || -n ${8} ]]
 then
 	IS_PREMIUM=1
 fi
+
+source ~/.skel/bin/wpinit ${KEY}
+echo
+
+DIR_PATH="${SITE_WP_PLUGINS}/${PLUGIN}"
 
 ${CMD_SCP} ~/Downloads/zzz-wp/${PLUGIN}.zip aihrus@aihr.us:~/subdomains/updates/update/. || exit 1;
 ${CMD_SCP} ~/Downloads/zzz-wp/${PLUGIN}.zip aihrus@aihr.us:~/public_html/wp-content/uploads/edd/${DIR_UPLOAD}/. || exit 1;
 
 # product
 open http://wordpress.org/extend/plugins/about/validator/
-mvim ${SITE_WP_PLUGINS}/${PLUGIN}/readme.txt
+
+file="${DIR_PATH}/readme.txt"
+if [[ -e ${file} ]]
+then
+	mvim ${file}
+fi
 
 if [[ -n ${ID_PRODUCT} && ${ID_PRODUCT} -gt 0 ]]
 then
@@ -63,19 +70,34 @@ fi
 
 if [[ -n ${ID_CHANGELOG} && ${ID_CHANGELOG} -gt 0 ]]
 then
-	open https://github.com/michael-cannon/${PLUGIN}/blob/master/CHANGELOG.md
+	file="${DIR_PATH}/CHANGELOG.md"
+	if [[ -e ${file} ]]
+	then
+		mvim ${file}
+	fi
+
 	open http://aihr.us/wp-admin/post.php?post=${ID_CHANGELOG}\&action=edit
 fi
 
 if [[ -n ${ID_API} && ${ID_API} -gt 0 ]]
 then
-	open https://github.com/michael-cannon/${PLUGIN}/blob/master/API.md
+	file="${DIR_PATH}/API.md"
+	if [[ -e ${file} ]]
+	then
+		mvim ${file}
+	fi
+
 	open http://aihr.us/wp-admin/post.php?post=${ID_API}\&action=edit
 fi
 
 if [[ -n ${ID_TODO} && ${ID_TODO} -gt 0 ]]
 then
-	open https://github.com/michael-cannon/${PLUGIN}/blob/master/TODO.md
+	file="${DIR_PATH}/TODO.md"
+	if [[ -e ${file} ]]
+	then
+		mvim ${file}
+	fi
+
 	open http://aihr.us/wp-admin/post.php?post=${ID_TODO}\&action=edit
 fi
 
