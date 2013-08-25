@@ -49,33 +49,37 @@ ${CMD_SCP} ~/Downloads/zzz-wp/${PLUGIN}.zip aihrus@aihr.us:~/public_html/wp-cont
 # product
 open http://wordpress.org/extend/plugins/about/validator/
 mvim ${SITE_WP_PLUGINS}/${PLUGIN}/readme.txt
-open http://aihr.us/wp-admin/post.php?post=${ID_PRODUCT}\&action=edit
+
+if [[ -n ${ID_PRODUCT} && ${ID_PRODUCT} -gt 0 ]]
+then
+	open http://aihr.us/wp-admin/post.php?post=${ID_PRODUCT}\&action=edit
+fi
 
 # details
-if [[ -n ${ID_POST} ]]
+if [[ -n ${ID_POST} && ${ID_POST} -gt 0 ]]
 then
 	open http://aihr.us/wp-admin/post.php?post=${ID_POST}\&action=edit
 fi
 
-if [[ -n ${ID_CHANGELOG} ]]
+if [[ -n ${ID_CHANGELOG} && ${ID_CHANGELOG} -gt 0 ]]
 then
 	open https://github.com/michael-cannon/${PLUGIN}/blob/master/CHANGELOG.md
 	open http://aihr.us/wp-admin/post.php?post=${ID_CHANGELOG}\&action=edit
 fi
 
-if [[ -n ${ID_API} ]]
+if [[ -n ${ID_API} && ${ID_API} -gt 0 ]]
 then
 	open https://github.com/michael-cannon/${PLUGIN}/blob/master/API.md
 	open http://aihr.us/wp-admin/post.php?post=${ID_API}\&action=edit
 fi
 
-if [[ -n ${ID_TODO} ]]
+if [[ -n ${ID_TODO} && ${ID_TODO} -gt 0 ]]
 then
 	open https://github.com/michael-cannon/${PLUGIN}/blob/master/TODO.md
 	open http://aihr.us/wp-admin/post.php?post=${ID_TODO}\&action=edit
 fi
 
-if [[ -n ${IS_PREMIUM} ]]
+if [[ -n ${IS_PREMIUM} && ${IS_PREMIUM} -gt 0 ]]
 then
 	mvim ~/Sites/zzz/testimonials-widget-premium/packages.php
 	echo ${CMD_SCP} ~/Sites/zzz/testimonials-widget-premium/packages.php aihrus@aihr.us:~/subdomains/updates/packages.php
