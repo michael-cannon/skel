@@ -71,34 +71,19 @@ fi
 
 if [[ -n ${ID_CHANGELOG} && ${ID_CHANGELOG} -gt 0 ]]
 then
-	file="${DIR_PATH}/CHANGELOG.md"
-	if [[ -e ${file} ]]
-	then
-		mvim ${file}
-	fi
-
+	open https://github.com/michael-cannon/${PLUGIN}/blob/master/CHANGELOG.md
 	open http://aihr.us/wp-admin/post.php?post=${ID_CHANGELOG}\&action=edit
 fi
 
 if [[ -n ${ID_API} && ${ID_API} -gt 0 ]]
 then
-	file="${DIR_PATH}/API.md"
-	if [[ -e ${file} ]]
-	then
-		mvim ${file}
-	fi
-
+	open https://github.com/michael-cannon/${PLUGIN}/blob/master/API.md
 	open http://aihr.us/wp-admin/post.php?post=${ID_API}\&action=edit
 fi
 
 if [[ -n ${ID_TODO} && ${ID_TODO} -gt 0 ]]
 then
-	file="${DIR_PATH}/TODO.md"
-	if [[ -e ${file} ]]
-	then
-		mvim ${file}
-	fi
-
+	open https://github.com/michael-cannon/${PLUGIN}/blob/master/TODO.md
 	open http://aihr.us/wp-admin/post.php?post=${ID_TODO}\&action=edit
 fi
 
