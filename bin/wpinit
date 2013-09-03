@@ -49,27 +49,27 @@ case "${1}" in
 
 	"cbqe" )
 		PLUGIN="custom-bulkquick-edit"
-		PLUGINS="custom-bulkquick-edit"
+		PLUGINS=${PLUGIN}
 		;;
 
 	"cbqep" )
 		PLUGIN="custom-bulkquick-edit-premium"
-		PLUGINS="custom-bulkquick-edit-premium"
+		PLUGINS=${PLUGIN}
 		;;
 
 	"esr" )
 		PLUGIN="edd-sales-recovery"
-		PLUGINS="edd-sales-recovery"
+		PLUGINS=${PLUGIN}
 		;;
 
 	"fsi" )
 		PLUGIN="flickr-shortcode-importer"
-		PLUGINS="flickr-shortcode-importer"
+		PLUGINS=${PLUGIN}
 		;;
 
 	"sbpp" )
 		PLUGIN="stonebriar-podpress"
-		PLUGINS="stonebriar-podpress"
+		PLUGINS=${PLUGIN}
 		;;
 
 	"twa" )
@@ -81,17 +81,22 @@ case "${1}" in
 
 	"tw" )
 		PLUGIN="testimonials-widget"
-		PLUGINS="testimonials-widget"
+		PLUGINS=${PLUGIN}
 		;;
 
 	"twp" )
 		PLUGIN="testimonials-widget-premium"
-		PLUGINS="testimonials-widget-premium"
+		PLUGINS=${PLUGIN}
+		;;
+
+	"wpl" )
+		PLUGIN="wp-leads-mailchimp-constant-contact-and-salesforcecom-integration"
+		PLUGINS=${PLUGIN}
 		;;
 
 	"ws" )
 		PLUGIN="wordpress-starter"
-		PLUGINS="wordpress-starter"
+		PLUGINS=${PLUGIN}
 		;;
 
 	* )
