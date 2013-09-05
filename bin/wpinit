@@ -4,6 +4,8 @@
 #
 # @author Michael Cannon <mc@aihr.us>
 
+WP_VERSION="3.6"
+
 SITE="wp"
 l2l_config="/Users/michael/.ssh/l2l_config/${SITE}"
 if [[ -e ${l2l_config} ]]

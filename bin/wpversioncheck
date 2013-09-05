@@ -3,6 +3,7 @@
 # Check WordPress plugins for release version
 #
 # @author Michael Cannon <mc@aihr.us>
+
 source ~/.skel/bin/wpinit ${@}
 echo
 
@@ -20,6 +21,16 @@ VERSION=${2}
 
 file_name="readme.txt"
 source_text=`head ${PLUGIN_DIR}/${file_name}`
+wp_version_tag="Tested up to: ${WP_VERSION}"
+if echo "${source_text}" | grep -q "${wp_version_tag}";
+then
+	echo "GOOD ${file_name} contains '${wp_version_tag}'"
+else
+	FILES_VALID=0
+	echo "BAD ${file_name} doesn't contains '${wp_version_tag}'"
+fi
+
+
 version_tag="Stable tag: ${VERSION}"
 if echo "${source_text}" | grep -q "${version_tag}";
 then
