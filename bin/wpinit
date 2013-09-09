@@ -42,6 +42,11 @@ CMD_SSH="${CMD_SSH} ${SSH_AIHRUS}"
 
 case "${1}" in
 
+	"bdb" )
+		PLUGIN="blackbox-debug-bar"
+		PLUGINS=${PLUGIN}
+		;;
+
 	"cbqea" )
 		PLUGINS="
 		custom-bulkquick-edit
