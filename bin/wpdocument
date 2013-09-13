@@ -4,16 +4,20 @@
 #
 # @author Michael Cannon <mc@aihr.us>
 
-if [[ -z ${1} || -z ${2} || -z ${3} || -z ${4} ]]
+if [[ -z ${1} || -z ${2} || -z ${3} ]]
 then
-	echo `basename ${0}` plugin-key upload-dir id-post id-product [id-changelog] [id-api] [id-todo] 
+	echo `basename ${0}` plugin-key upload-dir id-product [id-post] [id-changelog] [id-api] [id-todo] 
 	echo
 	exit 1
 else
 	KEY=${1}
 	DIR_UPLOAD=${2}
-	ID_POST=${3}
-	ID_PRODUCT=${4}
+	ID_PRODUCT=${3}
+fi
+
+if [[ -n ${4} ]]
+then
+	ID_POST=${4}
 fi
 
 if [[ -n ${5} ]]
@@ -31,44 +35,59 @@ then
 	ID_TODO=${7}
 fi
 
-source ~/.skel/bin/wpinit ${KEY}
-echo
-
-if [[ "${PLUGIN}" =~ .*-premium.* ]]
+if [[ "${PLUGIN}" =~ .*-premium.* || -n ${8} ]]
 then
 	IS_PREMIUM=1
 fi
 
+source ~/.skel/bin/wpinit ${KEY}
+echo
+
+DIR_PATH="${SITE_WP_PLUGINS}/${PLUGIN}"
+
 ${CMD_SCP} ~/Downloads/zzz-wp/${PLUGIN}.zip aihrus@aihr.us:~/subdomains/updates/update/. || exit 1;
 ${CMD_SCP} ~/Downloads/zzz-wp/${PLUGIN}.zip aihrus@aihr.us:~/public_html/wp-content/uploads/edd/${DIR_UPLOAD}/. || exit 1;
 
-# details
-open http://wordpress.org/extend/plugins/about/validator/
-mvim ${SITE_WP_PLUGINS}/${PLUGIN}/readme.txt
-open http://aihr.us/wp-admin/post.php?post=${ID_POST}\&action=edit
-
 # product
-open http://aihr.us/wp-admin/post.php?post=${ID_PRODUCT}\&action=edit
+open http://wpr2ghm.localhost/
+open http://wordpress.org/extend/plugins/about/validator/
 
-if [[ -n ${ID_CHANGELOG} ]]
+file="${DIR_PATH}/readme.txt"
+if [[ -e ${file} ]]
+then
+	mvim ${file}
+fi
+
+if [[ -n ${ID_PRODUCT} && ${ID_PRODUCT} -gt 0 ]]
+then
+	open http://aihr.us/wp-admin/post.php?post=${ID_PRODUCT}\&action=edit
+fi
+
+# details
+if [[ -n ${ID_POST} && ${ID_POST} -gt 0 ]]
+then
+	open http://aihr.us/wp-admin/post.php?post=${ID_POST}\&action=edit
+fi
+
+if [[ -n ${ID_CHANGELOG} && ${ID_CHANGELOG} -gt 0 ]]
 then
 	open https://github.com/michael-cannon/${PLUGIN}/blob/master/CHANGELOG.md
 	open http://aihr.us/wp-admin/post.php?post=${ID_CHANGELOG}\&action=edit
 fi
 
-if [[ -n ${ID_API} ]]
+if [[ -n ${ID_API} && ${ID_API} -gt 0 ]]
 then
 	open https://github.com/michael-cannon/${PLUGIN}/blob/master/API.md
 	open http://aihr.us/wp-admin/post.php?post=${ID_API}\&action=edit
 fi
 
-if [[ -n ${ID_TODO} ]]
+if [[ -n ${ID_TODO} && ${ID_TODO} -gt 0 ]]
 then
 	open https://github.com/michael-cannon/${PLUGIN}/blob/master/TODO.md
 	open http://aihr.us/wp-admin/post.php?post=${ID_TODO}\&action=edit
 fi
 
-if [[ -n ${IS_PREMIUM} ]]
+if [[ -n ${IS_PREMIUM} && ${IS_PREMIUM} -gt 0 ]]
 then
 	mvim ~/Sites/zzz/testimonials-widget-premium/packages.php
 	echo ${CMD_SCP} ~/Sites/zzz/testimonials-widget-premium/packages.php aihrus@aihr.us:~/subdomains/updates/packages.php

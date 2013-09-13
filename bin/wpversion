@@ -1,0 +1,29 @@
+#!/bin/bash
+
+# Version change helper WordPress plugins 
+#
+# @author Michael Cannon <mc@aihr.us>
+
+source ~/.skel/bin/wpinit ${@}
+echo
+
+if [[ -z ${1} ]]
+then
+	echo `basename ${0}` plugin-key
+	echo
+	exit 1
+fi
+
+PLUGIN_DIR="${SITE_WP_PLUGINS}/${PLUGIN}/"
+FILES="CHANGELOG.md
+readme.txt
+${PLUGIN}.php"
+
+for FILE in ${FILES}
+do
+	file_name="${PLUGIN_DIR}${FILE}"
+	if [[ -e "${file_name}" ]]
+	then
+		vi ${file_name}
+	fi
+done

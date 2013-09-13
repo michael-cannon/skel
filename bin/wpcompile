@@ -64,12 +64,15 @@ do
 	echo >> ${FILE_CODE_QA}
 	# mess detect
 	# @ref https://github.com/manuelpichler/phpmd
+	PHPMD_EXCLUDE="Akismet.class.php,class-redrokk-metabox-class.php,video-quick-edit.php,inc.flickr.php,screen-meta-links.php,EDD_License_Handler.php,EDD_SL_Plugin_Updater.php,jquery.cookie.js"
 	if [[ -e 'ci/phpmd.ruleset.xml' ]]
 	then
-		phpmd ${DIR_PLUGIN} --exclude Akismet.class.php,class-redrokk-metabox-class.php,video-quick-edit.php text ci/phpmd.ruleset.xml >> ${FILE_CODE_QA}
+		PHPMD_RULESET="ci/phpmd.ruleset.xml"
 	else
-		phpmd ${DIR_PLUGIN} --exclude Akismet.class.php,class-redrokk-metabox-class.php text ${DIR_RULESETS}/phpmd.ruleset.xml >> ${FILE_CODE_QA}
+		PHPMD_RULESET="${DIR_RULESETS}/phpmd.ruleset.xml"
 	fi
+	
+	phpmd ${DIR_PLUGIN} --exclude ${PHPMD_EXCLUDE} text ${PHPMD_RULESET} >> ${FILE_CODE_QA}
 
 	echo >> ${FILE_CODE_QA}
 	echo >> ${FILE_CODE_QA}

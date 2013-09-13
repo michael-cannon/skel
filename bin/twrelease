@@ -6,8 +6,8 @@
 
 KEY="tw"
 DIR_UPLOAD="2012/11"
-ID_POST=16103
 ID_PRODUCT=16754
+ID_POST=16103
 
 source ~/.skel/bin/wpinit ${KEY}
 echo
@@ -23,4 +23,4 @@ fi
 
 wprelease ${KEY} ${VERSION} || exit 1;
 wpsvn ${KEY} ${VERSION} || exit 1;
-wpdocument ${KEY} ${DIR_UPLOAD} ${ID_POST} ${ID_PRODUCT}
+wpdocument ${KEY} ${DIR_UPLOAD} ${ID_PRODUCT} ${ID_POST}

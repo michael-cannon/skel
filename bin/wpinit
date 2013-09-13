@@ -4,6 +4,8 @@
 #
 # @author Michael Cannon <mc@aihr.us>
 
+WP_VERSION="3.6"
+
 SITE="wp"
 l2l_config="/Users/michael/.ssh/l2l_config/${SITE}"
 if [[ -e ${l2l_config} ]]
@@ -40,6 +42,11 @@ CMD_SSH="${CMD_SSH} ${SSH_AIHRUS}"
 
 case "${1}" in
 
+	"bdb" )
+		PLUGIN="blackbox-debug-bar"
+		PLUGINS=${PLUGIN}
+		;;
+
 	"cbqea" )
 		PLUGINS="
 		custom-bulkquick-edit
@@ -49,12 +56,27 @@ case "${1}" in
 
 	"cbqe" )
 		PLUGIN="custom-bulkquick-edit"
-		PLUGINS="custom-bulkquick-edit"
+		PLUGINS=${PLUGIN}
 		;;
 
 	"cbqep" )
 		PLUGIN="custom-bulkquick-edit-premium"
-		PLUGINS="custom-bulkquick-edit-premium"
+		PLUGINS=${PLUGIN}
+		;;
+
+	"esr" )
+		PLUGIN="edd-sales-recovery"
+		PLUGINS=${PLUGIN}
+		;;
+
+	"fsi" )
+		PLUGIN="flickr-shortcode-importer"
+		PLUGINS=${PLUGIN}
+		;;
+
+	"sbpp" )
+		PLUGIN="stonebriar-podpress"
+		PLUGINS=${PLUGIN}
 		;;
 
 	"twa" )
@@ -66,17 +88,22 @@ case "${1}" in
 
 	"tw" )
 		PLUGIN="testimonials-widget"
-		PLUGINS="testimonials-widget"
+		PLUGINS=${PLUGIN}
 		;;
 
 	"twp" )
 		PLUGIN="testimonials-widget-premium"
-		PLUGINS="testimonials-widget-premium"
+		PLUGINS=${PLUGIN}
+		;;
+
+	"wpl" )
+		PLUGIN="wp-leads-mailchimp-constant-contact-and-salesforcecom-integration"
+		PLUGINS=${PLUGIN}
 		;;
 
 	"ws" )
 		PLUGIN="wordpress-starter"
-		PLUGINS="wordpress-starter"
+		PLUGINS=${PLUGIN}
 		;;
 
 	* )
