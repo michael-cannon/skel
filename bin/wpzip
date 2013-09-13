@@ -7,9 +7,18 @@
 source ~/.skel/bin/wpinit ${@}
 echo
 
-if [[ -n ${2} ]]
+ZIP="zip"
+
+if [[ -n ${2} && 0 != ${2} ]]
 then
 	VERSION=${2}
+fi
+
+echo ${VERSION}
+
+if [[ -n ${3} ]]
+then
+	BRANCH=${3}
 fi
 
 for PLUGIN in ${PLUGINS}
@@ -31,11 +40,16 @@ do
 	git clone git@github.com:michael-cannon/${PLUGIN}.git || exit 1
 
 	cd ${PLUGIN}
+	if [[ -n ${BRANCH} ]]
+	then
+		git checkout ${BRANCH}
+	fi
+
 	find . -type d \( -name ".git*" -o -name ".svn" \) -exec rm -rf {} \;
 
 	cd ${DIR_DOWNLOADS}
 
-	FILE_ZIP="${PLUGIN}.zip"
+	FILE_ZIP="${PLUGIN}.${ZIP}"
 	if [[ -e ${FILE_ZIP} ]]
 	then
 		rm -f ${FILE_ZIP}
@@ -45,13 +59,24 @@ do
 
 	if [[ -n ${VERSION} ]]
 	then
-		FILE_ZIP="${PLUGIN}-${VERSION}.zip"
+		FILE_ZIP="${PLUGIN}-${VERSION}.${ZIP}"
 		if [[ -e ${FILE_ZIP} ]]
 		then
 			rm -f ${FILE_ZIP}
 		fi
 
 		zip -r ${FILE_ZIP} ${PLUGIN}
+	fi
+
+	if [[ -n ${BRANCH} ]]
+	then
+		BRANCH_ZIP="${PLUGIN}-${BRANCH}.${ZIP}"
+		if [[ -e ${BRANCH_ZIP} ]]
+		then
+			rm -f ${BRANCH_ZIP}
+		fi
+
+		cp ${FILE_ZIP} ${BRANCH_ZIP}
 	fi
 
 	cd ${PLUGIN}
@@ -61,7 +86,8 @@ do
 
 	if [[ 1 == ${IS_PREMIUM} ]]
 	then
-		FILE_ZIP="${PLUGIN}-no-screenshots.zip"
+		NO_SCREENSHOTS="no-screenshots"
+		FILE_ZIP="${PLUGIN}-${NO_SCREENSHOTS}.${ZIP}"
 		if [[ -e ${FILE_ZIP} ]]
 		then
 			rm -f ${FILE_ZIP}
@@ -71,13 +97,24 @@ do
 
 		if [[ -n ${VERSION} ]]
 		then
-			FILE_ZIP="${PLUGIN}-${VERSION}-no-screenshots.zip"
+			FILE_ZIP="${PLUGIN}-${VERSION}-${NO_SCREENSHOTS}.${ZIP}"
 			if [[ -e ${FILE_ZIP} ]]
 			then
 				rm -f ${FILE_ZIP}
 			fi
 
 			zip -r ${FILE_ZIP} ${PLUGIN}
+		fi
+
+		if [[ -n ${BRANCH} ]]
+		then
+			BRANCH_ZIP="${PLUGIN}-${BRANCH}-${NO_SCREENSHOTS}.${ZIP}"
+			if [[ -e ${BRANCH_ZIP} ]]
+			then
+				rm -f ${BRANCH_ZIP}
+			fi
+
+			cp ${FILE_ZIP} ${BRANCH_ZIP}
 		fi
 	fi
 
