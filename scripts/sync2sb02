@@ -48,7 +48,7 @@ function db2dev {
 
 	# remove db sql
 	rm ${SQL_FILE}
-	# ssh ${DEV} rm -f ${SQL_FILE}
+	ssh ${DEV} rm -f ${SQL_FILE}
 
 	# prepare dev sql for import
 	ssh ${DEV} gunzip ${DB_FILE}.gz
@@ -58,7 +58,7 @@ function db2dev {
 
 	# remove local and remote db dump
 	rm ${DB_FILE}.gz
-	# ssh ${DEV} rm -f ${DB_FILE}
+	ssh ${DEV} rm -f ${DB_FILE}
 
 	return
 }
@@ -162,7 +162,7 @@ function dburltypo3 {
 
 	# remove update sql
 	rm ${SQL_FILE}
-	# ssh ${DEV} rm -f ${SQL_FILE}
+	ssh ${DEV} rm -f ${SQL_FILE}
 
 	return
 }

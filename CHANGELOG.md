@@ -1,6 +1,7 @@
 # CHANGELOG for skel
 
 ## master
+* rm old sql files on sb sync
 * Add CHANGELOG tracking
 * Add PHP error_log helpers to vimrc
 * Bring in WordPress CI and release helpers
