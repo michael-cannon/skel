@@ -1,6 +1,9 @@
 # CHANGELOG for skel
 
 ## master
+* Alias csslint
+* vim abbreviation jsdb
+* csslint checking
 * rm old sql files on sb sync
 * Add CHANGELOG tracking
 * Add PHP error_log helpers to vimrc

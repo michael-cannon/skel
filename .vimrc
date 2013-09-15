@@ -149,6 +149,7 @@ ab t3dv t3lib_div::devLog( var_export( $, true ), __FUNCTION__, 0, false )
 ab wpddb define('WP_DEBUG', true);<CR>define('WP_DEBUG_LOG', true);<CR>define('WP_DEBUG_DISPLAY', true)
 ab wpdm if ( get_mbi_options( 'debug_mode' ) ) {<CR>print_r(); echo '<br />'; echo '' . __LINE__ . ':' . basename( __FILE__ )  . '<br />';<CR>}
 ab wpidb if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {<CR>}
+ab jsdb console.log();
 
 
 set showmode

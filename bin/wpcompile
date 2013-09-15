@@ -37,6 +37,13 @@ do
 		php -lf ${FILE} >> ${FILE_CODE_QA}
 	done
 
+	FILES=`find . -type f \( -name "*.css" \)`
+	for FILE in ${FILES}
+	do
+		# CSS Lint
+		csslint --ignore=adjoining-classes,box-model,empty-rules ${FILE} >> ${FILE_CODE_QA}
+	done
+
 	# remove phptidy 
 	find . \( -name "*.phptidybak~" -o -name ".phptidy-cache" \) -exec rm {} \;
 
