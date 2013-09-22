@@ -74,6 +74,11 @@ case "${1}" in
 		PLUGINS=${PLUGIN}
 		;;
 
+	"rmem" )
+		PLUGIN="remove-extra-media"
+		PLUGINS=${PLUGIN}
+		;;
+
 	"sbpp" )
 		PLUGIN="stonebriar-podpress"
 		PLUGINS=${PLUGIN}
@@ -102,6 +107,11 @@ case "${1}" in
 		;;
 
 	"ws" )
+		PLUGIN="wordpress-starter"
+		PLUGINS=${PLUGIN}
+		;;
+
+	"wps" )
 		PLUGIN="wordpress-starter"
 		PLUGINS=${PLUGIN}
 		;;

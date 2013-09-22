@@ -49,6 +49,11 @@ do
 
 	echo >> ${FILE_CODE_QA}
 	echo >> ${FILE_CODE_QA}
+	# any error_log code?
+	grep -nrsI error_log ${DIR_PLUGIN} >> ${FILE_CODE_QA}
+
+	echo >> ${FILE_CODE_QA}
+	echo >> ${FILE_CODE_QA}
 	# Anti-virus
 	wpclamav ${DIR_PLUGIN} >> ${FILE_CODE_QA}
 
