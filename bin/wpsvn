@@ -18,6 +18,18 @@ echo
 
 # push svn and do WordPress release
 cd ~/code/svn.wordpress
+
+if [[ ! -e ${PLUGIN} ]]
+then
+	svn co http://plugins.svn.wordpress.org/${PLUGIN}
+
+	if [[ ! -e ${PLUGIN} ]]
+	then
+		echo No code directory for code/svn.wordpress
+		exit 1
+	fi
+fi
+
 cd ${PLUGIN}
 svn cleanup . || { echo "Unable to 'svn cleanup'"; exit 1; }
 svn up --force || { echo "Unable to 'svn up --force'"; exit 1; }
