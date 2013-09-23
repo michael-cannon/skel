@@ -20,14 +20,16 @@ VERSION=${2}
 
 
 file_name="readme.txt"
-source_text=`head ${PLUGIN_DIR}/${file_name}`
-wp_version_tag="Tested up to: ${WP_VERSION}"
+file_path="${PLUGIN_DIR}/${file_name}"
+source_text=`head ${file_path}`
+wp_tested_up_to="Tested up to:"
+wp_version_tag="${wp_tested_up_to} ${WP_VERSION}"
 if echo "${source_text}" | grep -q "${wp_version_tag}";
 then
 	echo "GOOD ${file_name} contains '${wp_version_tag}'"
 else
-	FILES_VALID=0
-	echo "BAD ${file_name} doesn't contains '${wp_version_tag}'"
+	contains=`grep "${wp_tested_up_to}" ${file_path}`
+	echo "WARNING ${file_name} doesn't contain '${wp_version_tag}', it states '${contains}'"
 fi
 
 
@@ -37,7 +39,7 @@ then
 	echo "GOOD ${file_name} contains '${version_tag}'"
 else
 	FILES_VALID=0
-	echo "BAD ${file_name} doesn't contains '${version_tag}'"
+	echo "BAD ${file_name} doesn't contain '${version_tag}'"
 fi
 
 
@@ -49,7 +51,7 @@ then
 	echo "GOOD ${file_name} contains '${version_tag}'"
 else
 	FILES_VALID=0
-	echo "BAD ${file_name} doesn't contains '${version_tag}'"
+	echo "BAD ${file_name} doesn't contain '${version_tag}'"
 fi
 
 version_tag="= '${VERSION}';"
@@ -58,7 +60,7 @@ then
 	echo "GOOD ${file_name} contains '${version_tag}'"
 else
 	FILES_VALID=0
-	echo "BAD ${file_name} doesn't contains '${version_tag}'"
+	echo "BAD ${file_name} doesn't contain '${version_tag}'"
 fi
 
 if [[ "${file_name}" =~ .*-premium.* ]]
@@ -89,7 +91,7 @@ then
 	echo "GOOD ${file_name} contains '${version_tag}'"
 else
 	FILES_VALID=0
-	echo "BAD ${file_name} doesn't contains '${version_tag}'"
+	echo "BAD ${file_name} doesn't contain '${version_tag}'"
 fi
 
 echo

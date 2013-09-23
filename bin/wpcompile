@@ -41,7 +41,7 @@ do
 	for FILE in ${FILES}
 	do
 		# CSS Lint
-		csslint --ignore=adjoining-classes,box-model,empty-rules ${FILE} >> ${FILE_CODE_QA}
+		csslint --ignore=adjoining-classes,box-model,empty-rules --exclude-list=./css/redmond ${FILE} >> ${FILE_CODE_QA}
 	done
 
 	# remove phptidy 

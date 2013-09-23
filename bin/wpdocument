@@ -49,7 +49,7 @@ ${CMD_SCP} ~/Downloads/zzz-wp/${PLUGIN}.zip aihrus@aihr.us:~/subdomains/updates/
 ${CMD_SCP} ~/Downloads/zzz-wp/${PLUGIN}.zip aihrus@aihr.us:~/public_html/wp-content/uploads/edd/${DIR_UPLOAD}/. || exit 1;
 
 # product
-open http://wpr2ghm.localhost/
+# open http://wpr2ghm.localhost/
 open http://wordpress.org/extend/plugins/about/validator/
 
 file="${DIR_PATH}/readme.txt"
