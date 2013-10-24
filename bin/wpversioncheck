@@ -28,6 +28,7 @@ if echo "${source_text}" | grep -q "${wp_version_tag}";
 then
 	echo "GOOD ${file_name} contains '${wp_version_tag}'"
 else
+	FILES_VALID=0
 	contains=`grep "${wp_tested_up_to}" ${file_path}`
 	echo "WARNING ${file_name} doesn't contain '${wp_version_tag}', it states '${contains}'"
 fi

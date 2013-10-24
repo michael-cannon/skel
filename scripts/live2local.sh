@@ -582,23 +582,10 @@ function l2l_settings_transfer() {
 		SCP_MODS=
 	fi
 	
-	if [[ -z ${USE_FTP} ]]
-	then
-		CMD_FTP_PULL=
-		CMD_FTP_PUSH=
-		CMD_RSYNC=
-		CMD_SCP=`which scp`
-	
-		if [[ -z ${USE_SCP} ]]
-		then
-			CMD_RSYNC=`which rsync`
-		fi
-	else
-		CMD_FTP_PULL=`which ncftpget`
-		CMD_FTP_PUSH=`which ncftpput`
-		CMD_RSYNC=
-		CMD_SCP=
-	fi
+	CMD_FTP_PULL=`which ncftpget`
+	CMD_FTP_PUSH=`which ncftpput`
+	CMD_RSYNC=`which rsync`
+	CMD_SCP=`which scp`
 
 	FTP_OPTIONS="-F -R -v -z"
 	FTP_OPTIONS="-R -v -z"

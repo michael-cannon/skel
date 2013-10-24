@@ -22,5 +22,10 @@ else
 fi
 
 wprelease ${KEY} ${VERSION} || exit 1;
-wpsvn ${KEY} ${VERSION} || exit 1;
+
+if [[ -z ${2} ]]
+then
+	wpsvn ${KEY} ${VERSION} || exit 1;
+fi
+
 wpdocument ${KEY} ${DIR_UPLOAD} ${ID_PRODUCT} ${ID_POST}

@@ -41,7 +41,7 @@
 # alias swohinold="ssh root@83.169.5.189"
 # alias swolf="ssh wolfaihr@wolf.aihr.us"
 alias sacqalco="ssh acqalco@acqal.peimic.com"
-alias saihrus="ssh aihrus@aihr.us"
+alias saihrus="ssh aihrus@yi.aihr.us"
 alias schinacon="ssh chinacon@chinaconnectnow.com"
 alias scrmgbf="ssh crm.greatbooks.org"
 alias sdftg="ssh dontfeed@ftp.dontfeedthegeek.com"

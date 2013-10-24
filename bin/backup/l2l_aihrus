@@ -10,6 +10,8 @@ DOMAIN_BASE="aihrus"
 DOMAIN_LOCALHOST="aihrus.localhost"
 DOMAIN_USER="aihrus"
 WWW_USER="www"
+USE_FTP=1
+REMOTE_DIR_WWW="/"
 
 # load live2local function helpers
 source ~/.skel/scripts/live2local.sh

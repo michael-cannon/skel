@@ -45,8 +45,16 @@ echo
 
 DIR_PATH="${SITE_WP_PLUGINS}/${PLUGIN}"
 
-${CMD_SCP} ~/Downloads/zzz-wp/${PLUGIN}.zip aihrus@aihr.us:~/subdomains/updates/update/. || exit 1;
-${CMD_SCP} ~/Downloads/zzz-wp/${PLUGIN}.zip aihrus@aihr.us:~/public_html/wp-content/uploads/edd/${DIR_UPLOAD}/. || exit 1;
+echo
+echo Updates push
+${CMD_SCP} ~/Sites/zzz-wp/${PLUGIN}.zip aihrus@updates.aihr.us:~/subdomains/updates/update/. || exit 1;
+
+# Now handled through product edit window
+# echo
+# echo EDD push
+# ${CMD_FTP_PUSH} ${FTP_OPTIONS} ~/Sites/zzz-wp/${PLUGIN}.zip ${FTP_REMOTE_SERVER}/public_html/wp-content/uploads/edd/${DIR_UPLOAD}/.
+
+# echo ${CMD_SCP} ~/Sites/zzz-wp/${PLUGIN}.zip aihrus@aihr.us:~/public_html/wp-content/uploads/edd/${DIR_UPLOAD}/. || exit 1;
 
 # product
 # open http://wpr2ghm.localhost/
@@ -89,8 +97,8 @@ fi
 
 if [[ -n ${IS_PREMIUM} && ${IS_PREMIUM} -gt 0 ]]
 then
-	mvim ~/Sites/zzz/testimonials-widget-premium/packages.php
-	echo ${CMD_SCP} ~/Sites/zzz/testimonials-widget-premium/packages.php aihrus@aihr.us:~/subdomains/updates/packages.php
+	mvim ~/Sites/zzz-wp/updates/packages.php
+	echo ${CMD_SCP} ~/Sites/zzz-wp/updates/packages.php aihrus@updates.aihr.us:~/subdomains/updates/packages.php
 	echo
 else
 	open http://wordpress.org/extend/plugins/${PLUGIN}/

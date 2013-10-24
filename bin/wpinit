@@ -4,7 +4,7 @@
 #
 # @author Michael Cannon <mc@aihr.us>
 
-WP_VERSION="3.6.1"
+WP_VERSION="3.8.0"
 
 SITE="wp"
 l2l_config="/Users/michael/.ssh/l2l_config/${SITE}"
@@ -20,7 +20,13 @@ CMD_RSYNC="rsync -Pahz -e ssh --stats --delete-excluded --exclude=**/.git/** --e
 CMD_SCP="scp -r -p -C"
 CMD_SSH="ssh -t"
 
-DIR_DOWNLOADS="${HOME}/Downloads/zzz-wp"
+CMD_FTP_PUSH=`which ncftpput`
+FTP_OPTIONS="-R -v -z"
+# FTP_OPTIONS="${FTP_OPTIONS} -p ${FTP_PW}"
+REMOTE_SERVER="aihrus@aihr.us"
+FTP_REMOTE_SERVER="sftp://${REMOTE_SERVER}"
+
+DIR_DOWNLOADS="${HOME}/Sites/zzz-wp"
 
 if [[ ! -e ${DIR_DOWNLOADS} ]]
 then
