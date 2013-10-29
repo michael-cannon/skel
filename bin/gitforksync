@@ -1,0 +1,13 @@
+#!/bin/bash
+
+# GitHub fork sync helper
+#
+# @ref https://help.github.com/articles/syncing-a-fork
+# @author Michael Cannon <mc@aihr.us>
+
+git remote -v
+git fetch upstream
+git branch -va
+git checkout master
+git merge upstream/master
+git push origin master

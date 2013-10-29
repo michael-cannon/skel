@@ -70,6 +70,11 @@ case "${1}" in
 		PLUGINS=${PLUGIN}
 		;;
 
+	"erl" )
+		PLUGIN="edd-retroactive-licensing"
+		PLUGINS=${PLUGIN}
+		;;
+
 	"esr" )
 		PLUGIN="edd-sales-recovery"
 		PLUGINS=${PLUGIN}
@@ -77,6 +82,11 @@ case "${1}" in
 
 	"fsi" )
 		PLUGIN="flickr-shortcode-importer"
+		PLUGINS=${PLUGIN}
+		;;
+
+	"rem" )
+		PLUGIN="remove-extra-media"
 		PLUGINS=${PLUGIN}
 		;;
 

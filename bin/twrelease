@@ -7,7 +7,7 @@
 KEY="tw"
 DIR_UPLOAD="2012/11"
 ID_PRODUCT=16754
-ID_POST=16103
+ID_POST=0
 
 source ~/.skel/bin/wpinit ${KEY}
 echo

@@ -1,13 +1,16 @@
 # CHANGELOG for skel
 
 ## master
-* *release ignore wpsvn option
 * Add CHANGELOG tracking
 * Add PHP error_log helpers to vimrc
+* Add erl
+* Add rem
 * Alias csslint
 * Bring in WordPress CI and release helpers
 * Clean up aliases
 * Clean up git diff aliases
+* GitHub fork sync helper
+* Ignore .jquery on csslint
 * Relocate packages file for updating premium
 * Revise ID_POST ordering
 * Revise WordPress helpers
@@ -17,6 +20,7 @@
 * alias wpptr="phptidy.php replace"
 * csslint checking
 * l2l_aihrus USE_FTP=1
+* release ignore wpsvn option
 * rm old sql files on sb sync
 * vim ab erra error_log( print_r( func_get_args(), true ) . ':' . __LINE__ . ':' . basename( __FILE__ ) )
 * vim abbreviation jsdb

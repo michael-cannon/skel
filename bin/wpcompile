@@ -37,7 +37,7 @@ do
 		php -lf ${FILE} >> ${FILE_CODE_QA}
 	done
 
-	FILES=`find . -type f \( -name "*.css" \)`
+	FILES=`find . -type f \( -name "*.css" ! -name "jquery*" \)`
 	for FILE in ${FILES}
 	do
 		# CSS Lint
@@ -76,7 +76,7 @@ do
 	echo >> ${FILE_CODE_QA}
 	# mess detect
 	# @ref https://github.com/manuelpichler/phpmd
-	PHPMD_EXCLUDE="Akismet.class.php,class-redrokk-metabox-class.php,video-quick-edit.php,inc.flickr.php,screen-meta-links.php,EDD_License_Handler.php,EDD_SL_Plugin_Updater.php,jquery.cookie.js"
+	PHPMD_EXCLUDE="Akismet.class.php,class-redrokk-metabox-class.php,video-quick-edit.php,inc.flickr.php,screen-meta-links.php,EDD_License_Handler.php,EDD_SL_Plugin_Updater.php,jquery.cookie.js,jquery.bxslider.js,jquery.easing.1.3.js,jquery.fitvids.js"
 	if [[ -e 'ci/phpmd.ruleset.xml' ]]
 	then
 		PHPMD_RULESET="ci/phpmd.ruleset.xml"
