@@ -7,7 +7,7 @@
 	type = cat-file -t
 	dump = cat-file -p
 [color]
-	ui = auto
+	ui = 1
 [pager]
 	status = yes
 [url "ssh://comprock@review.typo3.org:29418"]

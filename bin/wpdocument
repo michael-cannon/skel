@@ -45,9 +45,9 @@ echo
 
 DIR_PATH="${SITE_WP_PLUGINS}/${PLUGIN}"
 
-echo
-echo Updates push
-${CMD_SCP} ~/Sites/zzz-wp/${PLUGIN}.zip aihrus@updates.aihr.us:~/subdomains/updates/update/. || exit 1;
+# echo
+# echo Updates push
+# ${CMD_SCP} ~/Sites/zzz-wp/${PLUGIN}.zip aihrus@updates.aihr.us:~/subdomains/updates/update/. || exit 1;
 
 # Now handled through product edit window
 # echo

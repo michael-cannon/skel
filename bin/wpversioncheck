@@ -45,7 +45,7 @@ fi
 
 
 file_name="${PLUGIN}.php"
-source_text=`head -n 50 ${PLUGIN_DIR}/${file_name}`
+source_text=`head -n 75 ${PLUGIN_DIR}/${file_name}`
 version_tag="Version: ${VERSION}"
 if echo "${source_text}" | grep -q "${version_tag}";
 then

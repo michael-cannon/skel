@@ -48,6 +48,11 @@ CMD_SSH="${CMD_SSH} ${SSH_AIHRUS}"
 
 case "${1}" in
 
+	"af" )
+		PLUGIN="aihrus-framework"
+		PLUGINS=${PLUGIN}
+		;;
+
 	"bdb" )
 		PLUGIN="blackbox-debug-bar"
 		PLUGINS=${PLUGIN}
@@ -67,6 +72,11 @@ case "${1}" in
 
 	"cbqep" )
 		PLUGIN="custom-bulkquick-edit-premium"
+		PLUGINS=${PLUGIN}
+		;;
+
+	"cbqepwpseo" )
+		PLUGIN="cbqep-wordpress-seo"
 		PLUGINS=${PLUGIN}
 		;;
 
@@ -130,6 +140,18 @@ case "${1}" in
 	"wps" )
 		PLUGIN="wordpress-starter"
 		PLUGINS=${PLUGIN}
+		;;
+
+	"wpsp" )
+		PLUGIN="wordpress-starter-premium"
+		PLUGINS=${PLUGIN}
+		;;
+
+	"wpsa" )
+		PLUGINS="
+		wordpress-starter
+		wordpress-starter-premium
+		"
 		;;
 
 	* )
