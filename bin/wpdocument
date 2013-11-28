@@ -97,8 +97,14 @@ fi
 
 if [[ -n ${IS_PREMIUM} && ${IS_PREMIUM} -gt 0 ]]
 then
-	mvim ~/Sites/zzz-wp/updates/packages.php
-	echo ${CMD_SCP} ~/Sites/zzz-wp/updates/packages.php aihrus@updates.aihr.us:~/subdomains/updates/packages.php
+	file="${DIR_PATH}/CHANGELOG.md"
+	if [[ -e ${file} ]]
+	then
+		mvim ${file}
+	fi
+
+	# mvim ~/Sites/updates/packages.php
+	# echo ${CMD_SCP} ~/Sites/updates/packages.php aihrus@updates.aihr.us:~/subdomains/updates/packages.php
 	echo
 else
 	open http://wordpress.org/extend/plugins/${PLUGIN}/
