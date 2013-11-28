@@ -29,7 +29,7 @@ do
 	for FILE in ${FILES}
 	do
 		# apply WordPress Coding Standards
-		phptidy.php replace ${FILE}
+		echo phptidy.php replace ${FILE}
 
 		# todo indent case blocks
 
