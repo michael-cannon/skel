@@ -242,7 +242,8 @@ function l2l_settings_server() {
 		# macports - /opt/local/apache2/bin/apachectl
 	
 		APACHE_CMD=`which apachectl`
-		DIR_VHOST="/opt/local/apache2/conf/vhosts"
+		# DIR_VHOST="/opt/local/apache2/conf/vhosts"
+		DIR_VHOST="/private/etc/apache2/other"
 		DEV_GROUP="www"
 		SITES="Sites"
 
@@ -1335,7 +1336,8 @@ function l2l_remove_vhost() {
 	if [[ -e "${vhost_conf}" ]]
 	then
 		${BIN_SUDO} rm ${vhost_conf}
-		${BIN_SUDO} ${APACHE_CMD} restart
+		${BIN_SUDO} ${APACHE_CMD} stop
+		${BIN_SUDO} ${APACHE_CMD} start
 	fi
 }
 
@@ -1764,7 +1766,8 @@ function l2l_access_create_vhost() {
 		echo "	</Directory>" >> "${vhost_conf}"
 		echo "</VirtualHost>" >> "${vhost_conf}"
 
-		${BIN_SUDO} ${APACHE_CMD} restart
+		${BIN_SUDO} ${APACHE_CMD} stop
+		${BIN_SUDO} ${APACHE_CMD} start
 	fi
 }
 

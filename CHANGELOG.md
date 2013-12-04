@@ -1,6 +1,16 @@
 # CHANGELOG for skel
 
 ## master
+* Update alias terror_log
+* Integrate brew
+* Update LS_OPTIONS
+* Default no wpsvn for *releases
+* Now wipe NON_SVN_FILES from svn wp repo
+* Setup gct2t for gc-testimonials-to-testimonials
+* Setup cbqeef cbqe-edit-flow
+* Correct git pull with origin master
+* Check for successful SVN checkout before proceeding
+* Revise for default Apache conf files
 * Add CHANGELOG tracking
 * Add PHP error_log helpers to vimrc
 * Add erl

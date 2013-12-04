@@ -23,7 +23,7 @@ fi
 
 wprelease ${KEY} ${VERSION} || exit 1;
 
-if [[ -z ${2} ]]
+if [[ -n ${2} ]]
 then
 	wpsvn ${KEY} ${VERSION} || exit 1;
 fi

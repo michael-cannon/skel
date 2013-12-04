@@ -18,7 +18,7 @@ source ~/.skel/bin/wpinit ${KEY}
 echo
 
 cd ${SITE_WP_PLUGINS}/${PLUGIN} || exit 1;
-git pull || exit 1;
+git pull origin master || exit 1;
 
 wpversioncheck ${KEY} ${VERSION} || exit 1;
 wplocalize ${KEY} commit || exit 1;

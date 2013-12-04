@@ -203,6 +203,14 @@ if [ -n "$PS1" ]; then
 			then
 				source ~/.bash_completion
 			fi
+
+			WHICH_BREW=`which brew`
+			if [[ ${WHICH_BREW} ]] && [[ "${WHICH_BREW}" != "No *" ]]
+			then
+				source `brew --repository`/Library/Contributions/brew_bash_completion.sh
+			fi
+
+			unset WHICH_BREW
 		fi
 	fi
 fi
@@ -216,7 +224,7 @@ if [[ -e /opt/local/bin/gls ]]
 then
 	export LS_OPTIONS="--color=tty -F -b -T 0 -h"
 else
-	export LS_OPTIONS="--color -h"
+	export LS_OPTIONS="-G -h"
 fi
 
 # how many ways to list something are there?
@@ -234,8 +242,7 @@ export GREP_OPTIONS
 export RUBYOPT=rubygems
 
 WHICH_VIM=`which vim`
-
-if [ ${WHICH_VIM} ] && [ "${WHICH_VIM}" != "No *" ]
+if [[ ${WHICH_VIM} ]] && [[ "${WHICH_VIM}" != "No *" ]]
 then
 	alias vi="vim"
 	VISUAL=vim

@@ -3,7 +3,10 @@
 # 	alias du="du -d 1 -h | sort -rh"
 # fi
 
-if [[ -e /usr/local/apache/logs/error_log ]]
+if [[ -e /var/log/apache2/error_log ]]
+then
+	alias terror_log='tail -f /var/log/apache2/error_log'
+elif [[ -e /usr/local/apache/logs/error_log ]]
 then
 	alias terror_log='tail -f /usr/local/apache/logs/error_log'
 elif [[ -e /etc/httpd/logs/error_log ]]

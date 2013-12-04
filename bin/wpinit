@@ -26,6 +26,18 @@ FTP_OPTIONS="-R -v -z"
 REMOTE_SERVER="aihrus@aihr.us"
 FTP_REMOTE_SERVER="sftp://${REMOTE_SERVER}"
 
+NON_SVN_FILES="
+.git
+.gitignore
+.travis.yml
+000-code-qa.txt
+ci
+lib/aihrus/.travis.yml
+lib/aihrus/ci
+phpunit.xml
+prepare-plugin.sh
+"
+
 DIR_DOWNLOADS="${HOME}/Sites/zzz-wp"
 
 if [[ ! -e ${DIR_DOWNLOADS} ]]
@@ -48,6 +60,11 @@ CMD_SSH="${CMD_SSH} ${SSH_AIHRUS}"
 
 case "${1}" in
 
+	"gct2t" )
+		PLUGIN="gc-testimonials-to-testimonials"
+		PLUGINS=${PLUGIN}
+		;;
+
 	"af" )
 		PLUGIN="aihrus-framework"
 		PLUGINS=${PLUGIN}
@@ -63,6 +80,7 @@ case "${1}" in
 		custom-bulkquick-edit
 		custom-bulkquick-edit-premium
 		cbqep-wordpress-seo
+		cbqe-edit-flow
 		"
 		;;
 
@@ -73,6 +91,11 @@ case "${1}" in
 
 	"cbqep" )
 		PLUGIN="custom-bulkquick-edit-premium"
+		PLUGINS=${PLUGIN}
+		;;
+
+	"cbqeef" )
+		PLUGIN="cbqe-edit-flow"
 		PLUGINS=${PLUGIN}
 		;;
 
@@ -115,6 +138,7 @@ case "${1}" in
 		PLUGINS="
 		testimonials-widget
 		testimonials-widget-premium
+		gc-testimonials-to-testimonials
 		"
 		;;
 
@@ -157,6 +181,7 @@ case "${1}" in
 
 	* )
 		PLUGINS="
+		gc-testimonials-to-testimonials
 		custom-bulkquick-edit
 		custom-bulkquick-edit-premium
 		flickr-shortcode-importer

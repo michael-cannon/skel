@@ -21,7 +21,7 @@ cd ~/code/svn.wordpress
 
 if [[ ! -e ${PLUGIN} ]]
 then
-	svn co http://plugins.svn.wordpress.org/${PLUGIN}
+	svn co http://plugins.svn.wordpress.org/${PLUGIN} || { echo "Unable to 'svn co'"; exit 1; }
 
 	if [[ ! -e ${PLUGIN} ]]
 	then
@@ -34,11 +34,20 @@ cd ${PLUGIN}
 svn cleanup . || { echo "Unable to 'svn cleanup'"; exit 1; }
 svn up --force || { echo "Unable to 'svn up --force'"; exit 1; }
 git clone git@github.com:michael-cannon/${PLUGIN}.git || { echo "Unable to 'git clone'"; exit 1; }
-cd ${PLUGIN}
-rm -rf .git*
-cp -r * ../trunk/.
-cd ../trunk
+cp -r ${PLUGIN}/* trunk/.
+
+cd trunk
+for FILE in ${NON_SVN_FILES}
+do
+	if [[ -e ${FILE} ]]
+	then
+		svn rm ${FILE}
+		rm -rf ${FILE}
+	fi
+done
+
 svn add *
+
 cd ..
 rm -rf ${PLUGIN}
 
