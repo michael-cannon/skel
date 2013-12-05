@@ -27,3 +27,5 @@ do
 		vi ${file_name}
 	fi
 done
+
+echo cd ${PLUGIN_DIR}

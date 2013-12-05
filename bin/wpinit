@@ -58,7 +58,100 @@ SSH_AIHRUS="aihrus@aihr.us"
 PATH_AIHRUS="~/public_html"
 CMD_SSH="${CMD_SSH} ${SSH_AIHRUS}"
 
-case "${1}" in
+LOOKUP_PLUGIN=${1}
+
+if [[ "." == ${LOOKUP_PLUGIN} ]]
+then
+	PWD=`pwd`
+	LOOKUP_PLUGIN=`basename ${PWD}`
+	case "${LOOKUP_PLUGIN}" in
+
+		"aihrus-framework" )
+			LOOKUP_PLUGIN="af"
+			;;
+
+		"blackbox-debug-bar" )
+			LOOKUP_PLUGIN="bdb"
+			;;
+
+		"cbqe-edit-flow" )
+			LOOKUP_PLUGIN="cbqeef"
+			;;
+
+		"cbqep-wordpress-seo" )
+			LOOKUP_PLUGIN="cbqepwpseo"
+			;;
+
+		"custom-bulkquick-edit" )
+			LOOKUP_PLUGIN="cbqe"
+			;;
+
+		"custom-bulkquick-edit-premium" )
+			LOOKUP_PLUGIN="cbqep"
+			;;
+
+		"edd-retroactive-licensing" )
+			LOOKUP_PLUGIN="erl"
+			;;
+
+		"edd-sales-recovery" )
+			LOOKUP_PLUGIN="eddsr"
+			;;
+
+		"flickr-shortcode-importer" )
+			LOOKUP_PLUGIN="fsi"
+			;;
+
+		"gc-testimonials-to-testimonials" )
+			LOOKUP_PLUGIN="gct2t"
+			;;
+
+		"remove-extra-media" )
+			LOOKUP_PLUGIN="rem"
+			;;
+
+		"stonebriar-podpress" )
+			LOOKUP_PLUGIN="sbpp"
+			;;
+
+		"testimonials-widget" )
+			LOOKUP_PLUGIN="tw"
+			;;
+
+		"testimonials-widget-premium" )
+			LOOKUP_PLUGIN="twp"
+			;;
+
+		"wordpress-starter" )
+			LOOKUP_PLUGIN="ws"
+			;;
+
+		"wordpress-starter-premium" )
+			LOOKUP_PLUGIN="wpsp"
+			;;
+
+		"wp-leads-mailchimp-constant-contact-and-salesforcecom-integration" )
+			LOOKUP_PLUGIN="wpl"
+			;;
+		
+		* )
+			echo "Plugin code for '${LOOKUP_PLUGIN}' wasn't found"
+			exit 1
+			;;
+	esac
+	echo
+	echo "Plugin code: ${LOOKUP_PLUGIN}"
+
+	release="${LOOKUP_PLUGIN}release"
+	if [[ -e ~/bin/${release} || -e ~/bin/custom/${release} ]]
+	then
+		echo "Release code: ${release}"
+	fi
+
+	echo
+fi
+
+case "${LOOKUP_PLUGIN}" in
 
 	"gct2t" )
 		PLUGIN="gc-testimonials-to-testimonials"
@@ -109,7 +202,7 @@ case "${1}" in
 		PLUGINS=${PLUGIN}
 		;;
 
-	"esr" )
+	"eddsr" )
 		PLUGIN="edd-sales-recovery"
 		PLUGINS=${PLUGIN}
 		;;
@@ -181,14 +274,28 @@ case "${1}" in
 
 	* )
 		PLUGINS="
-		gc-testimonials-to-testimonials
+		blackbox-debug-bar
+		cbqe-edit-flow
+		cbqep-wordpress-seo
 		custom-bulkquick-edit
 		custom-bulkquick-edit-premium
+		edd-retroactive-licensing
+		edd-sales-recovery
 		flickr-shortcode-importer
+		gc-testimonials-to-testimonials
+		remove-extra-media
 		testimonials-widget
 		testimonials-widget-premium
 		typo3-importer
 		wordpress-starter
+		wordpress-starter-premium
 		"
 		;;
 esac
+
+if [[ ! -e ${SITE_WP_PLUGINS}/${PLUGIN} ]]
+then
+	echo "Missing plugin directory for ${LOOKUP_PLUGIN}"
+	echo "Trying ${SITE_WP_PLUGINS}/${PLUGIN}"
+	exit 1;
+fi

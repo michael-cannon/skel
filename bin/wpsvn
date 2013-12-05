@@ -34,18 +34,20 @@ cd ${PLUGIN}
 svn cleanup . || { echo "Unable to 'svn cleanup'"; exit 1; }
 svn up --force || { echo "Unable to 'svn up --force'"; exit 1; }
 git clone git@github.com:michael-cannon/${PLUGIN}.git || { echo "Unable to 'git clone'"; exit 1; }
-cp -r ${PLUGIN}/* trunk/.
 
-cd trunk
+cd ${PLUGIN}
 for FILE in ${NON_SVN_FILES}
 do
 	if [[ -e ${FILE} ]]
 	then
-		svn rm ${FILE}
 		rm -rf ${FILE}
 	fi
 done
+cd ..
 
+cp -r ${PLUGIN}/* trunk/.
+
+cd trunk
 svn add *
 
 cd ..

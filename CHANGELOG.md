@@ -1,7 +1,10 @@
 # CHANGELOG for skel
 
 ## master
+* Better wipe NON_SVN_FILES from svn wp repo
+* Lookup plugin code
 * Update alias terror_log
+* Show wpsvn helpers
 * Integrate brew
 * Update LS_OPTIONS
 * Default no wpsvn for *releases

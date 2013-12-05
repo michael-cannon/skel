@@ -26,6 +26,8 @@ wprelease ${KEY} ${VERSION} || exit 1;
 if [[ -n ${2} ]]
 then
 	wpsvn ${KEY} ${VERSION} || exit 1;
+else
+	echo "wpsvn ${KEY} ${VERSION}"
 fi
 
 wpdocument ${KEY} ${DIR_UPLOAD} ${ID_PRODUCT} ${ID_POST}
