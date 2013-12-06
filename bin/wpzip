@@ -45,7 +45,7 @@ do
 		git checkout ${BRANCH}
 	fi
 
-	find . -type d \( -name ".git*" -o -name ".svn" \) -exec rm -rf {} \;
+	find . -type d \( -name ".git*" -o -name ".svn" -o -name "ci" \) -exec rm -rf {} \;
 
 	cd ${DIR_DOWNLOADS}
 

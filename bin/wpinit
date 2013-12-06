@@ -293,7 +293,17 @@ case "${LOOKUP_PLUGIN}" in
 		;;
 esac
 
-if [[ ! -e ${SITE_WP_PLUGINS}/${PLUGIN} ]]
+BETA_TEST_PLUGINS="
+cbqe-edit-flow
+cbqep-wordpress-seo
+custom-bulkquick-edit
+custom-bulkquick-edit-premium
+gc-testimonials-to-testimonials
+testimonials-widget
+testimonials-widget-premium
+"
+
+if [[ -n ${PLUGIN} && ! -e ${SITE_WP_PLUGINS}/${PLUGIN} ]]
 then
 	echo "Missing plugin directory for ${LOOKUP_PLUGIN}"
 	echo "Trying ${SITE_WP_PLUGINS}/${PLUGIN}"

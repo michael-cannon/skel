@@ -1,6 +1,9 @@
 # CHANGELOG for skel
 
 ## master
+* Alias bud for brew
+* Pull and compress together WordPress plugins for beta testing
+* Remove CI directories on wpzip
 * Better wipe NON_SVN_FILES from svn wp repo
 * Lookup plugin code
 * Update alias terror_log

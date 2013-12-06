@@ -1,0 +1,46 @@
+#!/bin/bash
+
+# Pull and compress together WordPress plugins for beta testing
+#
+# @author Michael Cannon <mc@aihr.us>
+
+source ~/.skel/bin/wpinit ${@}
+echo
+
+ZIP="zip"
+
+BETA_FILE="beta-test-plugins"
+BETA_ZIP="${FILE}.${ZIP}"
+
+if [[ -e ${BETA_ZIP} ]]
+then
+	rm ${BETA_ZIP}
+fi
+
+for PLUGIN in ${BETA_TEST_PLUGINS}
+do
+	cd ${DIR_DOWNLOADS}
+
+	if [[ -d ${PLUGIN} ]]
+	then
+		rm -rf ${PLUGIN}
+	fi
+
+	git clone git@github.com:michael-cannon/${PLUGIN}.git || exit 1
+
+	cd ${PLUGIN}
+	find . -type d \( -name ".git*" -o -name ".svn" -o -name "ci" \) -exec rm -rf {} \;
+
+	cd ${DIR_DOWNLOADS}
+	FILE_ZIP="${PLUGIN}.${ZIP}"
+	if [[ -e ${FILE_ZIP} ]]
+	then
+		rm -f ${FILE_ZIP}
+	fi
+
+	zip -r ${FILE_ZIP} ${PLUGIN}
+	zip -g ${BETA_FILE} ${FILE_ZIP}
+	rm -rf ${PLUGIN}
+
+	echo
+done
