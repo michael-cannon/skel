@@ -67,9 +67,9 @@ if has("autocmd")
   au!
 
   " For all text files set 'textwidth' to 78 characters.
-  autocmd FileType text setlocal textwidth=78
-  autocmd FileType php setlocal textwidth=80
-  autocmd FileType sh setlocal textwidth=80
+"  autocmd FileType text setlocal textwidth=78
+"  autocmd FileType php setlocal textwidth=80
+"  autocmd FileType sh setlocal textwidth=80
 
   " When editing a file, always jump to the last known cursor position.
   " Don't do it when the position is invalid or when inside an event handler

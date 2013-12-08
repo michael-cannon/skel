@@ -1,0 +1,21 @@
+#!/bin/bash
+
+# plugin.php edit helper
+#
+# @author Michael Cannon <mc@aihr.us>
+
+source ~/.skel/bin/wpinit ${KEY}
+echo
+
+cd ${SITE_WP_PLUGINS}
+
+for PLUGIN in ${PLUGINS}
+do
+	plugin_file="${PLUGIN}/${PLUGIN}.php"
+	if [[ -e ${plugin_file} ]]
+	then
+		vim ${plugin_file}
+	else
+		echo Not found ${plugin_file}
+	fi
+done
