@@ -4,7 +4,7 @@
 #
 # @author Michael Cannon <mc@aihr.us>
 
-WP_VERSION="3.8.0"
+WP_VERSION="3.9.0"
 
 SITE="wp"
 l2l_config="/Users/michael/.ssh/l2l_config/${SITE}"
@@ -78,8 +78,8 @@ then
 			LOOKUP_PLUGIN="cbqeef"
 			;;
 
-		"cbqep-wordpress-seo" )
-			LOOKUP_PLUGIN="cbqepwpseo"
+		"cbqe-wordpress-seo" )
+			LOOKUP_PLUGIN="cbqewpseo"
 			;;
 
 		"custom-bulkquick-edit" )
@@ -87,7 +87,7 @@ then
 			;;
 
 		"custom-bulkquick-edit-premium" )
-			LOOKUP_PLUGIN="cbqep"
+			LOOKUP_PLUGIN="cbqe"
 			;;
 
 		"edd-retroactive-licensing" )
@@ -120,6 +120,10 @@ then
 
 		"testimonials-widget-premium" )
 			LOOKUP_PLUGIN="twp"
+			;;
+
+		"typo3-importer" )
+			LOOKUP_PLUGIN="t3i"
 			;;
 
 		"wordpress-starter" )
@@ -172,7 +176,7 @@ case "${LOOKUP_PLUGIN}" in
 		PLUGINS="
 		custom-bulkquick-edit
 		custom-bulkquick-edit-premium
-		cbqep-wordpress-seo
+		cbqe-wordpress-seo
 		cbqe-edit-flow
 		"
 		;;
@@ -182,7 +186,7 @@ case "${LOOKUP_PLUGIN}" in
 		PLUGINS=${PLUGIN}
 		;;
 
-	"cbqep" )
+	"cbqe" )
 		PLUGIN="custom-bulkquick-edit-premium"
 		PLUGINS=${PLUGIN}
 		;;
@@ -192,8 +196,8 @@ case "${LOOKUP_PLUGIN}" in
 		PLUGINS=${PLUGIN}
 		;;
 
-	"cbqepwpseo" )
-		PLUGIN="cbqep-wordpress-seo"
+	"cbqewpseo" )
+		PLUGIN="cbqe-wordpress-seo"
 		PLUGINS=${PLUGIN}
 		;;
 
@@ -245,6 +249,11 @@ case "${LOOKUP_PLUGIN}" in
 		PLUGINS=${PLUGIN}
 		;;
 
+	"t3i" )
+		PLUGIN="typo3-importer"
+		PLUGINS=${PLUGIN}
+		;;
+
 	"wpl" )
 		PLUGIN="wp-leads-mailchimp-constant-contact-and-salesforcecom-integration"
 		PLUGINS=${PLUGIN}
@@ -274,9 +283,8 @@ case "${LOOKUP_PLUGIN}" in
 
 	* )
 		PLUGINS="
-		blackbox-debug-bar
 		cbqe-edit-flow
-		cbqep-wordpress-seo
+		cbqe-wordpress-seo
 		custom-bulkquick-edit
 		custom-bulkquick-edit-premium
 		edd-retroactive-licensing
@@ -295,7 +303,7 @@ esac
 
 BETA_TEST_PLUGINS="
 cbqe-edit-flow
-cbqep-wordpress-seo
+cbqe-wordpress-seo
 custom-bulkquick-edit
 custom-bulkquick-edit-premium
 gc-testimonials-to-testimonials

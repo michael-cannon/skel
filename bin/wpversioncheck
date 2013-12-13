@@ -16,6 +16,7 @@ fi
 
 FILES_VALID=1
 PLUGIN_DIR="${SITE_WP_PLUGINS}/${PLUGIN}/"
+SLUG=`echo ${1} | tr '[:lower:]' '[:upper:]'`
 VERSION=${2}
 
 
@@ -55,13 +56,31 @@ else
 	echo "BAD ${file_name} doesn't contain '${version_tag}'"
 fi
 
+
+version_okay=0
 version_tag="= '${VERSION}';"
 if echo "${source_text}" | grep -q "${version_tag}";
 then
+	version_okay=1
+	echo "GOOD ${file_name} contains '${version_tag}'"
+else
+	echo "WARNING ${file_name} doesn't contain '${version_tag}'"
+fi
+
+version_tag="${SLUG}_VERSION', '${VERSION}' );"
+if echo "${source_text}" | grep -q "${version_tag}";
+then
+	version_okay=1
 	echo "GOOD ${file_name} contains '${version_tag}'"
 else
 	FILES_VALID=0
-	echo "BAD ${file_name} doesn't contain '${version_tag}'"
+	echo "WARNING ${file_name} doesn't contain '${version_tag}'"
+fi
+
+if [[ 0 == ${version_okay} ]]
+then
+	FILES_VALID=0
+	echo "BAD ${file_name} doesn't contain version information'"
 fi
 
 if [[ "${file_name}" =~ .*-premium.* ]]
@@ -69,7 +88,6 @@ then
 	echo "CHECK"
 	echo "${source_text}" | grep "REQUIRED_FREE_VERSION";
 fi
-
 
 file_name="changelog.txt"
 file="${PLUGIN_DIR}/${file_name}"

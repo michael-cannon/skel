@@ -47,7 +47,7 @@ alias gitpull="git pull"
 alias gitpush="git push"
 alias gits="git status -sb"
 alias gitstash="git stash"
-alias grep="grep -nrsI"
+alias grep='grep -nrsI --exclude-dir="*\.git"'
 alias hisg="history | \grep"
 alias kcvsdir="find . -name CVS -type d -exec rm -rf {} \;"
 alias kdiff="find . -name 'diff.txt' -type f -exec rm {} \;"
