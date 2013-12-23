@@ -83,6 +83,17 @@ then
 	echo "BAD ${file_name} doesn't contain version information'"
 fi
 
+
+aihr_version_tag="${SLUG}_AIHR_VERSION', '${AIHR_VERSION}' );"
+if echo "${source_text}" | grep -q "${aihr_version_tag}";
+then
+	echo "GOOD ${file_name} contains '${aihr_version_tag}'"
+else
+	FILES_VALID=0
+	echo "BAD ${file_name} doesn't contain '${aihr_version_tag}'"
+fi
+
+
 if [[ "${file_name}" =~ .*-premium.* ]]
 then
 	echo "CHECK"
