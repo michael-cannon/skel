@@ -7,12 +7,12 @@
 source ~/.skel/bin/wpinit ${@}
 echo
 
-if [[ -z ${1} ]]
-then
-	echo `basename ${0}` plugin-key
-	echo
-	exit 1
-fi
+# if [[ -z ${1} ]]
+# then
+# 	echo `basename ${0}` plugin-key
+# 	echo
+# 	exit 1
+# fi
 
 PLUGIN_DIR="${SITE_WP_PLUGINS}/${PLUGIN}/"
 FILES="CHANGELOG.md

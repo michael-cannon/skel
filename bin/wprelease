@@ -17,6 +17,12 @@ fi
 source ~/.skel/bin/wpinit ${KEY}
 echo
 
+if [[ "" == ${PLUGIN} ]]
+then
+	echo "'\${PLUGIN}' for '${KEY}' not defined"
+	exit 1;
+fi
+
 cd ${SITE_WP_PLUGINS}/${PLUGIN} || exit 1;
 git pull origin master || exit 1;
 

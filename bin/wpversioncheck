@@ -16,8 +16,12 @@ fi
 
 FILES_VALID=1
 PLUGIN_DIR="${SITE_WP_PLUGINS}/${PLUGIN}/"
-SLUG=`echo ${1} | tr '[:lower:]' '[:upper:]'`
 VERSION=${2}
+
+if [[ -z ${SLUG} ]]
+then
+	SLUG=`echo ${1} | tr '[:lower:]' '[:upper:]'`
+fi
 
 
 file_name="readme.txt"
@@ -97,7 +101,7 @@ fi
 if [[ "${file_name}" =~ .*-premium.* ]]
 then
 	echo "CHECK"
-	echo "${source_text}" | grep "REQUIRED_FREE_VERSION";
+	echo "${source_text}" | grep "${SLUG}_REQ_VERSION";
 fi
 
 file_name="changelog.txt"

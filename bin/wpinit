@@ -61,7 +61,7 @@ CMD_SSH="${CMD_SSH} ${SSH_AIHRUS}"
 
 LOOKUP_PLUGIN=${1}
 
-if [[ "." == ${LOOKUP_PLUGIN} ]]
+if [[ "." == ${LOOKUP_PLUGIN} || "" == ${LOOKUP_PLUGIN} ]]
 then
 	PWD=`pwd`
 	LOOKUP_PLUGIN=`basename ${PWD}`
@@ -88,7 +88,7 @@ then
 			;;
 
 		"custom-bulkquick-edit-premium" )
-			LOOKUP_PLUGIN="cbqe"
+			LOOKUP_PLUGIN="cbqep"
 			;;
 
 		"edd-retroactive-licensing" )
@@ -187,7 +187,7 @@ case "${LOOKUP_PLUGIN}" in
 		PLUGINS=${PLUGIN}
 		;;
 
-	"cbqe" )
+	"cbqep" )
 		PLUGIN="custom-bulkquick-edit-premium"
 		PLUGINS=${PLUGIN}
 		;;
@@ -195,11 +195,13 @@ case "${LOOKUP_PLUGIN}" in
 	"cbqeef" )
 		PLUGIN="cbqe-edit-flow"
 		PLUGINS=${PLUGIN}
+		SLUG="CBQE_EF"
 		;;
 
 	"cbqewpseo" )
 		PLUGIN="cbqe-wordpress-seo"
 		PLUGINS=${PLUGIN}
+		SLUG="CBQE_WPSEO"
 		;;
 
 	"erl" )
