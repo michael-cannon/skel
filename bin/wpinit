@@ -4,7 +4,7 @@
 #
 # @author Michael Cannon <mc@aihr.us>
 
-AIHR_VERSION="1.0.0"
+AIHR_VERSION="1.0.1"
 WP_VERSION="3.9.0"
 
 SITE="wp"
@@ -127,6 +127,10 @@ then
 			LOOKUP_PLUGIN="t3i"
 			;;
 
+		"wootheme-testimonials-to-testimonials" )
+			LOOKUP_PLUGIN="wtt2t"
+			;;
+
 		"wordpress-starter" )
 			LOOKUP_PLUGIN="ws"
 			;;
@@ -239,6 +243,7 @@ case "${LOOKUP_PLUGIN}" in
 		testimonials-widget
 		testimonials-widget-premium
 		gc-testimonials-to-testimonials
+		wootheme-testimonials-to-testimonials
 		"
 		;;
 
@@ -272,6 +277,12 @@ case "${LOOKUP_PLUGIN}" in
 		PLUGINS=${PLUGIN}
 		;;
 
+		
+	"wtt2t" )
+		PLUGIN="wootheme-testimonials-to-testimonials"
+		PLUGINS=${PLUGIN}
+		;;
+
 	"wpsp" )
 		PLUGIN="wordpress-starter-premium"
 		PLUGINS=${PLUGIN}
@@ -300,6 +311,7 @@ case "${LOOKUP_PLUGIN}" in
 		typo3-importer
 		wordpress-starter
 		wordpress-starter-premium
+		wootheme-testimonials-to-testimonials
 		"
 		;;
 esac
@@ -312,6 +324,7 @@ custom-bulkquick-edit-premium
 gc-testimonials-to-testimonials
 testimonials-widget
 testimonials-widget-premium
+wootheme-testimonials-to-testimonials
 "
 
 if [[ -n ${PLUGIN} && ! -e ${SITE_WP_PLUGINS}/${PLUGIN} ]]

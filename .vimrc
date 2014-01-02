@@ -182,3 +182,8 @@ set gfn=Monaco:h13
 
 " for presentations
 " colorscheme delek
+
+if &diff
+	" diff mode
+	set diffopt+=iwhite
+endif

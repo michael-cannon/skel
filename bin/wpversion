@@ -7,25 +7,22 @@
 source ~/.skel/bin/wpinit ${@}
 echo
 
-# if [[ -z ${1} ]]
-# then
-# 	echo `basename ${0}` plugin-key
-# 	echo
-# 	exit 1
-# fi
+cd ${SITE_WP_PLUGINS}
 
-PLUGIN_DIR="${SITE_WP_PLUGINS}/${PLUGIN}/"
-FILES="CHANGELOG.md
+for PLUGIN in ${PLUGINS}
+do
+	files="CHANGELOG.md
 readme.txt
 ${PLUGIN}.php"
 
-for FILE in ${FILES}
-do
-	file_name="${PLUGIN_DIR}${FILE}"
-	if [[ -e "${file_name}" ]]
-	then
-		vi ${file_name}
-	fi
+	for file in ${files}
+	do
+		file_name="${PLUGIN}/${file}"
+		if [[ -e "${file_name}" ]]
+		then
+			vi ${file_name}
+		fi
+	done
 done
 
 echo cd ${PLUGIN_DIR}
