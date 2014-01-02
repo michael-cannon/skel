@@ -29,7 +29,10 @@ do
 	git clone git@github.com:michael-cannon/${PLUGIN}.git || exit 1
 
 	cd ${PLUGIN}
-	find . -type d \( -name ".git*" -o -name ".svn" -o -name "ci" \) -exec rm -rf {} \;
+
+	find . -type d \( -name ".git" -o -name ".svn" -o -name "tests" \) -exec rm -rf {} \;
+
+	find . -type f \( -name ".travis.yml" -o -name ".gitignore" \) -exec rm -rf {} \;
 
 	cd ${DIR_DOWNLOADS}
 	FILE_ZIP="${PLUGIN}.${ZIP}"

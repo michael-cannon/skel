@@ -45,7 +45,7 @@ do
 		git checkout ${BRANCH}
 	fi
 
-	find . -type d \( -name ".git" -o -name ".svn" -o -name "ci" \) -exec rm -rf {} \;
+	find . -type d \( -name ".git" -o -name ".svn" -o -name "tests" \) -exec rm -rf {} \;
 
 	find . -type f \( -name ".travis.yml" -o -name ".gitignore" \) -exec rm -rf {} \;
 

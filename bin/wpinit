@@ -32,11 +32,14 @@ NON_SVN_FILES="
 .gitignore
 .travis.yml
 000-code-qa.txt
-ci
-lib/aihrus/.travis.yml
-lib/aihrus/ci
+includes/libraries/aihrus-framework/.git
+includes/libraries/aihrus-framework/.gitignore
+includes/libraries/aihrus-framework/.travis.yml
+includes/libraries/aihrus-framework/000-code-qa.txt
+includes/libraries/aihrus-framework/tests
 phpunit.xml
 prepare-plugin.sh
+tests
 "
 
 DIR_DOWNLOADS="${HOME}/Sites/zzz-wp"
