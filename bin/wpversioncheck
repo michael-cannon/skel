@@ -103,8 +103,9 @@ elif [[ -n ${IS_PREMIUM} && ${IS_PREMIUM} -gt 0 ]]
 then
 	echo "WARNING ${file_name} doesn't contain '${aihr_version_tag}'"
 else
-	FILES_VALID=0
-	echo "BAD ${file_name} doesn't contain '${aihr_version_tag}'"
+	# FILES_VALID=0
+	# echo "BAD ${file_name} doesn't contain '${aihr_version_tag}'"
+	echo "WARNING ${file_name} doesn't contain '${aihr_version_tag}'"
 fi
 
 
