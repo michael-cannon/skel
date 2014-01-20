@@ -18,6 +18,13 @@ FILES_VALID=1
 PLUGIN_DIR="${SITE_WP_PLUGINS}/${PLUGIN}/"
 VERSION=${2}
 
+if [[ "${PLUGIN}" =~ .*-premium.* ]]
+then
+	IS_PREMIUM=1
+else
+	IS_PREMIUM=0
+fi
+
 if [[ -z ${SLUG} ]]
 then
 	SLUG=`echo ${1} | tr '[:lower:]' '[:upper:]'`
@@ -92,6 +99,9 @@ aihr_version_tag="${SLUG}_AIHR_VERSION', '${AIHR_VERSION}' );"
 if echo "${source_text}" | grep -q "${aihr_version_tag}";
 then
 	echo "GOOD ${file_name} contains '${aihr_version_tag}'"
+elif [[ -n ${IS_PREMIUM} && ${IS_PREMIUM} -gt 0 ]]
+then
+	echo "WARNING ${file_name} doesn't contain '${aihr_version_tag}'"
 else
 	FILES_VALID=0
 	echo "BAD ${file_name} doesn't contain '${aihr_version_tag}'"

@@ -54,7 +54,7 @@ DIR_SITES="${HOME}/Sites"
 
 SITE_WP="${DIR_SITES}/${SITE}"
 SITE_WP_PLUGINS="${SITE_WP}/${DIR_PLUGINS}"
-DIR_RULESETS="${SITE_WP_PLUGINS}/testimonials-widget/ci/"
+DIR_RULESETS="${SITE_WP_PLUGINS}/testimonials-widget/tests/"
 
 PLUGIN=
 

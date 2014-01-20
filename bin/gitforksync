@@ -5,6 +5,8 @@
 # @ref https://help.github.com/articles/syncing-a-fork
 # @author Michael Cannon <mc@aihr.us>
 
+echo Is remote upstream set like 'git remote add upstream https://github.com/Yoast/wordpress-seo.git'?
+
 git remote -v
 git fetch upstream
 git branch -va

@@ -24,7 +24,7 @@ do
 
 	echo Prepare plugin ${PLUGIN} at ${DIR_PLUGIN}
 
-	FILES=`find . -type f \( -name "*.php" -o -name "*.inc" \)`
+	FILES=`find . -not -path '*/libraries/*' -type f \( -name "*.php" -o -name "*.inc" \)`
 	for FILE in ${FILES}
 	do
 		echo Update text domain in ${FILE}

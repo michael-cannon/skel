@@ -14,8 +14,6 @@ then
 	VERSION=${2}
 fi
 
-echo ${VERSION}
-
 if [[ -n ${3} ]]
 then
 	BRANCH=${3}
@@ -82,7 +80,7 @@ do
 	fi
 
 	cd ${PLUGIN}
-	find . -maxdepth 1 -type f -name "screenshot-*" -exec rm -f {} \;
+	find . -maxdepth 2 -type f -name "screenshot-*" -exec rm -f {} \;
 
 	cd ${DIR_DOWNLOADS}
 
