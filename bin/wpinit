@@ -27,8 +27,12 @@ FTP_OPTIONS="-R -v -z"
 REMOTE_SERVER="aihrus@aihr.us"
 FTP_REMOTE_SERVER="sftp://${REMOTE_SERVER}"
 
-NON_SVN_FILES="
+NON_SVN_DIRS="
 .git
+tests
+"
+
+NON_SVN_FILES="
 .gitignore
 .travis.yml
 000-code-qa.txt
@@ -39,7 +43,6 @@ includes/libraries/aihrus-framework/000-code-qa.txt
 includes/libraries/aihrus-framework/tests
 phpunit.xml
 prepare-plugin.sh
-tests
 "
 
 DIR_DOWNLOADS="${HOME}/Sites/zzz-wp"
@@ -187,6 +190,7 @@ case "${LOOKUP_PLUGIN}" in
 		cbqe-wordpress-seo
 		cbqe-edit-flow
 		"
+		IS_PREMIUM=1
 		;;
 
 	"cbqe" )
@@ -197,6 +201,7 @@ case "${LOOKUP_PLUGIN}" in
 	"cbqep" )
 		PLUGIN="custom-bulkquick-edit-premium"
 		PLUGINS=${PLUGIN}
+		IS_PREMIUM=1
 		;;
 
 	"cbqeef" )
@@ -209,16 +214,19 @@ case "${LOOKUP_PLUGIN}" in
 		PLUGIN="cbqe-wordpress-seo"
 		PLUGINS=${PLUGIN}
 		SLUG="CBQE_WPSEO"
+		IS_PREMIUM=1
 		;;
 
 	"erl" )
 		PLUGIN="edd-retroactive-licensing"
 		PLUGINS=${PLUGIN}
+		IS_PREMIUM=1
 		;;
 
 	"eddsr" )
 		PLUGIN="edd-sales-recovery"
 		PLUGINS=${PLUGIN}
+		IS_PREMIUM=1
 		;;
 
 	"fsi" )
@@ -248,6 +256,7 @@ case "${LOOKUP_PLUGIN}" in
 		gc-testimonials-to-testimonials
 		wootheme-testimonials-to-testimonials
 		"
+		IS_PREMIUM=1
 		;;
 
 	"tw" )
@@ -258,6 +267,7 @@ case "${LOOKUP_PLUGIN}" in
 	"twp" )
 		PLUGIN="testimonials-widget-premium"
 		PLUGINS=${PLUGIN}
+		IS_PREMIUM=1
 		;;
 
 	"t3i" )
@@ -289,6 +299,7 @@ case "${LOOKUP_PLUGIN}" in
 	"wpsp" )
 		PLUGIN="wordpress-starter-premium"
 		PLUGINS=${PLUGIN}
+		IS_PREMIUM=1
 		;;
 
 	"wpsa" )
@@ -296,6 +307,7 @@ case "${LOOKUP_PLUGIN}" in
 		wordpress-starter
 		wordpress-starter-premium
 		"
+		IS_PREMIUM=1
 		;;
 
 	* )
@@ -316,6 +328,7 @@ case "${LOOKUP_PLUGIN}" in
 		wordpress-starter-premium
 		wootheme-testimonials-to-testimonials
 		"
+		IS_PREMIUM=1
 		;;
 esac
 

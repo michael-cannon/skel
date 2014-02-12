@@ -13,7 +13,6 @@ fi
 BACKUP_DIRS="Documents
 Pictures
 Desktop
-Dropbox
 PortableApps
 Sites
 .skel"

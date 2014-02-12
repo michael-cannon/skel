@@ -35,11 +35,6 @@ then
 	ID_TODO=${7}
 fi
 
-if [[ "${PLUGIN}" =~ .*-premium.* || -n ${8} ]]
-then
-	IS_PREMIUM=1
-fi
-
 source ~/.skel/bin/wpinit ${KEY}
 echo
 

@@ -12,23 +12,13 @@ ZIP="zip"
 if [[ -n ${2} && 0 != ${2} ]]
 then
 	VERSION=${2}
-fi
-
-if [[ -n ${3} ]]
-then
-	BRANCH=${3}
+else
+	VERSION="master"
 fi
 
 for PLUGIN in ${PLUGINS}
 do
 	cd ${DIR_DOWNLOADS}
-
-	if [[ "${PLUGIN}" =~ .*-premium.* ]]
-	then
-		IS_PREMIUM=1
-	else
-		IS_PREMIUM=0
-	fi
 
 	if [[ -d ${PLUGIN} ]]
 	then
@@ -38,10 +28,7 @@ do
 	git clone git@github.com:michael-cannon/${PLUGIN}.git || exit 1
 
 	cd ${PLUGIN}
-	if [[ -n ${BRANCH} ]]
-	then
-		git checkout ${BRANCH}
-	fi
+	git checkout ${VERSION}
 
 	find . -type d \( -name ".git" -o -name ".svn" -o -name "tests" \) -exec rm -rf {} \;
 
@@ -68,23 +55,12 @@ do
 		zip -r ${FILE_ZIP} ${PLUGIN}
 	fi
 
-	if [[ -n ${BRANCH} ]]
-	then
-		BRANCH_ZIP="${PLUGIN}-${BRANCH}.${ZIP}"
-		if [[ -e ${BRANCH_ZIP} ]]
-		then
-			rm -f ${BRANCH_ZIP}
-		fi
-
-		cp ${FILE_ZIP} ${BRANCH_ZIP}
-	fi
-
 	cd ${PLUGIN}
 	find . -maxdepth 2 -type f -name "screenshot-*" -exec rm -f {} \;
 
 	cd ${DIR_DOWNLOADS}
 
-	if [[ 1 == ${IS_PREMIUM} ]]
+	if [[ -n ${IS_PREMIUM} && ${IS_PREMIUM} -gt 0 ]]
 	then
 		NO_SCREENSHOTS="no-screenshots"
 		FILE_ZIP="${PLUGIN}-${NO_SCREENSHOTS}.${ZIP}"
@@ -104,17 +80,6 @@ do
 			fi
 
 			zip -r ${FILE_ZIP} ${PLUGIN}
-		fi
-
-		if [[ -n ${BRANCH} ]]
-		then
-			BRANCH_ZIP="${PLUGIN}-${BRANCH}-${NO_SCREENSHOTS}.${ZIP}"
-			if [[ -e ${BRANCH_ZIP} ]]
-			then
-				rm -f ${BRANCH_ZIP}
-			fi
-
-			cp ${FILE_ZIP} ${BRANCH_ZIP}
 		fi
 	fi
 

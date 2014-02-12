@@ -36,12 +36,13 @@ svn up --force || { echo "Unable to 'svn up --force'"; exit 1; }
 git clone git@github.com:michael-cannon/${PLUGIN}.git || { echo "Unable to 'git clone'"; exit 1; }
 
 cd ${PLUGIN}
+for DIR in ${NON_SVN_DIRS}
+do
+	find . -type d -name ${DIR} -exec rm -rf {} \;
+done
 for FILE in ${NON_SVN_FILES}
 do
-	if [[ -e ${FILE} ]]
-	then
-		rm -rf ${FILE}
-	fi
+	find . -type f -name ${FILE} -exec rm {} \;
 done
 cd ..
 

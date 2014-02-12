@@ -18,13 +18,6 @@ FILES_VALID=1
 PLUGIN_DIR="${SITE_WP_PLUGINS}/${PLUGIN}/"
 VERSION=${2}
 
-if [[ "${PLUGIN}" =~ .*-premium.* ]]
-then
-	IS_PREMIUM=1
-else
-	IS_PREMIUM=0
-fi
-
 if [[ -z ${SLUG} ]]
 then
 	SLUG=`echo ${1} | tr '[:lower:]' '[:upper:]'`
