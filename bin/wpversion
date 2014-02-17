@@ -13,6 +13,7 @@ for PLUGIN in ${PLUGINS}
 do
 	files="CHANGELOG.md
 readme.txt
+requirements.php
 ${PLUGIN}.php"
 
 	for file in ${files}
