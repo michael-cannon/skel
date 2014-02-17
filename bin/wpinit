@@ -151,7 +151,6 @@ then
 		
 		* )
 			echo "Plugin code for '${LOOKUP_PLUGIN}' wasn't found"
-			exit 1
 			;;
 	esac
 	echo
