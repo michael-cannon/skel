@@ -36,6 +36,8 @@ svn up --force || { echo "Unable to 'svn up --force'"; exit 1; }
 git clone git@github.com:michael-cannon/${PLUGIN}.git || { echo "Unable to 'git clone'"; exit 1; }
 
 cd ${PLUGIN}
+git checkout ${VERSION} || exit 1;
+
 for DIR in ${NON_SVN_DIRS}
 do
 	find . -type d -name ${DIR} -exec rm -rf {} \;
