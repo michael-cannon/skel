@@ -17,6 +17,9 @@ PortableApps
 Sites
 .skel"
 
+BACKUP_DIRS="Pictures
+.skel"
+
 UNAME=`uname`
 
 if [ -z ${1} ]
@@ -173,5 +176,5 @@ function backupDb {
 
 # call backup routines
 date
-backupDb
+# backupDb
 time cycleBackupDests
