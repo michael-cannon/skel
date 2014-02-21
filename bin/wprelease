@@ -35,4 +35,7 @@ git push origin ${VERSION} || exit 1;
 git checkout master || exit 1;
 cd -
 
+# clean out none release branches
+open https://github.com/michael-cannon/${PLUGIN}/branches
+
 wpzip ${@} || exit 1;

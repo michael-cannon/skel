@@ -1,0 +1,177 @@
+#!/bin/bash
+
+# Backup sync for flash drives
+#
+# @author Michael Cannon <mc@aihr.us>
+
+if [[ -z "${USER}" ]]
+then
+	echo "No USER defined by environment"
+	exit
+fi
+
+BACKUP_DIRS="Documents
+Pictures
+Desktop
+PortableApps
+Sites
+.skel"
+
+UNAME=`uname`
+
+if [ -z ${1} ]
+then
+	MODE="rsync"
+	SYNC="/usr/bin/rsync -auh \
+			--delete-excluded \
+			--include='log/' \
+			--exclude='**/log/**' \
+			--include='temp/' \
+			--exclude='**/temp/**' \
+			--include='tmp/' \
+			--exclude='**/tmp/**' \
+			--include='cache/' \
+			--exclude='**/cache/**' \
+			--include='Cache/' \
+			--exclude='**/Cache/**' \
+			--include='Trash/' \
+			--exclude='**/Trash/**' \
+			--exclude='.DS_Store' \
+			--include='zzz-*/' \
+			--exclude='**/zzz-*/**' \
+		"
+	REMOTE_SSH=""
+else
+	MODE="unison"
+	SYNC="/opt/local/bin/unison portable"
+	REMOTE_SSH="ssh://localhost/"
+fi
+
+# Windows
+if [ ${UNAME} == "CYGWIN_NT-6.1" ]
+then
+	USERS_DIR="/cygdrive/c/Users/${USER}"
+
+	BACKUP_DESTS="/cygdrive/d
+/cygdrive/e
+/cygdrive/f"
+
+	DB_HOST="localhost"
+	DB_USER="root"
+	DB_PW=""
+	MYSQL_BIN="/cygdrive/c/TYPO3_4.3.1/MySQL/bin/"
+	MYSQLDUMP="mysqldump.exe"
+
+# Darwin OSX
+elif [ "${UNAME}" == "Darwin" ]
+then
+	USERS_DIR="/Users/${USER}"
+
+	BACKUP_DESTS="/Volumes/bu"
+
+	DB_HOST="localhost"
+	DB_USER="root"
+	DB_PW=
+	if [[ -e  ~/.ssh/l2l_config/mysql ]]
+	then
+		DB_PW=`cat ~/.ssh/l2l_config/mysql`
+	fi
+	MYSQL_BIN=""
+	MYSQLDUMP="mysqldump"
+
+else
+	echo "${UNAME} mode not defined"
+fi
+
+
+cd ${USERS_DIR}
+
+
+function cycleBackupDirs {
+	for DIR in ${BACKUP_DIRS}
+	do
+		if [[ -e "${DIR}" ]]
+		then
+			echo "doBackup ${DIR}"
+			du -sh "${DIR}"
+			doBackup 
+		else
+			echo "${DIR} not found"
+		fi
+	done
+
+	echo
+}
+
+
+function cycleBackupDests {
+	for BACKUP_DEST in ${BACKUP_DESTS}
+	do
+		# ensure backup destination is found
+		if [[ -e "${BACKUP_DEST}" ]]
+		then
+			# Windows drive letter vary, only backup to portable media 
+			if [ "${UNAME}" == "CYGWIN_NT-6.1" ] \
+				&& [ -e "${BACKUP_DEST}/Autorun.inf" ]
+			then
+				echo "Start cycleBackupDirs to ${BACKUP_DEST}"
+				cycleBackupDirs
+				echo "End backup to ${BACKUP_DEST}"
+			elif [ "${UNAME}" == "Darwin" ]
+			then
+				echo "Start cycleBackupDirs to ${BACKUP_DEST}"
+				cycleBackupDirs
+				echo "End backup to ${BACKUP_DEST}"
+			else
+				echo "Location ${BACKUP_DEST} not a portable flash"
+			fi
+		else
+			echo "Location ${BACKUP_DEST} wasn't found"
+		fi
+	done
+}
+
+
+function doBackup {
+	if [ "${MODE}" == "unison" ]
+	then
+		time ${SYNC} "${DIR}" ${REMOTE_SSH}${BACKUP_DEST}/"${DIR}"
+	elif [ "${MODE}" == "rsync" ]
+	then
+		# rysnc for 2-way needs to be called twice with swapped args
+		time ${SYNC} "${DIR}" ${BACKUP_DEST}
+		# time ${SYNC} ${BACKUP_DEST}/"${DIR}" ${USERS_DIR}
+	fi
+}
+
+
+DATE=`date +'%F'`
+FILE="${USERS_DIR}/Sites/all-databases.${DATE}.sql"
+
+
+function backupDb {
+	# removes same day db backup
+	if [ -f ${FILE}.gz ]
+	then
+		rm ${FILE}.gz
+	fi
+
+	# backup databases 
+	${MYSQL_BIN}${MYSQLDUMP} \
+		--host=${DB_HOST} \
+		--user=${DB_USER} \
+		--password=${DB_PW} \
+		--add-drop-table \
+		--extended-insert \
+		--opt \
+		--all-databases > ${FILE}
+
+	# compress db file
+	gzip -q ${FILE}
+}
+
+
+# call backup routines
+date
+backupDb
+time cycleBackupDests

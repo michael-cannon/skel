@@ -26,6 +26,7 @@ alias ferrors="find . \( -name 'errors' -o -name 'error_log' \) -type f -exec vi
 alias flibaf="find . -name "aihrus" -type d"
 alias git2cl="git log > changelog.txt"
 alias gita="git add"
+alias gitac="gitau; gitc; gitpo"
 alias gitacp="gitau; gitc; gitpom"
 alias gitacpcs="gitcacs; gitpom"
 alias gitau="git add -u"
