@@ -73,6 +73,18 @@ then
 	LOOKUP_PLUGIN=`basename ${PWD}`
 	case "${LOOKUP_PLUGIN}" in
 
+		"ldd" )
+			LOOKUP_PLUGIN="ldd"
+			;;
+
+		"ldd-ordering" )
+			LOOKUP_PLUGIN="lddo"
+			;;
+
+		"ldd-operations" )
+			LOOKUP_PLUGIN="lddops"
+			;;
+
 		"aihrus-framework" )
 			LOOKUP_PLUGIN="af"
 			;;
@@ -166,6 +178,30 @@ then
 fi
 
 case "${LOOKUP_PLUGIN}" in
+
+	"ldd" )
+		PLUGIN="ldd"
+		PLUGINS=${PLUGIN}
+		;;
+
+	"lddo" )
+		PLUGIN="ldd-ordering"
+		PLUGINS=${PLUGIN}
+		;;
+
+	"lddops" )
+		PLUGIN="ldd-operations"
+		PLUGINS=${PLUGIN}
+		;;
+
+	"ldda" )
+		PLUGINS="
+		ldd
+		ldd-ordering
+		ldd-operations
+		"
+		IS_PREMIUM=1
+		;;
 
 	"gct2t" )
 		PLUGIN="gc-testimonials-to-testimonials"
@@ -319,6 +355,9 @@ case "${LOOKUP_PLUGIN}" in
 		edd-sales-recovery
 		flickr-shortcode-importer
 		gc-testimonials-to-testimonials
+		ldd
+		ldd-ordering
+		ldd-operations
 		remove-extra-media
 		testimonials-widget
 		testimonials-widget-premium
@@ -346,5 +385,6 @@ if [[ -n ${PLUGIN} && ! -e ${SITE_WP_PLUGINS}/${PLUGIN} ]]
 then
 	echo "Missing plugin directory for ${LOOKUP_PLUGIN}"
 	echo "Trying ${SITE_WP_PLUGINS}/${PLUGIN}"
-	exit 1;
+	echo
+	# exit 1;
 fi

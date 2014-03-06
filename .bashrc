@@ -79,9 +79,9 @@ TEMP_PATH=`echo ${TEMP_PATH} | sed -e "s#^:##g"`
 export PATH=${TEMP_PATH}
 unset TEMP_PATH
 
-if [[ -d /opt/local/share/man ]]
+if [[ -d /usr/local/share/man ]]
 then
-	export MANPATH=/opt/local/share/man:$MANPATH
+	export MANPATH=/usr/local/share/man:$MANPATH
 fi
 
 # set cvsroot
@@ -221,17 +221,17 @@ unset bash bminor bmajor
 export CLICOLOR="Yes"
 export LSCOLORS=Exfxcxdxbxegedabagacad
 
-if [[ -e /opt/local/bin/gls ]]
+if [[ -e /usr/local/bin/gls ]]
 then
-	export LS_OPTIONS="--color=tty -F -b -T 0 -h"
+	export LS_OPTIONS="gls --color=tty -F -b -T 0 -h"
 else
-	export LS_OPTIONS="-G -h"
+	export LS_OPTIONS="ls -G -h"
 fi
 
 # how many ways to list something are there?
-alias ls="ls ${LS_OPTIONS}"
+alias ls="${LS_OPTIONS}"
 
-if [[ -e /opt/local/bin/grep ]]
+if [[ -e /usr/local/bin/grep ]]
 then
 	GREP_OPTIONS="--binary-files=without-match --color=auto --devices=skip --exclude-dir=CVS --exclude-dir=.libs --exclude-dir=.deps --exclude-dir=.svn --exclude-dir=.git"
 else

@@ -9,13 +9,20 @@ echo
 
 for PLUGIN in ${PLUGINS}
 do
-	DIR_PLUGIN="${SITE_WP_PLUGINS}/${PLUGIN}"
-	if [[ ! -e ${DIR_PLUGIN} ]]
+	PWD=`pwd`
+	BASENAME=`basename ${PWD}`
+	if [[ ${BASENAME} != ${PLUGIN} ]]
 	then
-		continue
-	fi
+		DIR_PLUGIN="${SITE_WP_PLUGINS}/${PLUGIN}"
+		if [[ ! -e ${DIR_PLUGIN} ]]
+		then
+			continue
+		fi
 
-	cd ${DIR_PLUGIN}
+		cd ${DIR_PLUGIN}
+	else
+		DIR_PLUGIN="${PWD}"
+	fi
 
 	FILE_CODE_QA="000-code-qa.txt"
 	if [[ -e ${FILE_CODE_QA} ]]
