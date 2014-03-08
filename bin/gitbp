@@ -1,0 +1,15 @@
+#!/bin/bash
+
+if [[ -z ${1} ]]
+then
+	echo `basename ${0}` branchname
+	echo
+	exit 1
+else
+	VERSION=${1}
+fi
+
+git branch --force ${VERSION}
+git checkout ${VERSION} || exit 1;
+git commit --all || exit 1;
+git push origin ${VERSION} || exit 1;
