@@ -51,47 +51,47 @@ DIR_PATH="${SITE_WP_PLUGINS}/${PLUGIN}"
 
 # echo ${CMD_SCP} ~/Sites/zzz-wp/${PLUGIN}.zip aihrus@aihr.us:~/public_html/wp-content/uploads/edd/${DIR_UPLOAD}/. || exit 1;
 
-# product
-# open http://wpr2ghm.localhost/
-open http://wordpress.org/extend/plugins/about/validator/
-
 file="${DIR_PATH}/readme.txt"
 if [[ -e ${file} ]]
 then
 	mvim ${file}
 fi
 
-if [[ -n ${ID_PRODUCT} && ${ID_PRODUCT} -gt 0 ]]
-then
-	open http://aihr.us/wp-admin/post.php?post=${ID_PRODUCT}\&action=edit
-fi
-
 # details
-if [[ -n ${ID_POST} && ${ID_POST} -gt 0 ]]
-then
-	open http://aihr.us/wp-admin/post.php?post=${ID_POST}\&action=edit
-fi
-
-if [[ -n ${ID_CHANGELOG} && ${ID_CHANGELOG} -gt 0 ]]
-then
-	open https://github.com/michael-cannon/${PLUGIN}/blob/master/CHANGELOG.md
-	open http://aihr.us/wp-admin/post.php?post=${ID_CHANGELOG}\&action=edit
-fi
-
-if [[ -n ${ID_API} && ${ID_API} -gt 0 ]]
-then
-	open https://github.com/michael-cannon/${PLUGIN}/blob/master/API.md
-	open http://aihr.us/wp-admin/post.php?post=${ID_API}\&action=edit
-fi
-
-if [[ -n ${ID_TODO} && ${ID_TODO} -gt 0 ]]
-then
-	open https://github.com/michael-cannon/${PLUGIN}/blob/master/TODO.md
-	open http://aihr.us/wp-admin/post.php?post=${ID_TODO}\&action=edit
-fi
-
 if [[ -n ${IS_PREMIUM} && ${IS_PREMIUM} -gt 0 ]]
 then
+	# product
+	# open http://wpr2ghm.localhost/
+	open http://wordpress.org/extend/plugins/about/validator/
+
+	if [[ -n ${ID_PRODUCT} && ${ID_PRODUCT} -gt 0 ]]
+	then
+		open http://aihr.us/wp-admin/post.php?post=${ID_PRODUCT}\&action=edit
+	fi
+
+	if [[ -n ${ID_POST} && ${ID_POST} -gt 0 ]]
+	then
+		open http://aihr.us/wp-admin/post.php?post=${ID_POST}\&action=edit
+	fi
+
+	if [[ -n ${ID_CHANGELOG} && ${ID_CHANGELOG} -gt 0 ]]
+	then
+		open https://github.com/michael-cannon/${PLUGIN}/blob/master/CHANGELOG.md
+		open http://aihr.us/wp-admin/post.php?post=${ID_CHANGELOG}\&action=edit
+	fi
+
+	if [[ -n ${ID_API} && ${ID_API} -gt 0 ]]
+	then
+		open https://github.com/michael-cannon/${PLUGIN}/blob/master/API.md
+		open http://aihr.us/wp-admin/post.php?post=${ID_API}\&action=edit
+	fi
+
+	if [[ -n ${ID_TODO} && ${ID_TODO} -gt 0 ]]
+	then
+		open https://github.com/michael-cannon/${PLUGIN}/blob/master/TODO.md
+		open http://aihr.us/wp-admin/post.php?post=${ID_TODO}\&action=edit
+	fi
+
 	file="${DIR_PATH}/CHANGELOG.md"
 	if [[ -e ${file} ]]
 	then

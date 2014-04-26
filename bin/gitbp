@@ -11,5 +11,5 @@ fi
 
 git branch --force ${VERSION}
 git checkout ${VERSION} || exit 1;
-git commit --all || exit 1;
+git commit --all -m "Branch ${VERSION}" || exit 1;
 git push origin ${VERSION} || exit 1;

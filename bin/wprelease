@@ -36,6 +36,6 @@ git checkout master || exit 1;
 cd -
 
 # clean out none release branches
-open https://github.com/michael-cannon/${PLUGIN}/branches
+open https://github.com/michael-cannon/${PLUGIN}/branches?merged=1
 
 wpzip ${@} || exit 1;
