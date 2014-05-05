@@ -24,7 +24,13 @@ then
 fi
 
 
-file_name="readme.txt"
+if [[ -n ${IS_PREMIUM} && ${IS_PREMIUM} -gt 0 ]]
+then
+	file_name="README.md"
+else
+	file_name="readme.txt"
+fi
+
 file_path="${PLUGIN_DIR}/${file_name}"
 source_text=`head ${file_path}`
 wp_tested_up_to="Tested up to:"
