@@ -88,7 +88,7 @@ do
 	echo >> ${FILE_CODE_QA}
 	# mess detect
 	# @ref https://github.com/manuelpichler/phpmd
-	PHPMD_EXCLUDE="class-wp-session.php,Akismet.class.php,class-redrokk-metabox-class.php,video-quick-edit.php,inc.flickr.php,screen-meta-links.php,EDD_License_Handler.php,EDD_SL_Plugin_Updater.php,jquery.cookie.js,jquery.bxslider.js,jquery.easing.1.3.js,jquery.fitvids.js"
+	PHPMD_EXCLUDE="jquery.cookie.js,jquery.bxslider.js,jquery.easing.*.js,jquery.fitvids.js,/libraries/"
 	if [[ -e 'tests/phpmd.ruleset.xml' ]]
 	then
 		PHPMD_RULESET="tests/phpmd.ruleset.xml"

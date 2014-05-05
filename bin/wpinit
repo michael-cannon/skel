@@ -4,8 +4,8 @@
 #
 # @author Michael Cannon <mc@aihr.us>
 
-AIHR_VERSION="1.1.3"
-WP_VERSION="3.9.0"
+AIHR_VERSION="1.1.4"
+WP_VERSION="4.0.0"
 
 SITE="wp"
 l2l_config="/Users/michael/.ssh/l2l_config/${SITE}"
