@@ -12,6 +12,7 @@ cd ${SITE_WP_PLUGINS}
 for PLUGIN in ${PLUGINS}
 do
 	files="CHANGELOG.md
+README.md
 readme.txt
 requirements.php
 ${PLUGIN}.php"
