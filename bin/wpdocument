@@ -66,6 +66,7 @@ then
 
 	if [[ -n ${ID_PRODUCT} && ${ID_PRODUCT} -gt 0 ]]
 	then
+		open https://github.com/michael-cannon/${PLUGIN}/blob/master/README.md
 		open http://aihr.us/wp-admin/post.php?post=${ID_PRODUCT}\&action=edit
 	fi
 
