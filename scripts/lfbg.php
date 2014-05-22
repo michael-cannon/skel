@@ -468,7 +468,7 @@ function FindMaliciousCodeSnippets($filename)
 		# SUSPICIOUS NAMES. SOME HACKERS SIGN THEIR SCRIPTS. MANY NAMES COULD BE PUT INTO THIS LIST.
 		# HERE IS A GENERIC EXAMPLE OF TEXT FROM A DEFACED WEB PAGE.
 
-		'/hacked by\s/i',
+		'/(hacked|defaced|owned|0wned) by\s/i',
 
 		# OTHER SUSPICIOUS TEXT STRINGS
 
