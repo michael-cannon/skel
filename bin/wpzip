@@ -36,13 +36,16 @@ do
 
 	cd ${DIR_DOWNLOADS}
 
-	FILE_ZIP="${PLUGIN}.${ZIP}"
-	if [[ -e ${FILE_ZIP} ]]
+	if [[ "master" == ${VERSION} ]]
 	then
-		rm -f ${FILE_ZIP}
-	fi
+		FILE_ZIP="${PLUGIN}.${ZIP}"
+		if [[ -e ${FILE_ZIP} ]]
+		then
+			rm -f ${FILE_ZIP}
+		fi
 
-	zip -r ${FILE_ZIP} ${PLUGIN}
+		zip -r ${FILE_ZIP} ${PLUGIN}
+	fi
 
 	if [[ -n ${VERSION} ]]
 	then
@@ -64,12 +67,15 @@ do
 	then
 		NO_SCREENSHOTS="no-screenshots"
 		FILE_ZIP="${PLUGIN}-${NO_SCREENSHOTS}.${ZIP}"
-		if [[ -e ${FILE_ZIP} ]]
+		if [[ "master" == ${VERSION} ]]
 		then
-			rm -f ${FILE_ZIP}
-		fi
+			if [[ -e ${FILE_ZIP} ]]
+			then
+				rm -f ${FILE_ZIP}
+			fi
 
-		zip -r ${FILE_ZIP} ${PLUGIN}
+			zip -r ${FILE_ZIP} ${PLUGIN}
+		fi
 
 		if [[ -n ${VERSION} ]]
 		then
