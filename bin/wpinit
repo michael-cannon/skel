@@ -5,7 +5,7 @@
 # @author Michael Cannon <mc@aihr.us>
 
 AIHR_VERSION="1.1.4"
-WP_VERSION="4.0.0"
+WP_VERSION="4.1.0"
 
 SITE="wp"
 l2l_config="/Users/michael/.ssh/l2l_config/${SITE}"
@@ -114,7 +114,7 @@ then
 			;;
 
 		"edd-sales-recovery" )
-			LOOKUP_PLUGIN="eddsr"
+			LOOKUP_PLUGIN="edd_sr"
 			;;
 
 		"flickr-shortcode-importer" )
@@ -258,7 +258,7 @@ case "${LOOKUP_PLUGIN}" in
 		IS_PREMIUM=1
 		;;
 
-	"eddsr" )
+	"edd_sr" )
 		PLUGIN="edd-sales-recovery"
 		PLUGINS=${PLUGIN}
 		IS_PREMIUM=1
