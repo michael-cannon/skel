@@ -143,7 +143,7 @@ export HISTTIMEFORMAT='%F %X '
 PWD_MAX_LENGTH=21
 
 function cut_pwd {
-	if [ $HOME == ${PWD:0:${#HOME}} ]
+	if [[ $HOME == ${PWD:0:${#HOME}} ]]
 	then
 		NEW_PWD="~${PWD:${#HOME}}"
 	else
