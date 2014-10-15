@@ -31,8 +31,11 @@ export PATH_ORIG=${PATH}
 # list of paths to check for
 # in order of precedence
 NEW_PATHS="`pwd`/bin/custom
-`pwd`/bin
 `pwd`/bin/backup
+`pwd`/bin
+/usr/local/opt/coreutils/libexec/gnubin
+/usr/local/sbin
+/usr/local/bin
 /opt/local/libexec/gnubin
 /opt/local/sbin
 /opt/local/bin
@@ -45,8 +48,6 @@ NEW_PATHS="`pwd`/bin/custom
 /usr/kerberos/sbin
 /usr/kerberos/bin
 /usr/local/mysql/bin
-/usr/local/sbin
-/usr/local/bin
 /usr/sbin
 /usr/bin
 /sbin

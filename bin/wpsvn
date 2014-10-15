@@ -64,7 +64,10 @@ then
 else
 	echo
 	echo Manually merge SVN files
-	echo "svn cp trunk tags/${VERSION}"
+	echo "cd ~/code/svn.wordpress/${PLUGIN}"
+	echo "cp -r trunk/* tags/${VERSION}/."
+	echo "svn add trunk/* tags/${VERSION}"
 	echo "svn ci -m \"Release version ${VERSION}\""
+	echo "svn status"
 	echo
 fi

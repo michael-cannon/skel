@@ -4,7 +4,7 @@
 #
 # @author Michael Cannon <mc@aihr.us>
 
-AIHR_VERSION="1.1.4"
+AIHR_VERSION="1.1.5"
 WP_VERSION="4.1.0"
 
 SITE="wp"
