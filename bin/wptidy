@@ -1,0 +1,45 @@
+#!/bin/bash
+
+# PHP Tidy Helper for WordPress plugins
+#
+# @author Michael Cannon <mc@aihr.us>
+
+source ~/.skel/bin/wpinit ${@}
+echo
+
+for PLUGIN in ${PLUGINS}
+do
+	PWD=`pwd`
+	BASENAME=`basename ${PWD}`
+	if [[ ${BASENAME} != ${PLUGIN} ]]
+	then
+		DIR_PLUGIN="${SITE_WP_PLUGINS}/${PLUGIN}"
+		if [[ ! -e ${DIR_PLUGIN} ]]
+		then
+			continue
+		fi
+
+		cd ${DIR_PLUGIN}
+	else
+		DIR_PLUGIN="${PWD}"
+	fi
+
+	FILES=`find . -not -path '*/libraries/*' -type f \( -name "*.php" -o -name "*.inc" \)`
+	for FILE in ${FILES}
+	do
+		# apply WordPress Coding Standards
+		if [[ -z ${2} ]]
+		then
+			echo phptidy.php replace ${FILE}
+		else
+			phptidy.php replace ${FILE}
+		fi
+
+		# todo indent case blocks
+	done
+
+	# remove phptidy 
+	find . \( -name "*.phptidybak~" -o -name ".phptidy-cache" \) -exec rm {} \;
+
+	echo
+done

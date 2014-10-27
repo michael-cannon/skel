@@ -1761,8 +1761,7 @@ function l2l_access_create_vhost() {
 		echo "	<Directory \"${LOCAL_DIR_WWW}\">" >> "${vhost_conf}"
 		echo "		Options Includes FollowSymLinks" >> "${vhost_conf}"
 		echo "		AllowOverride All" >> "${vhost_conf}"
-		echo "		Order allow,deny" >> "${vhost_conf}"
-		echo "		Allow from all" >> "${vhost_conf}"
+		echo "		Require all granted" >> "${vhost_conf}"
 		echo "	</Directory>" >> "${vhost_conf}"
 		echo "</VirtualHost>" >> "${vhost_conf}"
 

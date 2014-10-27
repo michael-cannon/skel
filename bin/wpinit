@@ -73,6 +73,10 @@ then
 	LOOKUP_PLUGIN=`basename ${PWD}`
 	case "${LOOKUP_PLUGIN}" in
 
+		"excel-export-plus" )
+			LOOKUP_PLUGIN="eep"
+			;;
+
 		"ldd" )
 			LOOKUP_PLUGIN="ldd"
 			;;
@@ -178,6 +182,11 @@ then
 fi
 
 case "${LOOKUP_PLUGIN}" in
+
+	"eep" )
+		PLUGIN="excel-export-plus"
+		PLUGINS=${PLUGIN}
+		;;
 
 	"ldd" )
 		PLUGIN="ldd"
@@ -347,6 +356,7 @@ case "${LOOKUP_PLUGIN}" in
 
 	* )
 		PLUGINS="
+		excel-export-plus
 		cbqe-edit-flow
 		cbqe-wordpress-seo
 		custom-bulkquick-edit
