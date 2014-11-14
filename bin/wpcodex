@@ -2,7 +2,7 @@
 
 # WordPress Codex grab helper
 
-cd ~/Sites
+cd ~/Sites/zzz-helpers
 rm -rf codex.wordpress.org
 getsite codex.wordpress.org
 cp -r codex.wordpress.org/* codex/.

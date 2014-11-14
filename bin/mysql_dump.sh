@@ -23,10 +23,10 @@ nice mysqldump \
 	--opt \
 	--quote-names \
 	--skip-set-charset \
-	--default-character-set=latin1 \
+	--default-character-set=utf8 \
 	"${4}" > ${FILE}
 
-perl -pi -e "s#(CHARSET=)([^;]+)#\1utf8#g" ${FILE}
+# perl -pi -e "s#(CHARSET=)([^;]+)#\1utf8#g" ${FILE}
 gzip ${FILE}
 
 echo Database ${4} dumped and compressed to file ${FILE}.gz
