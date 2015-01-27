@@ -72,7 +72,7 @@ do
 
 	heading ERROR_LOG
 	# any error_log code?
-	grep -nrsI error_log ${DIR_PLUGIN} >> ${FILE_CODE_QA}
+	grep -nrsI error_log ${DIR_PLUGIN} | grep -v '\bcommit:' >> ${FILE_CODE_QA}
 
 	heading PHPCD
 	# copy detector

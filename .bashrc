@@ -226,11 +226,14 @@ alias ls="${LS_OPTIONS}"
 
 if [[ -e /usr/local/bin/grep ]]
 then
-	GREP_OPTIONS="--binary-files=without-match --color=auto --devices=skip --exclude-dir=CVS --exclude-dir=.libs --exclude-dir=.deps --exclude-dir=.svn --exclude-dir=.git"
+	GREP_OPTIONS=""
+	SKEL_GREP_OPTIONS="--binary-files=without-match --color=auto --devices=skip --exclude-dir=CVS --exclude-dir=.libs --exclude-dir=.deps --exclude-dir=.svn --exclude-dir=.git"
 else
 	GREP_OPTIONS="--binary-files=without-match --color=auto --devices=skip --exclude=CVS --exclude=.libs --exclude=.deps --exclude=.svn --exclude=.git"
+	SKEL_GREP_OPTIONS=""
 fi
 export GREP_OPTIONS
+export SKEL_GREP_OPTIONS
 
 # ruby helpers
 export RUBYOPT=rubygems

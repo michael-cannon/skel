@@ -47,19 +47,20 @@ then
 fi
 
 # WordPress readme.txt to HTML validator
-open http://wordpress.org/plugins/about/validator/
+open https://wordpress.org/plugins/about/validator/
 
 # product details
 if [[ -n ${ID_PRODUCT} && ${ID_PRODUCT} -gt 0 ]]
 then
 	open https://github.com/michael-cannon/${PLUGIN}/blob/master/README.md
-	open http://aihr.us/wp-admin/post.php?post=${ID_PRODUCT}\&action=edit
+
+	open https://aihr.us/wp-admin/post.php?post=${ID_PRODUCT}\&action=edit
 fi
 
 # post details
 #	if [[ -n ${ID_POST} && ${ID_POST} -gt 0 ]]
 #	then
-#		open http://aihr.us/wp-admin/post.php?post=${ID_POST}\&action=edit
+#		open https://aihr.us/wp-admin/post.php?post=${ID_POST}\&action=edit
 #	fi
 
 if [[ -n ${ID_CHANGELOG} && ${ID_CHANGELOG} -gt 0 ]]
@@ -72,28 +73,31 @@ then
 	# changelog
 	if [[ -n ${ID_CHANGELOG} && ${ID_CHANGELOG} -gt 0 ]]
 	then
-		open http://aihr.us/wp-admin/post.php?post=${ID_CHANGELOG}\&action=edit
+		open https://aihr.us/wp-admin/post.php?post=${ID_CHANGELOG}\&action=edit
 	fi
 
 	# api
 	if [[ -n ${ID_API} && ${ID_API} -gt 0 ]]
 	then
 		open https://github.com/michael-cannon/${PLUGIN}/blob/master/API.md
-		open http://aihr.us/wp-admin/post.php?post=${ID_API}\&action=edit
+
+		open https://aihr.us/wp-admin/post.php?post=${ID_API}\&action=edit
 	fi
 
 	# todo
 	if [[ -n ${ID_TODO} && ${ID_TODO} -gt 0 ]]
 	then
 		open https://github.com/michael-cannon/${PLUGIN}/blob/master/TODO.md
-		open http://aihr.us/wp-admin/post.php?post=${ID_TODO}\&action=edit
+
+		open https://aihr.us/wp-admin/post.php?post=${ID_TODO}\&action=edit
 	fi
 
 	echo
 else
-	open http://wordpress.org/extend/plugins/${PLUGIN}/
+	open https://wordpress.org/extend/plugins/${PLUGIN}/
 fi
 
 # see if updates are ready
-open http://testwp.localhost/wp-admin/update-core.php
-open http://aihr.us/wp-admin/update-core.php
+open https://testwp.localhost/wp-admin/update-core.php
+
+open https://aihr.us/wp-admin/update-core.php

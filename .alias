@@ -58,7 +58,7 @@ alias gits="git status -sb"
 alias gitsa="git subtree add --squash -P"
 alias gitsp="git subtree pull --squash -P"
 alias gitstash="git stash"
-alias grep='grep -nrsI --exclude-dir="*\.git"'
+alias grep="grep -nrsI ${SKEL_GREP_OPTIONS}"
 alias hisg="history | \grep"
 alias kcvsdir="find . -name CVS -type d -exec rm -rf {} \;"
 alias kdiff="find . -name 'diff.txt' -type f -exec rm {} \;"
