@@ -44,6 +44,7 @@ alias gitd="git diff --ignore-space-change HEAD > diff.txt; vi diff.txt +0; rm d
 alias gitdc="git diff CHANGELOG.md > diff.txt"
 alias gitdca="git diff --ignore-space-change --cached > diff.txt; vi diff.txt +0; rm diff.txt"
 alias gitdh="gitd"
+alias gitfa="git fetch --all"
 alias gith="grep url .git/config"
 alias gitl="git log"
 alias gitld="git log --oneline --graph --decorate"
