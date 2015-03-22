@@ -7,7 +7,7 @@
 AIHR_VERSION="1.2.0"
 WP_VERSION="4.1.0"
 
-DOC_DOMAIN="http://axelerant.wpengine.com/"
+DOC_DOMAIN="http://axelerant.wpengine.com"
 
 SITE="wp"
 l2l_config="/Users/michael/.ssh/l2l_config/${SITE}"
