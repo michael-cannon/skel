@@ -4,10 +4,10 @@
 #
 # @author Michael Cannon <mc@aihr.us>
 
-AIHR_VERSION="1.2.0"
-WP_VERSION="4.1.0"
-
+AIHR_VERSION="1.2.1"
 DOC_DOMAIN="http://axelerant.wpengine.com"
+WP_REQUIRES="3.9.2"
+WP_VERSION="4.2.0"
 
 SITE="wp"
 l2l_config="/Users/michael/.ssh/l2l_config/${SITE}"

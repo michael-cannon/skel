@@ -58,7 +58,7 @@
 # alias swohin="ssh root@176.28.9.117"
 # alias swohinold="ssh root@83.169.5.189"
 # alias swolf="ssh wolfaihr@wolf.aihr.us"
-alias saxel="ssh michael@axelerant.com"
+alias saxel="ssh michael@54.235.75.160"
 alias sdftg="ssh dontfeed@ftp.dontfeedthegeek.com"
 alias sexcaucti="ssh excaucti@excauctions.com"
 alias sproj="ssh michael@projspace.com"

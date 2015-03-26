@@ -45,6 +45,18 @@ else
 fi
 
 
+wp_requires_at_least="Requires at least:"
+wp_version_tag="${wp_requires_at_least} ${WP_REQUIRES}"
+if echo "${source_text}" | grep -q "${wp_version_tag}";
+then
+	echo "GOOD ${file_name} contains '${wp_version_tag}'"
+else
+	FILES_VALID=0
+	contains=`grep "${wp_requires_at_least}" ${file_path}`
+	echo "WARNING ${file_name} doesn't contain '${wp_version_tag}', it states '${contains}'"
+fi
+
+
 version_tag="Stable tag: ${VERSION}"
 if echo "${source_text}" | grep -q "${version_tag}";
 then
@@ -55,17 +67,17 @@ else
 fi
 
 
+echo
+
 file_name="${PLUGIN}.php"
 source_text=`head -n 75 ${PLUGIN_DIR}/${file_name}`
 version_tag="Version: ${VERSION}"
 if echo "${source_text}" | grep -q "${version_tag}";
 then
-	echo "GOOD ${file_name} contains '${version_tag}'"
+	echo "GOOD ${file_name} header contains '${version_tag}'"
 else
-	FILES_VALID=0
-	echo "BAD ${file_name} doesn't contain '${version_tag}'"
+	echo "WARNING ${file_name} header doesn't contain '${version_tag}'"
 fi
-
 
 version_okay=0
 version_tag="= '${VERSION}';"
@@ -83,14 +95,13 @@ then
 	version_okay=1
 	echo "GOOD ${file_name} contains '${version_tag}'"
 else
-	FILES_VALID=0
 	echo "WARNING ${file_name} doesn't contain '${version_tag}'"
 fi
 
 if [[ 0 == ${version_okay} ]]
 then
 	FILES_VALID=0
-	echo "BAD ${file_name} doesn't contain version information'"
+	echo "BAD ${file_name} doesn't contain version information"
 fi
 
 
@@ -129,13 +140,16 @@ else
 	fi
 fi
 
+
+echo
+
 source_text=`head ${file}`
 if echo "${source_text}" | grep -q "${version_tag}";
 then
 	echo "GOOD ${file_name} contains '${version_tag}'"
 else
 	FILES_VALID=0
-	echo "BAD ${file_name} doesn't contain '${version_tag}'"
+	echo "BAD ${file_name} doesn't contain '${version_tag}''"
 fi
 
 echo
