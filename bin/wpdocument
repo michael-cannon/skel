@@ -98,6 +98,6 @@ else
 fi
 
 # see if updates are ready
-open https://testwp.localhost/wp-admin/update-core.php
+# open https://testwp.localhost/wp-admin/update-core.php
 
 open ${DOC_DOMAIN}/wp-admin/update-core.php
