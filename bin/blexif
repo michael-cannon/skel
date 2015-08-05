@@ -1,0 +1,20 @@
+#!/bin/bash
+
+# Exiftool location write helper
+#
+# Meant to update meta tags for images
+
+CITY=$1
+STATE=$2
+COUNTRY=$3
+COUNTRY_CODE=$4
+LOCATION=$5
+
+echo "
+exiftool \
+-City='${CITY}' \
+-State='${STATE}' \
+-Country='${COUNTRY}' \
+-CountryCode='${COUNTRY_CODE}' \
+-Location='${LOCATION}' \
+"
