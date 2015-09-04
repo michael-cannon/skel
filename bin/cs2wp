@@ -1,0 +1,23 @@
+#!/bin/bash
+
+# Clean up CoSchedule WordPress content
+#
+# @author Michael Cannon <michael@axelerant.com>
+
+# have an arguement
+if [ ! "$1" ]
+then
+	echo 
+	echo Clean up CoSchedule WordPress content
+	echo "Usage: `basename $0` filename"
+	echo 
+	exit
+fi
+
+perl -pi -e "s#^&nbsp;$\n##g" ${1}
+perl -pi -e "s#^&nbsp;$\r##g" ${1}
+perl -pi -e "s#<a name=\"[^\"]+\"></a>##g" ${1}
+perl -pi -e "s#https?://www.google.com/url\?q=##g" ${1}
+perl -pi -e "s#&amp;sa=D[^\"]+\"#\"#g" ${1}
+perl -pi -e "s#%3A#:#g" ${1}
+perl -pi -e "s#%2F#/#g" ${1}
