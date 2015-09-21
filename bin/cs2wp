@@ -21,3 +21,4 @@ perl -pi -e "s#https?://www.google.com/url\?q=##g" ${1}
 perl -pi -e "s#&amp;sa=D[^\"]+\"#\"#g" ${1}
 perl -pi -e "s#%3A#:#g" ${1}
 perl -pi -e "s#%2F#/#g" ${1}
+perl -pi -e "s/%23/#/g" ${1}
