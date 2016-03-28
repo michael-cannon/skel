@@ -4,7 +4,7 @@
 #
 # @author Michael Cannon <mc@aihr.us>
 
-AIHR_VERSION="1.2.2"
+AIHR_VERSION="1.2.4"
 DOC_DOMAIN="https://store.axelerant.com"
 WP_REQUIRES="3.9.2"
 WP_VERSION="4.4.0"
