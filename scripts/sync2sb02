@@ -5,7 +5,7 @@
 # @author Michael Cannon <mc@aihr.us>
 
 
-DEV="root@stonebriar02"
+DEV="root@stonebriar04"
 APACHE_USER="apache"
 CONFIG_WP="/wp-config.php"
 CONFIG_TYPO3="/typo3conf/localconf.php"
