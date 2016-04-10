@@ -11,13 +11,6 @@ then
 fi
 
 BACKUP_DIRS="Documents
-Pictures
-Desktop
-PortableApps
-Sites
-.skel"
-
-BACKUP_DIRS="Documents
 Desktop
 PortableApps
 .skel"
