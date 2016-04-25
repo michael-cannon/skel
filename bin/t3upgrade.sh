@@ -11,7 +11,7 @@ then
 	VERSION="$1"
 else
 	# latest LTS TYPO3 version
-	VERSION="4.5.19"
+	VERSION="4.5.40"
 fi
 
 # [blankpackage|typo3_src]
