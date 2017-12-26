@@ -243,7 +243,8 @@ function l2l_settings_server() {
 	
 		APACHE_CMD=`which apachectl`
 		# DIR_VHOST="/opt/local/apache2/conf/vhosts"
-		DIR_VHOST="/private/etc/apache2/other"
+		# DIR_VHOST="/private/etc/apache2/other"
+		DIR_VHOST="/usr/local/etc/apache2/2.4/other"
 		DEV_GROUP="www"
 		SITES="Sites"
 

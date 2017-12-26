@@ -15,3 +15,5 @@
 [user]
 	name = Michael Cannon
 	email = michael@axelerant.com
+[push]
+	default = simple

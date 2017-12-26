@@ -173,10 +173,12 @@ else
 endif
 
 " syntax helpers
-au BufNewFile,BufRead jquery.*.js set ft=javascript syntax=jquery
+au BufNewFile,BufRead jquery.*.js setlocal ft=javascript syntax=jquery
 au BufNewFile,BufRead mozex.textarea.* setlocal filetype=typoscript
-au BufNewFile,BufRead *.ts setlocal filetype=typoscript
-au BufRead,BufNewFile *.js set ft=php syntax=php
+" au BufNewFile,BufRead *.ts setlocal filetype=typoscript
+au BufNewFile,BufRead *.ts setlocal filetype=javascript tabstop=2
+au BufNewFile,BufRead *.js setlocal filetype=javascript tabstop=2
+au BufRead,BufNewFile *.php setlocal ft=php syntax=php
 
 set gfn=Monaco:h13
 
@@ -187,3 +189,12 @@ if &diff
 	" diff mode
 	set diffopt+=iwhite
 endif
+
+" yank to clipboard
+" if has("clipboard")
+" 	set clipboard=unnamed " copy to the system clipboard
+" 
+" 	if has("unnamedplus") " X11 support
+" 		set clipboard+=unnamedplus
+" 	endif
+" endif
